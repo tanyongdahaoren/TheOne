@@ -1,0 +1,4 @@
+build/Debug/TheOne.tlog/
+*.idb
+build/TheOne.opensdf
+build/TheOne.sdf
