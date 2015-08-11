@@ -107,8 +107,8 @@ int Director::Run()
 	Camera* camera = new Camera;
 	camera->Perspective(60, sWinW / sWinH, 0.1f, 10000.0);
 	//camera->orthographic(sWinW, sWinH, .1, 100);
-	vec3 eye(-30, 10, 30);
-	vec3 center(0, 0, 0);
+	vec3 eye(-20, 0, 0);
+	vec3 center(0, 0, -0);
 	camera->LookAt(eye, center);
 	tree->AddCamera(camera);
 
@@ -160,23 +160,34 @@ int Director::Run()
 	
 	{
 		Mesh* mesh = new Mesh;
-		V3F_T2F_V3N v1(vec3(-10, -10, 5.773f), vec2(0, 0)); mesh->vertices.push_back(v1);
-		V3F_T2F_V3N v2(vec3(0.0f, -10, -11.5475f), vec2(0.5f, 0.0f)); mesh->vertices.push_back(v2);
-		V3F_T2F_V3N v3(vec3(10, -10, 5.773f), vec2(1.0f, 0.0f)); mesh->vertices.push_back(v3);
-		V3F_T2F_V3N v4(vec3(0.0f, 10, 0.0f), vec2(0.5f, 1.0f)); mesh->vertices.push_back(v4);
+// 		V3F_T2F_V3N v1(vec3(-10, -10, 5.773f), vec2(0, 0)); mesh->vertices.push_back(v1);
+// 		V3F_T2F_V3N v2(vec3(0.0f, -10, -11.5475f), vec2(0.5f, 0.0f)); mesh->vertices.push_back(v2);
+// 		V3F_T2F_V3N v3(vec3(10, -10, 5.773f), vec2(1.0f, 0.0f)); mesh->vertices.push_back(v3);
+// 		V3F_T2F_V3N v4(vec3(0.0f, 10, 0.0f), vec2(0.5f, 1.0f)); mesh->vertices.push_back(v4);
+// 
+// 		mesh->indices.push_back(0);
+// 		mesh->indices.push_back(3);
+// 		mesh->indices.push_back(1);
+// 		mesh->indices.push_back(1);
+// 		mesh->indices.push_back(3);
+// 		mesh->indices.push_back(2);
+// 		mesh->indices.push_back(2);
+// 		mesh->indices.push_back(3);
+// 		mesh->indices.push_back(0);
+// 		mesh->indices.push_back(1);
+// 		mesh->indices.push_back(2);
+// 		mesh->indices.push_back(0);
+		V3F_T2F_V3N v1(vec3(0,  0,  -10), vec2(0, 0));   mesh->vertices.push_back(v1);
+		V3F_T2F_V3N v2(vec3(0,  0,  0),   vec2(0.5, 0)); mesh->vertices.push_back(v2);
+		V3F_T2F_V3N v3(vec3(0,  10, 0),   vec2(0, 0.5)); mesh->vertices.push_back(v3);
+		V3F_T2F_V3N v4(vec3(10, 0,  0),   vec2(1, 0)); mesh->vertices.push_back(v4);
+		mesh->indices.push_back(0);
+		mesh->indices.push_back(1);
+		mesh->indices.push_back(2);
+		mesh->indices.push_back(1);
+		mesh->indices.push_back(3);
+		mesh->indices.push_back(2);
 
-		mesh->indices.push_back(0);
-		mesh->indices.push_back(3);
-		mesh->indices.push_back(1);
-		mesh->indices.push_back(1);
-		mesh->indices.push_back(3);
-		mesh->indices.push_back(2);
-		mesh->indices.push_back(2);
-		mesh->indices.push_back(3);
-		mesh->indices.push_back(0);
-		mesh->indices.push_back(1);
-		mesh->indices.push_back(2);
-		mesh->indices.push_back(0);
 		mesh->CalcNormals();
 		mesh->GenBuffers();
 		
@@ -253,7 +264,7 @@ void Director::MainLoop()
 		sCurrentTree = tree;
 
 		sp3d->SetRotation(vec3(0, rot, 0));
-		rot+=1;
+		//rot+=1;
 
 		tree->Travel();
 	}

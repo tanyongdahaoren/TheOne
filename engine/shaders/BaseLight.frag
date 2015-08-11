@@ -44,11 +44,7 @@ vec4 CalculateLightInternal(BaseLight light, vec3 direction)
 		diffuseColor = vec4(light.color * light.diffuseIntensity * diffuseFactor, 1.0f);
 
 		vec3 vertex2eye = normalize(u_world_eyepos - o_world_pos);
-		vertex2eye = vec3(-1,0,0);
-
-        vec3 lightReflect = normalize(reflect(direction, o_world_normal));  
-		lightReflect = vec3(-1,0,0);                   
-        
+        vec3 lightReflect = normalize(reflect(direction, o_world_normal));   
 		float specularFactor = dot(vertex2eye, lightReflect);
 		if (specularFactor > 0)
 		{                                                           
