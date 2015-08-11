@@ -1,0 +1,154 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{BD73F8F7-185E-4FE4-9E48-9C397FF0EA2B}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>TheOne</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\external\glm;..\external\glfw\include;..\external\ImageMagick\include;..\external\ImageMagick\include\Magick++\lib;..\external\assimp\include;..\external\jpeg\include;..\engine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;glu32.lib;opengl32.lib;glfw3.lib;libjpeg.lib;CORE_DB_Magick++_.lib;assimpd.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\external\glfw\prebuilt;..\external\jpeg\prebuilt;..\external\ImageMagick\prebuilt;..\external\assimp\prebuilt</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>LIBCMT.lib</IgnoreSpecificDefaultLibraries>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\external\glew\include;..\external\glm;..\external\glfw\include;..\engine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;glu32.lib;opengl32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\external\glew\prebuilt;..\external\glfw\prebuilt</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>LIBCMT.lib</IgnoreSpecificDefaultLibraries>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\engine\AutoReleasePool.h" />
+    <ClInclude Include="..\engine\BaseLight.h" />
+    <ClInclude Include="..\engine\Camera.h" />
+    <ClInclude Include="..\engine\Data.h" />
+    <ClInclude Include="..\engine\Defines.h" />
+    <ClInclude Include="..\engine\Director.h" />
+    <ClInclude Include="..\engine\DrawNode.h" />
+    <ClInclude Include="..\engine\EasyImage.h" />
+    <ClInclude Include="..\engine\FileUtils.h" />
+    <ClInclude Include="..\engine\GLHeader.h" />
+    <ClInclude Include="..\engine\List.h" />
+    <ClInclude Include="..\engine\MathH.h" />
+    <ClInclude Include="..\engine\Mesh.h" />
+    <ClInclude Include="..\engine\MeshManager.h" />
+    <ClInclude Include="..\engine\Node.h" />
+    <ClInclude Include="..\engine\Ref.h" />
+    <ClInclude Include="..\engine\ShaderBaseLight.h" />
+    <ClInclude Include="..\engine\ShaderManager.h" />
+    <ClInclude Include="..\engine\ShaderName.h" />
+    <ClInclude Include="..\engine\Shader.h" />
+    <ClInclude Include="..\engine\ShaderValue.h" />
+    <ClInclude Include="..\engine\Sprite2D.h" />
+    <ClInclude Include="..\engine\Sprite3D.h" />
+    <ClInclude Include="..\engine\Texture2D.h" />
+    <ClInclude Include="..\engine\Tree.h" />
+    <ClInclude Include="..\engine\Types.h" />
+    <ClInclude Include="..\engine\Vector.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\engine\AutoReleasePool.cpp" />
+    <ClCompile Include="..\engine\BaseLight.cpp" />
+    <ClCompile Include="..\engine\Camera.cpp" />
+    <ClCompile Include="..\engine\Data.cpp" />
+    <ClCompile Include="..\engine\Director.cpp" />
+    <ClCompile Include="..\engine\DrawNode.cpp" />
+    <ClCompile Include="..\engine\EasyImage.cpp" />
+    <ClCompile Include="..\engine\FileUtils.cpp" />
+    <ClCompile Include="..\engine\glew.c" />
+    <ClCompile Include="..\engine\Mesh.cpp" />
+    <ClCompile Include="..\engine\MeshManager.cpp" />
+    <ClCompile Include="..\engine\Node.cpp" />
+    <ClCompile Include="..\engine\Ref.cpp" />
+    <ClCompile Include="..\engine\ShaderBaseLight.cpp" />
+    <ClCompile Include="..\engine\ShaderManager.cpp" />
+    <ClCompile Include="..\engine\ShaderName.cpp" />
+    <ClCompile Include="..\engine\Shader.cpp" />
+    <ClCompile Include="..\engine\Sprite2D.cpp" />
+    <ClCompile Include="..\engine\Sprite3D.cpp" />
+    <ClCompile Include="..\engine\Texture2D.cpp" />
+    <ClCompile Include="..\engine\Tree.cpp" />
+    <ClCompile Include="..\engine\Types.cpp" />
+    <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\engine\shaders\BaseLight.frag" />
+    <None Include="..\engine\shaders\BaseLight.vert" />
+    <None Include="..\engine\shaders\PositionColor.frag" />
+    <None Include="..\engine\shaders\PositionColor.vert" />
+    <None Include="..\engine\shaders\PositionTexture2D.frag" />
+    <None Include="..\engine\shaders\PositionTexture2D.vert" />
+    <None Include="..\engine\shaders\PositionTexture3D.frag" />
+    <None Include="..\engine\shaders\PositionTexture3D.vert" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
