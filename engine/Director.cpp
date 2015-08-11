@@ -181,30 +181,19 @@ int Director::Run()
 		mesh->GenBuffers();
 		
 		EasyImage* image = new EasyImage;
-		image->InitWithFileName("test.png");
-		Texture2D* texture = new Texture2D;
-		texture->LoadWithImage(image);
+		bool b = image->InitWithFileName("test.png");
+		if (b)
+		{
+			Texture2D* texture = new Texture2D;
+			texture->LoadWithImage(image);
 
-		Sprite3D* sp = new Sprite3D;
-		sp->InitWithMesh(mesh);
-		sp->SetTexture2D(texture);
-		par->AddChild(sp);
+			Sprite3D* sp = new Sprite3D;
+			sp->InitWithMesh(mesh);
+			sp->SetTexture2D(texture);
+			par->AddChild(sp);
 
-		DrawPoints* dp = new DrawPoints;
-		sp->AddChild(dp);
-		dp->DrawPoint(v1.vertex, Color3B::RED);
-		dp->DrawPoint(v2.vertex, Color3B::RED);
-		dp->DrawPoint(v3.vertex, Color3B::RED);
-		dp->DrawPoint(v4.vertex, Color3B::RED);
-
-		DrawLines* dl = new DrawLines;
-		sp->AddChild(dl);
-		dl->DrawLine(mesh->vertices[0].vertex, mesh->vertices[0].vertex + mesh->vertices[0].normal, Color3B::RED, Color3B::GREEN);
-		dl->DrawLine(mesh->vertices[1].vertex, mesh->vertices[1].vertex + mesh->vertices[1].normal, Color3B::RED, Color3B::GREEN);
-		dl->DrawLine(mesh->vertices[2].vertex, mesh->vertices[2].vertex + mesh->vertices[2].normal, Color3B::RED, Color3B::GREEN);
-		dl->DrawLine(mesh->vertices[3].vertex, mesh->vertices[3].vertex + mesh->vertices[3].normal, Color3B::RED, Color3B::GREEN);
-		
-		sp3d = sp;
+			sp3d = sp;
+		}
 	}
  	
 	//line

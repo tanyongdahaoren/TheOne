@@ -23,6 +23,18 @@ bool Sprite3D::InitWithMesh(Mesh* mesh)
 
 	SetShader(shader_position_texure_3D);
 
+#if DEBUG_SPRITE3D
+	_dp = new DrawPoints;
+	this->AddChild(_dp);
+	_dl = new DrawLines;
+	this->AddChild(_dl);
+	for (auto it:mesh->vertices)
+	{
+		_dp->DrawPoint(it.vertex, Color3B::RED);
+		_dl->DrawLine(it.vertex, it.vertex + it.normal, Color3B::RED, Color3B::GREEN);
+	}
+#endif
+
 	return true;
 }
 

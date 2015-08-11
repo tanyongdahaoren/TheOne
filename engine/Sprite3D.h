@@ -5,6 +5,9 @@
 #include "Texture2D.h"
 #include "Shader.h"
 
+#define DEBUG_SPRITE3D 1
+#include "DrawNode.h"
+
 class Sprite3D : public Node
 {
 public:
@@ -27,4 +30,9 @@ private:
 	Mesh* _mesh;
 	Texture2D* _texture2D;
 	Shader* _program;
+
+#if DEBUG_SPRITE3D
+	DrawPoints* _dp;
+	DrawLines* _dl;
+#endif
 };
