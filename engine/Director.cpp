@@ -29,6 +29,18 @@ GLFWwindow* window;
 #include "Texture2D.h"
 #include "MeshManager.h"
 
+
+static vec2 sPreCursorPos = vec2(sWinW/2, sWinH/2);
+static void cursor_position_callback(GLFWwindow* window, double x, double y)
+{
+	printf("Cursor position: %f %f\n", x, y);
+
+	vec2 delta = sPreCursorPos - vec2(x, y);
+	sPreCursorPos = vec2(x, y);
+
+	Director::GetInstance()->GetCurrentTree()->GetCurrentCamera()->SetAngle(delta);
+}
+
 static Tree* sCurrentTree = NULL;
 
 Director* Director::GetInstance()
@@ -85,15 +97,17 @@ int Director::Run()
 	// Ensure we can capture the escape key being pressed below
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
 
+	glfwSetCursorPos(window, sWinW/2, sWinH/2);
+	glfwSetCursorPosCallback(window, cursor_position_callback);
+
 	// Dark blue background
-	glClearColor(0.0f, 0.0f, 0, 0.0f);
+	glClearColor(0.0f, 0, .3, 0.0f);
 	
 	//main loop
 	double last, current, during = 0.0;
 	last = glfwGetTime();
 
 	//init eninge
-
 	ShaderManager::GetInstance();
 	FileUtils::GetInstance();
 	
@@ -108,8 +122,10 @@ int Director::Run()
 	camera->Perspective(60, sWinW / sWinH, 0.1f, 10000.0);
 	//camera->orthographic(sWinW, sWinH, .1, 100);
 	vec3 eye(-20, 0, 0);
-	vec3 center(0, 0, -0);
-	camera->LookAt(eye, center);
+	vec3 center(0, 0, 0);
+	camera->SetEyePos(eye);
+	camera->SetTarget(center);
+	camera->UpdateViewTransform();
 	tree->AddCamera(camera);
 
 	Node* par = new Node;
@@ -122,8 +138,8 @@ int Director::Run()
 	DirectionLight* dirlight = new DirectionLight;
 	dirlight->SetColor(Color3F::WHITE);
 	dirlight->SetDirection(vec3(1,0,0));
-	dirlight->SetAmbientIntensity(0);
-	dirlight->SetDiffuseIntensity(0);
+	dirlight->SetAmbientIntensity(0.2);
+	dirlight->SetDiffuseIntensity(.8);
 	par->AddChild(dirlight);
 
 	//2d sprite
@@ -160,33 +176,16 @@ int Director::Run()
 	
 	{
 		Mesh* mesh = new Mesh;
-// 		V3F_T2F_V3N v1(vec3(-10, -10, 5.773f), vec2(0, 0)); mesh->vertices.push_back(v1);
-// 		V3F_T2F_V3N v2(vec3(0.0f, -10, -11.5475f), vec2(0.5f, 0.0f)); mesh->vertices.push_back(v2);
-// 		V3F_T2F_V3N v3(vec3(10, -10, 5.773f), vec2(1.0f, 0.0f)); mesh->vertices.push_back(v3);
-// 		V3F_T2F_V3N v4(vec3(0.0f, 10, 0.0f), vec2(0.5f, 1.0f)); mesh->vertices.push_back(v4);
-// 
-// 		mesh->indices.push_back(0);
-// 		mesh->indices.push_back(3);
-// 		mesh->indices.push_back(1);
-// 		mesh->indices.push_back(1);
-// 		mesh->indices.push_back(3);
-// 		mesh->indices.push_back(2);
-// 		mesh->indices.push_back(2);
-// 		mesh->indices.push_back(3);
-// 		mesh->indices.push_back(0);
-// 		mesh->indices.push_back(1);
-// 		mesh->indices.push_back(2);
-// 		mesh->indices.push_back(0);
-		V3F_T2F_V3N v1(vec3(0,  0,  -10), vec2(0, 0));   mesh->vertices.push_back(v1);
-		V3F_T2F_V3N v2(vec3(0,  0,  0),   vec2(0.5, 0)); mesh->vertices.push_back(v2);
-		V3F_T2F_V3N v3(vec3(0,  10, 0),   vec2(0, 0.5)); mesh->vertices.push_back(v3);
-		V3F_T2F_V3N v4(vec3(10, 0,  0),   vec2(1, 0)); mesh->vertices.push_back(v4);
+		V3F_T2F_V3N v1(vec3(0,  0,  -10), vec2(0, 0)); mesh->vertices.push_back(v1);
+		V3F_T2F_V3N v2(vec3(0,  0,  0),   vec2(1, 0)); mesh->vertices.push_back(v2);
+		V3F_T2F_V3N v3(vec3(0,  10, 0),   vec2(1, 1)); mesh->vertices.push_back(v3);
+		V3F_T2F_V3N v4(vec3(0, 10, -10), vec2(0, 1)); mesh->vertices.push_back(v4);
 		mesh->indices.push_back(0);
 		mesh->indices.push_back(1);
 		mesh->indices.push_back(2);
-		mesh->indices.push_back(1);
-		mesh->indices.push_back(3);
+		mesh->indices.push_back(0);
 		mesh->indices.push_back(2);
+		mesh->indices.push_back(3);
 
 		mesh->CalcNormals();
 		mesh->GenBuffers();
@@ -253,10 +252,13 @@ void Director::MainLoop()
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
-	glFrontFace(GL_CW);
-	glCullFace(GL_BACK);
 	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glFrontFace(GL_CW);
+
+	glCullFace(GL_BACK);
 	glDepthFunc(GL_LESS);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	//travel all nodes
 	for ( const auto &tree: _trees )
@@ -278,5 +280,3 @@ Tree* Director::GetCurrentTree()
 {
 	return sCurrentTree;
 }
-
-
