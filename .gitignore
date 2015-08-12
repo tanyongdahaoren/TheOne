@@ -3,3 +3,9 @@ build/Debug/TheOne.tlog/
 build/TheOne.opensdf
 build/TheOne.sdf
 build/Debug/TheOne.exe
+*.obj
+build/TheOne.v12.suo
+build/Debug/TheOne.ilk
+build/Debug/TheOne.log
+build/Debug/TheOne.pdb
+build/Debug/vc120.pdb
