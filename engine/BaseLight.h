@@ -40,3 +40,22 @@ public:
 protected:
 	vec3 _direction;
 };
+
+class PointLight : public BaseLight
+{
+public:
+	PointLight();
+
+	void SetConstant(float val){ _constant = val; }
+	float GetConstant(){ return _constant; }
+
+	void SetLinear(float val){ _linear = val; }
+	float GetLinear(){ return _linear; }
+
+	void SetExp(float val){ _exp = val; }
+	float GetExp(){ return _exp; }
+protected:
+	float _constant;
+	float _linear;
+	float _exp;
+};

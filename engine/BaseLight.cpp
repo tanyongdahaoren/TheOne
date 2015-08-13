@@ -59,3 +59,13 @@ void DirectionLight::SetDirection(vec3 direction)
 {
 	_direction = direction;
 }
+
+//-------------------
+//PointLight
+//-------------------
+PointLight::PointLight()
+{
+	_constant = 1.0f;
+	_linear = 0.0f;
+	_exp = 0.0f;
+}
