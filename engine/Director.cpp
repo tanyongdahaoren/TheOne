@@ -43,7 +43,7 @@ static void cursor_position_callback(GLFWwindow* window, double x, double y)
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
-	if (action != GLFW_REPEAT || action != GLFW_PRESS)
+	if (action != GLFW_REPEAT && action != GLFW_PRESS)
 		return;
 	Camera* camera = Director::GetInstance()->GetCurrentTree()->GetCurrentCamera();
 	vec3 dir = camera->GetDirection();
