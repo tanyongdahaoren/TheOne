@@ -38,7 +38,106 @@ static void cursor_position_callback(GLFWwindow* window, double x, double y)
 	vec2 delta = sPreCursorPos - vec2(x, y);
 	sPreCursorPos = vec2(x, y);
 
-	Director::GetInstance()->GetCurrentTree()->GetCurrentCamera()->SetAngle(delta);
+	Director::GetInstance()->GetCurrentTree()->GetCurrentCamera()->ChangeCameraAngle(delta);
+}
+
+static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	if (action != GLFW_REPEAT || action != GLFW_PRESS)
+		return;
+	Camera* camera = Director::GetInstance()->GetCurrentTree()->GetCurrentCamera();
+	vec3 dir = camera->GetDirection();
+	vec3 right = camera->GetRight();
+	vec3 pos = camera->GetEyePos();
+
+	static float sCameraMoveSpeed = 0.5f;
+	switch (key)
+	{
+	case GLFW_KEY_W:
+		{
+			pos += dir * sCameraMoveSpeed;
+		}
+		break;
+	case GLFW_KEY_S:
+		{
+			pos -= dir * sCameraMoveSpeed;
+		}
+		break;
+	case GLFW_KEY_A:
+		{
+			pos -= right * sCameraMoveSpeed;
+		}
+		break;
+	case GLFW_KEY_D:
+		{
+			pos += right * sCameraMoveSpeed;
+		}
+		break;
+	}
+	camera->SetEyePos(pos);
+}
+
+static const char* get_button_name(int button)
+{
+	switch (button)
+	{
+	case GLFW_MOUSE_BUTTON_LEFT:
+		return "left";
+	case GLFW_MOUSE_BUTTON_RIGHT:
+		return "right";
+	case GLFW_MOUSE_BUTTON_MIDDLE:
+		return "middle";
+	default:
+	{
+		static char name[16];
+		sprintf(name, "%i", button);
+		return name;
+	}
+	}
+}
+
+static const char* get_mods_name(int mods)
+{
+	static char name[512];
+
+	if (mods == 0)
+		return " no mods";
+
+	name[0] = '\0';
+
+	if (mods & GLFW_MOD_SHIFT)
+		strcat(name, " shift");
+	if (mods & GLFW_MOD_CONTROL)
+		strcat(name, " control");
+	if (mods & GLFW_MOD_ALT)
+		strcat(name, " alt");
+	if (mods & GLFW_MOD_SUPER)
+		strcat(name, " super");
+
+	return name;
+}
+
+static const char* get_action_name(int action)
+{
+	switch (action)
+	{
+	case GLFW_PRESS:
+		return "pressed";
+	case GLFW_RELEASE:
+		return "released";
+	case GLFW_REPEAT:
+		return "repeated";
+	}
+
+	return "caused unknown action";
+}
+static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+	printf("Mouse button %i (%s) (with%s) was %s\n",
+		button,
+		get_button_name(button),
+		get_mods_name(mods),
+		get_action_name(action));
 }
 
 static Tree* sCurrentTree = NULL;
@@ -99,6 +198,8 @@ int Director::Run()
 
 	glfwSetCursorPos(window, sWinW/2, sWinH/2);
 	glfwSetCursorPosCallback(window, cursor_position_callback);
+	glfwSetMouseButtonCallback(window, mouse_button_callback);
+	glfwSetKeyCallback(window, key_callback);
 
 	// Dark blue background
 	glClearColor(0.0f, 0, .3, 0.0f);
@@ -119,13 +220,13 @@ int Director::Run()
 
  	//camera
 	Camera* camera = new Camera;
-	camera->Perspective(60, sWinW / sWinH, 0.1f, 10000.0);
+	camera->Perspective(60, sWinW / sWinH, 0.1f, 1000.0);
 	//camera->orthographic(sWinW, sWinH, .1, 100);
 	vec3 eye(-20, 0, 0);
 	vec3 center(0, 0, 0);
 	camera->SetEyePos(eye);
 	camera->SetTarget(center);
-	camera->UpdateViewTransform();
+	camera->SetMouseSpeed(0.3f);
 	tree->AddCamera(camera);
 
 	Node* par = new Node;

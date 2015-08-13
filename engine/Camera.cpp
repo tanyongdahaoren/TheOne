@@ -1,5 +1,11 @@
 #include "Camera.h"
 
+Camera::Camera()
+	:_mouseSpeed(1.0f)
+{
+
+}
+
 void Camera::Perspective(float fieldOfView, float aspectRatio, float nearPlane, float farPlane)
 {
 	_projectTransform = glm::perspective(fieldOfView, aspectRatio, nearPlane, farPlane);
@@ -17,6 +23,11 @@ const mat4& Camera::GetProjectTransform()
 
 const mat4& Camera::GetViewTransform()
 {
+	if (_viewDirty)
+	{
+		UpdateViewTransform();
+		_viewDirty = false;
+	}
 	return _viewTransform;
 }
 
@@ -28,6 +39,8 @@ glm::vec3 Camera::GetEyePos()
 void Camera::SetEyePos(vec3 pos)
 {
 	_eyePos = pos;
+
+	_viewDirty = true;
 }
 
 void Camera::SetTarget(vec3 target)
@@ -61,6 +74,16 @@ void Camera::SetTarget(vec3 target)
 			_horizontalAngle = 90.0f + glm::degrees(asin(-hDir.z));
 		}
 	}
+
+	_viewDirty = true;
+}
+
+void Camera::ChangeCameraAngle(vec2 delta)
+{
+	_horizontalAngle += delta.x * _mouseSpeed;
+	_verticalAngle += delta.y * _mouseSpeed;
+
+	_viewDirty = true;
 }
 
 void Camera::UpdateViewTransform()
@@ -68,30 +91,41 @@ void Camera::UpdateViewTransform()
 	float vangle = radians(_verticalAngle);
 	float hangle = radians(_horizontalAngle);
 
-	glm::vec3 direction(
+	_direction = vec3(
 		cos(vangle) * cos(hangle),
 		sin(vangle),
-		cos(vangle) * sin(hangle)
+		-cos(vangle) * sin(hangle)
 		);
 
 	// Right vector
-	glm::vec3 right = glm::vec3(
-		cos(hangle - 3.14f / 2.0f),
-		0,
-		sin(hangle - 3.14f / 2.0f)
-		);
+	vec3 right = GetRight();
 
 	// Up vector
-
-	glm::vec3 up = glm::cross(direction, right);
-	_viewTransform = glm::lookAt(_eyePos, _eyePos + direction, up);
+	glm::vec3 up = glm::cross(right, _direction);
+	_viewTransform = glm::lookAt(_eyePos, _eyePos + _direction, up);
 }
 
-void Camera::SetAngle(vec2 delta)
-{
-	_horizontalAngle += delta.x;
-	_verticalAngle += delta.y;
 
-	UpdateViewTransform();
+void Camera::SetMouseSpeed(float speed)
+{
+	_mouseSpeed = max(0.0f, min(1.0f, speed));
+}
+
+glm::vec3 Camera::GetDirection()
+{
+	return _direction;
+}
+
+glm::vec3 Camera::GetRight()
+{
+	float vangle = radians(_verticalAngle);
+	float hangle = radians(_horizontalAngle);
+
+	vec3 right = vec3(
+		cos(hangle - 3.14f / 2.0f),
+		0,
+		-sin(hangle - 3.14f / 2.0f)
+		);
+	return right;
 }
 

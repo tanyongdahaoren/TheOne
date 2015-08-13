@@ -6,6 +6,8 @@
 class Camera : public Ref
 {
 public:
+	Camera();
+
 	void Perspective(float fieldOfView, float aspectRatio, float nearPlane, float farPlane);
 
 	void Orthographic(float width, float height, float nearPlane, float farPlane);
@@ -20,9 +22,17 @@ public:
 
 	void SetTarget(vec3 target);
 
+	void ChangeCameraAngle(vec2 delta);
+
+	void SetMouseSpeed(float speed);
+
+	vec3 GetDirection();
+
+	vec3 GetRight();
+
+protected:
 	void UpdateViewTransform();
 
-	void SetAngle(vec2 delta);
 public:
 	vec3 _eyePos;
 	vec3 _direction;
@@ -31,4 +41,7 @@ public:
 
 	float _horizontalAngle;
 	float _verticalAngle;
+	float _mouseSpeed;
+
+	bool _viewDirty;
 };
