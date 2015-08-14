@@ -1,5 +1,7 @@
 ﻿const char* BaseLight_frag = STRINGIFY(
 
+const int kMaxPointLightNum = 2;   
+
 in vec2 o_tex_coord;
 in vec3 o_world_normal;
 in vec3 o_world_pos;
@@ -19,9 +21,24 @@ struct DirectionLight
 	BaseLight base;
 	vec3 direction;                                                                 
 }; 
+                                                                                
+//点光
+struct PointLight                                                                           
+{                                                                                           
+    BaseLight base;                                                                         
+    vec3 world_pos;                                                                          
+    float constant;                                                                 
+    float linear;                                                                   
+    float exp;                                                                      
+};
 
 //uniform 方向光
 uniform DirectionLight u_direction_light;
+
+//uniform 点光
+uniform int u_point_light_num;
+uniform PointLight u_point_lights[kMaxPointLightNum];   
+
 uniform vec3 u_world_eyepos;
 uniform float u_specular_intensity;                                                        
 uniform float u_specular_power;
