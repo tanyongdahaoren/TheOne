@@ -1,6 +1,7 @@
 ﻿const char* BaseLight_frag = STRINGIFY(
 
-const int kMaxPointLightNum = 2;   
+const int kMaxPointLightNum = 2;
+const int kMaxSpotLightNum = 2;
 
 in vec2 o_tex_coord;
 in vec3 o_world_normal;
@@ -47,6 +48,10 @@ uniform DirectionLight u_direction_light;
 uniform int u_point_light_num;
 uniform PointLight u_point_lights[kMaxPointLightNum];
 
+//uniform 聚光灯
+uniform int u_spot_light_num;
+uniform SpotLight u_spot_light[kMaxSpotLightNum]; 
+
 uniform vec3 u_world_eyepos;
 uniform float u_specular_intensity;
 uniform float u_specular_power;
@@ -81,18 +86,36 @@ vec4 CalculateLightInternal(BaseLight light, vec3 direction)
     return (ambientColor + diffuseColor + specularColor);                                   
 }
 
-vec4 CalculatePointLight(int index)                                                 
+//计算点光源
+vec4 CalculatePointLight(PointLight light)                                                 
 {                                                                                           
-    vec3 lightDirection = o_world_pos - u_point_lights[index].world_pos;                         
+    vec3 lightDirection = o_world_pos - light.world_pos;                         
     float distance = length(lightDirection);                                                
     lightDirection = normalize(lightDirection);                                             
                                                                                             
-    vec4 color = CalculateLightInternal(u_point_lights[index].base, lightDirection);       
-    float attenuation =  u_point_lights[index].constant +                               
-                         u_point_lights[index].linear * distance +                      
-                         u_point_lights[index].exp * distance * distance;               
+    vec4 color = CalculateLightInternal(light.base, lightDirection);       
+    float attenuation =  light.constant +                               
+                         light.linear * distance +                      
+                         light.exp * distance * distance;               
                                                                                             
     return color / attenuation;                                                             
+}
+
+//计算聚光灯                                                                                    
+vec4 CalculateSpotLight(SpotLight light)                                                
+{                                                                                           
+    vec3 lightDirection = normalize(o_world_pos - light.base.world_pos);                             
+    float spotFactor = dot(lightDirection, light.direction);                                      
+                                                                                            
+    if (spotFactor > light.cutoff)
+	{                                                            
+        vec4 color = CalculatePointLight(light.base);                                        
+        return color * (1.0 - (1.0 - spotFactor) * 1.0/(1.0 - light.cutoff));                   
+    }                                                                                       
+    else
+	{                                                                                  
+        return vec4(0,0,0,0);                                                               
+    }                                                                                       
 }
 
 void main()
@@ -103,10 +126,16 @@ void main()
 	
 	totalLight += directionLight;
 
-	for (int i = 0 ; i < u_point_light_num ; i++) {                                           
-        totalLight += CalculatePointLight(i);                                            
+	for (int i = 0 ; i < u_point_light_num ; i++)
+	{                                           
+        totalLight += CalculatePointLight(u_point_lights[i]);                                            
     }
     
+	for (int i = 0 ; i < u_spot_light_num ; i++)
+	{                                           
+        totalLight += CalculateSpotLight(u_spot_light[i]);                                            
+    }
+
 	color = texture2D(u_sampler, o_tex_coord.xy) * totalLight;
 }
 );
