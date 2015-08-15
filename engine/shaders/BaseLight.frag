@@ -32,6 +32,14 @@ struct PointLight
     float exp;                                                                      
 };
 
+//聚光灯
+struct SpotLight                                                                            
+{                                                                                           
+    PointLight base;                                                                        
+    vec3 direction;                                                                         
+    float cutoff;                                                                           
+};
+
 //uniform 方向光
 uniform DirectionLight u_direction_light;
 
