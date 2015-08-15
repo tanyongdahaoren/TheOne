@@ -2,6 +2,8 @@
 
 #include "Node.h"
 #include "Types.h"
+#include "DrawNode.h"
+#define DEBUG_LIGHT 1
 
 class BaseLight : public Node
 {
@@ -58,4 +60,7 @@ protected:
 	float _constant;
 	float _linear;
 	float _exp;
+#if DEBUG_LIGHT
+	DrawPoints* _dp;
+#endif
 };

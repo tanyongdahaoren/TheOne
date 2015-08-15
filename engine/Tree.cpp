@@ -26,6 +26,7 @@ Tree::Tree()
 void Tree::Travel()
 {
 	_directionLight = NULL;
+	_pointLights.clear();
 
 	mat4 identity;
 	Visit(identity);

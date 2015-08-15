@@ -16,6 +16,7 @@ protected:
 		GLuint color;
 		GLuint ambientIntensity;
 		GLuint diffuseIntensity;
+		//------special
 		GLuint direction;
 	}_dirLightUniformLocation;//∑ΩœÚπ‚Uniform
 
@@ -24,6 +25,7 @@ protected:
 		GLuint color;
 		GLuint ambientIntensity;
 		GLuint diffuseIntensity;
+		//------special
 		GLuint worldPos;
 		GLuint constant;
 		GLuint linear;

@@ -92,6 +92,12 @@ glm::vec3 Node::GetPosition()
 	return _position;
 }
 
+glm::vec3 Node::GetPositionInWorld()
+{
+	vec4 worldPos = vec4(_position.x, _position.y, _position.z, 1) * GetToWorldTransform();
+	return vec3(worldPos.x, worldPos.y, worldPos.z);
+}
+
 void Node::SetRotation(vec3 rotation)
 {
 	_rotationX = rotation.x;

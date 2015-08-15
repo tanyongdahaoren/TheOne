@@ -37,10 +37,10 @@ uniform DirectionLight u_direction_light;
 
 //uniform 点光
 uniform int u_point_light_num;
-uniform PointLight u_point_lights[kMaxPointLightNum];   
+uniform PointLight u_point_lights[kMaxPointLightNum];
 
 uniform vec3 u_world_eyepos;
-uniform float u_specular_intensity;                                                        
+uniform float u_specular_intensity;
 uniform float u_specular_power;
 
 //计算
@@ -71,12 +71,34 @@ vec4 CalculateLightInternal(BaseLight light, vec3 direction)
     }                                                                                       
 
     return (ambientColor + diffuseColor + specularColor);                                   
-} 
+}
+
+vec4 CalculatePointLight(int index)                                                 
+{                                                                                           
+    vec3 lightDirection = o_world_pos - u_point_lights[index].world_pos;                         
+    float distance = length(lightDirection);                                                
+    lightDirection = normalize(lightDirection);                                             
+                                                                                            
+    vec4 color = CalculateLightInternal(u_point_lights[index].base, lightDirection);       
+    float attenuation =  u_point_lights[index].constant +                               
+                         u_point_lights[index].linear * distance +                      
+                         u_point_lights[index].exp * distance * distance;               
+                                                                                            
+    return color / attenuation;                                                             
+}
 
 void main()
 {
-	vec4 totalLight = CalculateLightInternal(u_direction_light.base, u_direction_light.direction);                                                                   
+	vec4 totalLight;
+	
+	vec4 directionLight = CalculateLightInternal(u_direction_light.base, u_direction_light.direction);                                                                   
+	
+	totalLight += directionLight;
 
-    color = texture2D(u_sampler, o_tex_coord.xy) * totalLight;
+	for (int i = 0 ; i < u_point_light_num ; i++) {                                           
+        totalLight += CalculatePointLight(i);                                            
+    }
+    
+	color = texture2D(u_sampler, o_tex_coord.xy) * totalLight;
 }
 );

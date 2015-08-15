@@ -222,8 +222,8 @@ int Director::Run()
 	Camera* camera = new Camera;
 	camera->Perspective(60, sWinW / sWinH, 0.1f, 1000.0);
 	//camera->orthographic(sWinW, sWinH, .1, 100);
-	vec3 eye(-20, 0, 0);
-	vec3 center(0, 0, 0);
+	vec3 eye(-20, 3, -3);
+	vec3 center(0, 3, -3);
 	camera->SetEyePos(eye);
 	camera->SetTarget(center);
 	camera->SetMouseSpeed(0.3f);
@@ -231,17 +231,36 @@ int Director::Run()
 
 	Node* par = new Node;
 	tree->AddChild(par);
-
-	//dir light
+	
 	BaseLight::SetSpecularIntensity(1);
 	BaseLight::SetSpecularPower(32);
 
-	DirectionLight* dirlight = new DirectionLight;
-	dirlight->SetColor(Color3F::WHITE);
-	dirlight->SetDirection(vec3(1,0,0));
-	dirlight->SetAmbientIntensity(0.2);
-	dirlight->SetDiffuseIntensity(.8);
-	par->AddChild(dirlight);
+	//dir light
+// 	DirectionLight* dirlight = new DirectionLight;
+// 	dirlight->SetColor(Color3F::WHITE);
+// 	dirlight->SetDirection(vec3(1, 0, 0));
+// 	dirlight->SetAmbientIntensity(0.2);
+// 	dirlight->SetDiffuseIntensity(.8);
+// 	par->AddChild(dirlight);
+
+	PointLight* pointLight1 = new PointLight;
+	pointLight1->SetColor(Color3F::WHITE);
+	pointLight1->SetAmbientIntensity(0);
+	pointLight1->SetDiffuseIntensity(.1);
+	pointLight1->SetConstant(1.0f);
+	pointLight1->SetLinear(0.1f);
+	pointLight1->SetExp(0);
+	pointLight1->SetPosition(vec3(-5,1,-1));
+	par->AddChild(pointLight1);
+	PointLight* pointLight2 = new PointLight;
+	pointLight2->SetColor(Color3F::WHITE);
+	pointLight2->SetAmbientIntensity(0);
+	pointLight2->SetDiffuseIntensity(0.1);
+	pointLight2->SetConstant(1.0f);
+	pointLight2->SetLinear(0.1f);
+	pointLight2->SetExp(0);
+	pointLight2->SetPosition(vec3(-1, 5, -5));
+	par->AddChild(pointLight2);
 
 	//2d sprite
 	{

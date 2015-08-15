@@ -6,6 +6,7 @@ void ShaderBaseLight::InitUniformsLocation()
 {
 	Shader::InitUniformsLocation();
 
+	//direction light
 	_dirLightUniformLocation.color = GetUniformLocation("u_direction_light.base.color");
 
 	_dirLightUniformLocation.ambientIntensity = GetUniformLocation("u_direction_light.base.ambientIntensity");
@@ -68,25 +69,40 @@ void ShaderBaseLight::CustomEffect()
 	DirectionLight* dirLight = Director::GetInstance()->GetCurrentTree()->_directionLight;
 	if (dirLight)
 	{
-		glUniform3f(_dirLightUniformLocation.color,
-			dirLight->GetColor().r, dirLight->GetColor().g, dirLight->GetColor().b);
+		glUniform3f(_dirLightUniformLocation.color, dirLight->GetColor().r, dirLight->GetColor().g, dirLight->GetColor().b);
 
-		glUniform1f(_dirLightUniformLocation.ambientIntensity,
-			dirLight->GetAmbientIntensity());
+		glUniform1f(_dirLightUniformLocation.ambientIntensity, dirLight->GetAmbientIntensity());
 
-		glUniform1f(_dirLightUniformLocation.diffuseIntensity,
-			dirLight->GetDiffuseIntensity());
+		glUniform1f(_dirLightUniformLocation.diffuseIntensity, dirLight->GetDiffuseIntensity());
 
 		vec3 direction = dirLight->GetDirection();
 		direction = glm::normalize(direction);
-		glUniform3f(_dirLightUniformLocation.direction,
-			direction.x, direction.y, direction.z);
+		glUniform3f(_dirLightUniformLocation.direction, direction.x, direction.y, direction.z);
 	}
 
 	vector<PointLight*>& pointLights = Director::GetInstance()->GetCurrentTree()->_pointLights;
-	for (auto it:pointLights)
+	if (!pointLights.empty())
 	{
+		glUniform1i(_pointLightsNumLocation, pointLights.size());
+		for (int i = 0; i < pointLights.size(); i++)
+		{
+			PointLight* pointLight = pointLights[i];
 
+			glUniform3f(_pointLightsLocation[i].color, pointLight->GetColor().r, pointLight->GetColor().g, pointLight->GetColor().b);
+			
+			glUniform1f(_pointLightsLocation[i].ambientIntensity, pointLight->GetAmbientIntensity());
+
+			glUniform1f(_pointLightsLocation[i].diffuseIntensity, pointLight->GetDiffuseIntensity());
+
+			vec3 lightWorldPos = pointLights[i]->GetPositionInWorld();
+			glUniform3f(_pointLightsLocation[i].worldPos, lightWorldPos.x, lightWorldPos.y, lightWorldPos.z);
+
+			glUniform1f(_pointLightsLocation[i].constant, pointLight->GetConstant());
+
+			glUniform1f(_pointLightsLocation[i].linear, pointLight->GetLinear());
+
+			glUniform1f(_pointLightsLocation[i].exp, pointLight->GetExp());
+		}
 	}
 }
 

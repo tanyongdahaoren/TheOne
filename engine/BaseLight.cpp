@@ -68,4 +68,11 @@ PointLight::PointLight()
 	_constant = 1.0f;
 	_linear = 0.0f;
 	_exp = 0.0f;
+
+#if DEBUG_LIGHT
+	_dp = new DrawPoints;
+	this->AddChild(_dp);
+	_dp->SetPointSize(10);
+	_dp->DrawPoint(vec3(0, 0, 0), Color3B::YELLOW);
+#endif
 }

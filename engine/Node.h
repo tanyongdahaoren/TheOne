@@ -34,6 +34,7 @@ public:
 	void SetPositionZ(float z);
 	void SetPosition(vec3 pos);
 	vec3 GetPosition();
+	vec3 GetPositionInWorld();
 
 	void SetRotation(vec3 rotation);
 	void SetRotationQuat(quat rotationQuat);
