@@ -36,9 +36,9 @@ struct PointLight
 //聚光灯
 struct SpotLight                                                                            
 {                                                                                           
-    PointLight base;                                                                        
-    vec3 direction;                                                                         
-    float cutoff;                                                                           
+    PointLight base;
+    vec3 direction;
+    float cutoff;
 };
 
 //uniform 方向光
@@ -89,11 +89,11 @@ vec4 CalculateLightInternal(BaseLight light, vec3 direction)
 //计算点光源
 vec4 CalculatePointLight(PointLight light)                                                 
 {                                                                                           
-    vec3 lightDirection = o_world_pos - light.world_pos;                         
-    float distance = length(lightDirection);                                                
-    lightDirection = normalize(lightDirection);                                             
+    vec3 light2pixel = o_world_pos - light.world_pos;                         
+    float distance = length(light2pixel);                                                
+    light2pixel = normalize(light2pixel);                                             
                                                                                             
-    vec4 color = CalculateLightInternal(light.base, lightDirection);       
+    vec4 color = CalculateLightInternal(light.base, light2pixel);       
     float attenuation =  light.constant +                               
                          light.linear * distance +                      
                          light.exp * distance * distance;               
@@ -104,8 +104,8 @@ vec4 CalculatePointLight(PointLight light)
 //计算聚光灯                                                                                    
 vec4 CalculateSpotLight(SpotLight light)                                                
 {                                                                                           
-    vec3 lightDirection = normalize(o_world_pos - light.base.world_pos);                             
-    float spotFactor = dot(lightDirection, light.direction);                                      
+    vec3 light2pixel = normalize(o_world_pos - light.base.world_pos);                             
+    float spotFactor = dot(light2pixel, light.direction);                                      
                                                                                             
     if (spotFactor > light.cutoff)
 	{                                                            

@@ -76,3 +76,27 @@ PointLight::PointLight()
 	_dp->DrawPoint(vec3(0, 0, 0), Color3B::YELLOW);
 #endif
 }
+
+//-------------------
+//SpotLight
+//-------------------
+SpotLight::SpotLight()
+{
+#if DEBUG_LIGHT
+	_dl = new DrawLines;
+	this->AddChild(_dl);
+	_dl->SetLineWidth(5);
+#endif
+}
+
+void SpotLight::SetDirection(vec3 direction)
+{
+	_direction = direction;
+	_dl->Clear();
+	_dl->DrawLine(vec3(0,0,0), direction, Color3B::YELLOW, Color3B::GREEN);
+}
+
+void SpotLight::SetCutoff(float val)
+{
+	_cutoff = val;
+}

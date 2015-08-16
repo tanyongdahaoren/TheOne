@@ -64,3 +64,21 @@ protected:
 	DrawPoints* _dp;
 #endif
 };
+
+class SpotLight : public PointLight
+{
+public:
+	SpotLight();
+
+	void SetDirection(vec3 direction);
+	vec3 GetDirection(){ return _direction; }
+
+	void SetCutoff(float val);
+	float GetCutoff(){ return _cutoff; }
+protected:
+	vec3 _direction;
+	float _cutoff;
+#if DEBUG_LIGHT
+	DrawLines* _dl;
+#endif
+};

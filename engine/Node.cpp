@@ -204,15 +204,19 @@ void Node::Visit(const mat4& parentToWorldTransform)
 {
 	_toWorldTransform = parentToWorldTransform * GetToParentTransform();
 
-	if (dynamic_cast<DirectionLight*>(this))
+	if (dynamic_cast<SpotLight*>(this))
 	{
-		Director::GetInstance()->GetCurrentTree()->SetDirectionLight((DirectionLight*)this);
+		Director::GetInstance()->GetCurrentTree()->AddSpotLight((SpotLight*)this);
 	}
 	else if (dynamic_cast<PointLight*>(this))
 	{
 		Director::GetInstance()->GetCurrentTree()->AddPointLight((PointLight*)this);
 	}
-	
+	else if (dynamic_cast<DirectionLight*>(this))
+	{
+		Director::GetInstance()->GetCurrentTree()->SetDirectionLight((DirectionLight*)this);
+	}
+
 	for ( const auto &child: _children )
 	{
 		child->Visit(_toWorldTransform);

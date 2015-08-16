@@ -3,34 +3,47 @@
 #include "Shader.h"
 
 const int kMaxPointLightNum = 2;
+const int kMaxSpotLightNum = 2;
 
 //由于这里的uniform比较多  所以没有实用string为每个uniform变量命名
 
 class ShaderBaseLight : public Shader
 {
 protected:
-	virtual void CustomEffect();
 	virtual void InitUniformsLocation();
+	virtual void CustomEffect();
 protected:
-	struct {
+	//base
+	struct tBaseLightLocation
+	{
 		GLuint color;
 		GLuint ambientIntensity;
 		GLuint diffuseIntensity;
-		//------special
-		GLuint direction;
-	}_dirLightUniformLocation;//方向光Uniform
+	};
 
+	//direction light
+	struct tDirectionLightLocation : public tBaseLightLocation
+	{
+		GLuint direction;
+	} _dirLightUniformLocation;
+
+	//point light
 	GLuint _pointLightsNumLocation;
-	struct {
-		GLuint color;
-		GLuint ambientIntensity;
-		GLuint diffuseIntensity;
-		//------special
+	struct tPointLightLocation : public tBaseLightLocation
+	{
 		GLuint worldPos;
 		GLuint constant;
 		GLuint linear;
 		GLuint exp;
-	}_pointLightsLocation[kMaxPointLightNum];
+	} _pointLightsLocation[kMaxPointLightNum];
+
+	//spot light
+	GLuint _spotLightsNumLocation;
+	struct tSpotLightLocation : public tPointLightLocation
+	{
+		GLuint direction;
+		GLuint cutoff;
+	} _spotLightsLocation[kMaxSpotLightNum];
 
 	GLuint _eyeWorldPos;
 	GLuint _specularIntensity;

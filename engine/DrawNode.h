@@ -12,6 +12,7 @@ public:
 	DrawNode();
 	~DrawNode();
 	void AddVert(vec3 pos, Color3B c);
+	void Clear();
 protected:
 	virtual void InitBuffers();
 	virtual void EnsureCapacity(int count);

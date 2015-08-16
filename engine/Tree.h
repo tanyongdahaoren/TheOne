@@ -19,6 +19,8 @@ public:
 
 	void AddPointLight(PointLight* light) { _pointLights.push_back(light); }
 
+	void AddSpotLight(SpotLight* light) { _spotLights.push_back(light); }
+
 	Camera* GetCurrentCamera();
 public:
 	Vector<Camera*> _cameras;
@@ -26,4 +28,6 @@ public:
 	DirectionLight* _directionLight;
 
 	vector<PointLight*> _pointLights;
+
+	vector<SpotLight*> _spotLights;
 };

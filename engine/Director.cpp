@@ -235,32 +235,48 @@ int Director::Run()
 	BaseLight::SetSpecularIntensity(1);
 	BaseLight::SetSpecularPower(32);
 
-	//dir light
-// 	DirectionLight* dirlight = new DirectionLight;
-// 	dirlight->SetColor(Color3F::WHITE);
-// 	dirlight->SetDirection(vec3(1, 0, 0));
-// 	dirlight->SetAmbientIntensity(0.2);
-// 	dirlight->SetDiffuseIntensity(.8);
-// 	par->AddChild(dirlight);
+	{
+		//dir light
+		// 	DirectionLight* dirlight = new DirectionLight;
+		// 	dirlight->SetColor(Color3F::WHITE);
+		// 	dirlight->SetDirection(vec3(1, 0, 0));
+		// 	dirlight->SetAmbientIntensity(0.2);
+		// 	dirlight->SetDiffuseIntensity(.8);
+		// 	par->AddChild(dirlight);
 
-	PointLight* pointLight1 = new PointLight;
-	pointLight1->SetColor(Color3F::WHITE);
-	pointLight1->SetAmbientIntensity(0);
-	pointLight1->SetDiffuseIntensity(.1);
-	pointLight1->SetConstant(1.0f);
-	pointLight1->SetLinear(0.1f);
-	pointLight1->SetExp(0);
-	pointLight1->SetPosition(vec3(-5,1,-1));
-	par->AddChild(pointLight1);
-	PointLight* pointLight2 = new PointLight;
-	pointLight2->SetColor(Color3F::WHITE);
-	pointLight2->SetAmbientIntensity(0);
-	pointLight2->SetDiffuseIntensity(0.1);
-	pointLight2->SetConstant(1.0f);
-	pointLight2->SetLinear(0.1f);
-	pointLight2->SetExp(0);
-	pointLight2->SetPosition(vec3(-1, 5, -5));
-	par->AddChild(pointLight2);
+		// 	PointLight* pointLight1 = new PointLight;
+		// 	pointLight1->SetColor(Color3F::WHITE);
+		// 	pointLight1->SetAmbientIntensity(0);
+		// 	pointLight1->SetDiffuseIntensity(.1);
+		// 	pointLight1->SetConstant(1.0f);
+		// 	pointLight1->SetLinear(0.1f);
+		// 	pointLight1->SetExp(0);
+		// 	pointLight1->SetPosition(vec3(-5,1,-1));
+		// 	par->AddChild(pointLight1);
+		// 	PointLight* pointLight2 = new PointLight;
+		// 	pointLight2->SetColor(Color3F::WHITE);
+		// 	pointLight2->SetAmbientIntensity(0);
+		// 	pointLight2->SetDiffuseIntensity(0.1);
+		// 	pointLight2->SetConstant(1.0f);
+		// 	pointLight2->SetLinear(0.1f);
+		// 	pointLight2->SetExp(0);
+		// 	pointLight2->SetPosition(vec3(-1, 5, -5));
+		// 	par->AddChild(pointLight2);
+
+		SpotLight* spotLight1 = new SpotLight;
+		spotLight1->SetColor(Color3F::WHITE);
+		spotLight1->SetAmbientIntensity(0);
+		spotLight1->SetDiffuseIntensity(0.9);
+		spotLight1->SetConstant(1.0f);
+		spotLight1->SetLinear(0.1f);
+		spotLight1->SetExp(0);
+		spotLight1->SetCutoff(0.8);
+		spotLight1->SetDirection(vec3(1, 0, 0));
+		
+		spotLight1->SetPosition(vec3(-5,5,-5));
+		par->AddChild(spotLight1);
+	}
+
 
 	//2d sprite
 	{

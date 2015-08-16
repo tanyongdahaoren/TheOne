@@ -105,6 +105,13 @@ void DrawNode::AddVert(vec3 pos, Color3B c)
 	_dirty = true;
 }
 
+void DrawNode::Clear()
+{
+	_vertBufferCount = 0;
+	_vertCount = 0;
+	_dirty = true;
+}
+
 //---------------
 //DrawLines
 //---------------

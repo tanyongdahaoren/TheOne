@@ -46,6 +46,44 @@ void ShaderBaseLight::InitUniformsLocation()
 		_pointLightsLocation[i].exp = GetUniformLocation(Name);
 	}
 
+
+	//spot lights
+	_spotLightsNumLocation = GetUniformLocation("u_spot_light_num");
+
+	for (unsigned int i = 0; i < kMaxSpotLightNum; i++)
+	{
+		char Name[128];
+		memset(Name, 0, sizeof(Name));
+
+		sprintf(Name, "u_spot_light[%d].base.base.color", i);
+		_spotLightsLocation[i].color = GetUniformLocation(Name);
+
+		sprintf(Name, "u_spot_light[%d].base.base.ambientIntensity", i);
+		_spotLightsLocation[i].ambientIntensity = GetUniformLocation(Name);
+
+		sprintf(Name, "u_spot_light[%d].base.base.diffuseIntensity", i);
+		_spotLightsLocation[i].diffuseIntensity = GetUniformLocation(Name);
+
+		sprintf(Name, "u_spot_light[%d].base.world_pos", i);
+		_spotLightsLocation[i].worldPos = GetUniformLocation(Name);
+
+		sprintf(Name, "u_spot_light[%d].base.constant", i);
+		_spotLightsLocation[i].constant = GetUniformLocation(Name);
+
+		sprintf(Name, "u_spot_light[%d].base.linear", i);
+		_spotLightsLocation[i].linear = GetUniformLocation(Name);
+
+		sprintf(Name, "u_spot_light[%d].base.exp", i);
+		_spotLightsLocation[i].exp = GetUniformLocation(Name);
+
+		sprintf(Name, "u_spot_light[%d].direction", i);
+		_spotLightsLocation[i].direction = GetUniformLocation(Name);
+
+		sprintf(Name, "u_spot_light[%d].cutoff", i);
+		_spotLightsLocation[i].cutoff = GetUniformLocation(Name);
+	}
+
+
 	//others
 	_eyeWorldPos = GetUniformLocation("u_world_eyepos");
 
@@ -81,28 +119,56 @@ void ShaderBaseLight::CustomEffect()
 	}
 
 	vector<PointLight*>& pointLights = Director::GetInstance()->GetCurrentTree()->_pointLights;
-	if (!pointLights.empty())
+	glUniform1i(_pointLightsNumLocation, pointLights.size());
+	for (int i = 0; i < pointLights.size(); i++)
 	{
-		glUniform1i(_pointLightsNumLocation, pointLights.size());
-		for (int i = 0; i < pointLights.size(); i++)
-		{
-			PointLight* pointLight = pointLights[i];
+		PointLight* light = pointLights[i];
+		tPointLightLocation& loc = _pointLightsLocation[i];
 
-			glUniform3f(_pointLightsLocation[i].color, pointLight->GetColor().r, pointLight->GetColor().g, pointLight->GetColor().b);
-			
-			glUniform1f(_pointLightsLocation[i].ambientIntensity, pointLight->GetAmbientIntensity());
+		glUniform3f(loc.color, light->GetColor().r, light->GetColor().g, light->GetColor().b);
 
-			glUniform1f(_pointLightsLocation[i].diffuseIntensity, pointLight->GetDiffuseIntensity());
+		glUniform1f(loc.ambientIntensity, light->GetAmbientIntensity());
 
-			vec3 lightWorldPos = pointLights[i]->GetPositionInWorld();
-			glUniform3f(_pointLightsLocation[i].worldPos, lightWorldPos.x, lightWorldPos.y, lightWorldPos.z);
+		glUniform1f(loc.diffuseIntensity, light->GetDiffuseIntensity());
 
-			glUniform1f(_pointLightsLocation[i].constant, pointLight->GetConstant());
+		vec3 lightWorldPos = light->GetPositionInWorld();
+		glUniform3f(loc.worldPos, lightWorldPos.x, lightWorldPos.y, lightWorldPos.z);
 
-			glUniform1f(_pointLightsLocation[i].linear, pointLight->GetLinear());
+		glUniform1f(loc.constant, light->GetConstant());
 
-			glUniform1f(_pointLightsLocation[i].exp, pointLight->GetExp());
-		}
+		glUniform1f(loc.linear, light->GetLinear());
+
+		glUniform1f(loc.exp, light->GetExp());
+	}
+	
+
+	vector<SpotLight*>& spotLights = Director::GetInstance()->GetCurrentTree()->_spotLights;
+	glUniform1i(_spotLightsNumLocation, spotLights.size());
+	for (int i = 0; i < spotLights.size(); i++)
+	{
+		SpotLight* light = spotLights[i];
+		tSpotLightLocation& loc = _spotLightsLocation[i];
+
+		glUniform3f(loc.color, light->GetColor().r, light->GetColor().g, light->GetColor().b);
+
+		glUniform1f(loc.ambientIntensity, light->GetAmbientIntensity());
+
+		glUniform1f(loc.diffuseIntensity, light->GetDiffuseIntensity());
+
+		vec3 lightWorldPos = light->GetPositionInWorld();
+		glUniform3f(loc.worldPos, lightWorldPos.x, lightWorldPos.y, lightWorldPos.z);
+
+		glUniform1f(loc.constant, light->GetConstant());
+
+		glUniform1f(loc.linear, light->GetLinear());
+
+		glUniform1f(loc.exp, light->GetExp());
+
+		vec3 direction = light->GetDirection();
+		direction = glm::normalize(direction);
+		glUniform3f(loc.direction, direction.x, direction.y, direction.z);
+
+		glUniform1f(loc.cutoff, light->GetCutoff());
 	}
 }
 
