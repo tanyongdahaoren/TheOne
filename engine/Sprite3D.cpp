@@ -52,8 +52,6 @@ void Sprite3D::SetTexture2D(Texture2D* texture2D)
 
 void Sprite3D::Draw(Camera* camera)
 {
-	//glEnable(GL_CULL_FACE);
-
 	_program->Active();
 
 	_program->SetUniformLocationWith1i(UNIFORM_NAME_SAMPLER, 0);

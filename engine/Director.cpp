@@ -222,8 +222,8 @@ int Director::Run()
 	Camera* camera = new Camera;
 	camera->Perspective(60, sWinW / sWinH, 0.1f, 1000.0);
 	//camera->orthographic(sWinW, sWinH, .1, 100);
-	vec3 eye(-20, 3, -3);
-	vec3 center(0, 3, -3);
+	vec3 eye(0, 0, 30);
+	vec3 center(0, 0, 0);
 	camera->SetEyePos(eye);
 	camera->SetTarget(center);
 	camera->SetMouseSpeed(0.3f);
@@ -271,9 +271,9 @@ int Director::Run()
 		spotLight1->SetLinear(0.1f);
 		spotLight1->SetExp(0);
 		spotLight1->SetCutoff(0.8);
-		spotLight1->SetDirection(vec3(1, 0, 0));
+		spotLight1->SetDirection(vec3(0, 0, -1));
 		
-		spotLight1->SetPosition(vec3(-5,5,-5));
+		spotLight1->SetPosition(vec3(0,0,5));
 		par->AddChild(spotLight1);
 	}
 
@@ -294,35 +294,9 @@ int Director::Run()
 	}
 	
 	//3d sprite
-// 	{
-// 		auto meshs = MeshManager::GetInstance()->LoadMeshFromFile("phoenix_ugv.md2");
-// 		EasyImage* image = new EasyImage;
-// 		image->InitWithFileName("phoenix.pcx");
-// 		Texture2D* texture = new Texture2D;
-// 		texture->LoadWithImage(image);
-// 
-// 		for (ssize_t i = 0; i < meshs->size(); i++)
-// 		{
-// 			Sprite3D* sp = new Sprite3D;
-// 			sp->InitWithMesh(meshs->at(i));
-// 			sp->SetTexture2D(texture);
-// 			par->addChild(sp);
-// 		}
-// 	}
-	
-	{
-		Mesh* mesh = new Mesh;
-		V3F_T2F_V3N v1(vec3(0,  0,  -10), vec2(0, 0)); mesh->vertices.push_back(v1);
-		V3F_T2F_V3N v2(vec3(0,  0,  0),   vec2(1, 0)); mesh->vertices.push_back(v2);
-		V3F_T2F_V3N v3(vec3(0,  10, 0),   vec2(1, 1)); mesh->vertices.push_back(v3);
-		V3F_T2F_V3N v4(vec3(0, 10, -10), vec2(0, 1)); mesh->vertices.push_back(v4);
-		mesh->indices.push_back(0);
-		mesh->indices.push_back(1);
-		mesh->indices.push_back(2);
-		mesh->indices.push_back(0);
-		mesh->indices.push_back(2);
-		mesh->indices.push_back(3);
-
+ 	{
+		auto meshs = MeshManager::GetInstance()->LoadMeshFromFile("quad.obj");
+		Mesh* mesh = meshs->at(0);
 		mesh->CalcNormals();
 		mesh->GenBuffers();
 		
@@ -334,6 +308,8 @@ int Director::Run()
 			texture->LoadWithImage(image);
 
 			Sprite3D* sp = new Sprite3D;
+			sp->SetRotation(vec3(0,180,0));
+			sp->SetScale(vec3(10,10,1));
 			sp->InitWithMesh(mesh);
 			sp->SetTexture2D(texture);
 			par->AddChild(sp);
@@ -388,9 +364,10 @@ void Director::MainLoop()
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
+	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
-	glFrontFace(GL_CW);
+	glFrontFace(GL_CCW);
 
 	glCullFace(GL_BACK);
 	glDepthFunc(GL_LESS);
@@ -401,7 +378,7 @@ void Director::MainLoop()
 	{
 		sCurrentTree = tree;
 
-		sp3d->SetRotation(vec3(0, rot, 0));
+		//sp3d->SetRotation(vec3(0, rot, 0));
 		//rot+=1;
 
 		tree->Travel();
