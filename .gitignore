@@ -6,5 +6,6 @@ build/TheOne.v12.suo
 build/Debug/TheOne.ilk
 build/Debug/TheOne.pdb
 build/Debug/vc120.pdb
+build/Debug/*.obj
 *.log
 *.idb
