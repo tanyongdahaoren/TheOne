@@ -37,7 +37,7 @@ Vector<Mesh*>* MeshManager::LoadMeshFromFile(const string& fileName)
 
 	Assimp::Importer importer;
 
-	const aiScene* pScene = importer.ReadFile(fileName.c_str(), aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs);
+	const aiScene* pScene = importer.ReadFile(fileName.c_str(), aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
 
 	if (!pScene)
 	{
@@ -80,9 +80,10 @@ Vector<Mesh*>* MeshManager::LoadMeshFromFile(const string& fileName)
 
 			for (unsigned int i = 0; i < paiMesh->mNumVertices; i++)
 			{
-				const aiVector3D* pPos = &(paiMesh->mVertices[i]);
-				const aiVector3D* pNormal = &(paiMesh->mNormals[i]);
+				const aiVector3D* pPos = &paiMesh->mVertices[i];
+				const aiVector3D* pNormal = &paiMesh->mNormals[i];
 				const aiVector3D* pTexCoord = paiMesh->HasTextureCoords(0) ? &(paiMesh->mTextureCoords[0][i]) : &Zero3D;
+				const aiVector3D* pTangent = &paiMesh->mTangents[i];
 
 				V3F_T2F_V3N v(
 					vec3(pPos->x, pPos->y, pPos->z),

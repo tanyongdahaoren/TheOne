@@ -4,6 +4,11 @@
 #include "GLHeader.h"
 #include "Types.h"
 
+#define COLOR_TEXTURE              GL_TEXTURE0
+#define COLOR_TEXTURE_INDEX        0
+#define NORMAL_TEXTURE             GL_TEXTURE1
+#define NORMAL_TEXTURE_INDEX       1
+
 class Texture2D : public Ref
 {
 public:

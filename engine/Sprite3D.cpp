@@ -65,7 +65,7 @@ void Sprite3D::Draw(Camera* camera)
 
 	_program->CustomEffect();
 
-	_texture2D->Bind(GL_TEXTURE0);
+	_texture2D->Bind(COLOR_TEXTURE);
 
 	_mesh->UseBuffers();
 
