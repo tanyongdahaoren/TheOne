@@ -23,7 +23,7 @@ public:
 
 	~MeshManager();
 
-	Vector<Mesh*>* LoadMeshFromFile(const string& fileName);
+	Vector<Mesh*>* LoadMeshFromFile(const string& fileName, unsigned int flag);
 
 	Vector<Mesh*>* GetMeshs(string fileName);
 

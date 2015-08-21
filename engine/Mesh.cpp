@@ -21,28 +21,34 @@ Mesh::~Mesh()
 
 void Mesh::GenBuffers()
 {
+	int sss = sizeof(V3F_T2F_V3N);
+	int ssss = offsetof(V3F_T2F_V3N, texcood);
+
 	glGenVertexArrays(1, &_vao);
 	glBindVertexArray(_vao);
 
 	glGenBuffers( 1, &_vbo );
 	glBindBuffer( GL_ARRAY_BUFFER, _vbo );
-	glBufferData( GL_ARRAY_BUFFER, sizeof(V3F_T2F_V3N) * vertices.size(), &vertices[0], GL_STATIC_DRAW );
+	glBufferData(GL_ARRAY_BUFFER, sizePerVertex * vertices.size(), &vertices[0], GL_STATIC_DRAW);
 
-	glEnableVertexAttribArray(eShaderVertAttribute_pos);
-	glEnableVertexAttribArray(eShaderVertAttribute_texcood);
-	glEnableVertexAttribArray(eShaderVertAttribute_normal);
-	
-	glVertexAttribPointer( eShaderVertAttribute_pos, 3, GL_FLOAT, GL_FALSE, sizeof(V3F_T2F_V3N), (GLvoid *)offsetof(V3F_T2F_V3N, vertex) );
-	glVertexAttribPointer(eShaderVertAttribute_texcood, 2, GL_FLOAT, GL_FALSE, sizeof(V3F_T2F_V3N), (GLvoid *)offsetof(V3F_T2F_V3N, texcood));
-	glVertexAttribPointer(eShaderVertAttribute_normal, 3, GL_FLOAT, GL_FALSE, sizeof(V3F_T2F_V3N), (GLvoid *)offsetof(V3F_T2F_V3N, normal));
+	int offset = 0;
+	for (int i = 0; i < attribs.size(); i++)
+	{
+		MeshVertexAttrib& attrib = attribs.at(i);
+		glEnableVertexAttribArray(attrib.vertexAttrib);
+		glVertexAttribPointer(attrib.vertexAttrib, attrib.size, GL_FLOAT, GL_FALSE, sizePerVertex, (GLvoid *)offset);
+		offset += attrib.attribSizeBytes;
+	}
 
 	glGenBuffers( 1, &_ebo );
 	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _ebo );
 	glBufferData( GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indices.size(), &indices[0], GL_STATIC_DRAW );
 
- 	glDisableVertexAttribArray(eShaderVertAttribute_pos);
- 	glDisableVertexAttribArray(eShaderVertAttribute_texcood);
-	glDisableVertexAttribArray(eShaderVertAttribute_normal);
+	for (int i = 0; i < attribs.size(); i++)
+	{
+		MeshVertexAttrib& attrib = attribs.at(i);
+		glDisableVertexAttribArray(attrib.vertexAttrib);
+	}
 
 	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, 0 );
 	glBindBuffer( GL_ARRAY_BUFFER, 0 );
@@ -62,7 +68,7 @@ void Mesh::UseBuffers()
 
 	glDisableVertexAttribArray(eShaderVertAttribute_pos);
 	glDisableVertexAttribArray(eShaderVertAttribute_texcood);
-	glEnableVertexAttribArray(eShaderVertAttribute_normal);
+	glDisableVertexAttribArray(eShaderVertAttribute_normal);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
@@ -70,7 +76,7 @@ void Mesh::UseBuffers()
 
 void Mesh::CalcNormals()
 {
-/*	return;*/
+/*	return;
 	for (unsigned int i = 0; i < indices.size(); i+=3)
 	{
 		unsigned int index0 = indices[i];
@@ -89,5 +95,5 @@ void Mesh::CalcNormals()
 	for (unsigned int i = 0; i < vertices.size(); i++)
 	{
 		vertices[i].normal = normalize(vertices[i].normal);
-	}
+	}*/
 }

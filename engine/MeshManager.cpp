@@ -1,5 +1,6 @@
 #include "MeshManager.h"
 #include "Defines.h"
+#include "ShaderValue.h"
 
 static MeshManager* s_instance = nullptr;
 MeshManager* MeshManager::GetInstance()
@@ -27,7 +28,7 @@ MeshManager::~MeshManager()
 
 }
 
-Vector<Mesh*>* MeshManager::LoadMeshFromFile(const string& fileName)
+Vector<Mesh*>* MeshManager::LoadMeshFromFile(const string& fileName, unsigned int flag)
 {
 	Vector<Mesh*>* meshs = GetMeshs(fileName);
 	if (meshs)
@@ -37,7 +38,7 @@ Vector<Mesh*>* MeshManager::LoadMeshFromFile(const string& fileName)
 
 	Assimp::Importer importer;
 
-	const aiScene* pScene = importer.ReadFile(fileName.c_str(), aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs | aiProcess_CalcTangentSpace);
+	const aiScene* pScene = importer.ReadFile(fileName.c_str(), flag);
 
 	if (!pScene)
 	{
@@ -67,6 +68,21 @@ Vector<Mesh*>* MeshManager::LoadMeshFromFile(const string& fileName)
 			}
 		}
 
+		vector<MeshVertexAttrib> atts;
+		atts.push_back(MeshVertexAttrib(3, eShaderVertAttribute_pos));
+		atts.push_back(MeshVertexAttrib(2, eShaderVertAttribute_texcood));
+		atts.push_back(MeshVertexAttrib(3, eShaderVertAttribute_normal));
+		if (flag & aiProcess_CalcTangentSpace)
+		{
+			atts.push_back(MeshVertexAttrib(3, eShaderVertAttribute_tangent));
+		}
+
+		int sizePerVertex = 0;
+		for (int i = 0; i < atts.size(); i++)
+		{
+			sizePerVertex += atts[i].attribSizeBytes;
+		}
+
 		// meshs
 		for (unsigned int i = 0; i < pScene->mNumMeshes; i++)
 		{
@@ -76,6 +92,10 @@ Vector<Mesh*>* MeshManager::LoadMeshFromFile(const string& fileName)
 
 			oneMesh->_textureName = textureNames[paiMesh->mMaterialIndex];
 
+			oneMesh->attribs = atts;
+
+			oneMesh->sizePerVertex = sizePerVertex;
+
 			const aiVector3D Zero3D(0.0f, 0.0f, 0.0f);
 
 			for (unsigned int i = 0; i < paiMesh->mNumVertices; i++)
@@ -83,12 +103,18 @@ Vector<Mesh*>* MeshManager::LoadMeshFromFile(const string& fileName)
 				const aiVector3D* pPos = &paiMesh->mVertices[i];
 				const aiVector3D* pNormal = &paiMesh->mNormals[i];
 				const aiVector3D* pTexCoord = paiMesh->HasTextureCoords(0) ? &(paiMesh->mTextureCoords[0][i]) : &Zero3D;
-				const aiVector3D* pTangent = &paiMesh->mTangents[i];
 
-				V3F_T2F_V3N v(
-					vec3(pPos->x, pPos->y, pPos->z),
-					vec2(pTexCoord->x, pTexCoord->y),
-					vec3(pNormal->x, pNormal->y, pNormal->z));
+				MeshVertex v;
+				v.oneVertex.push_back(pPos->x);
+				v.oneVertex.push_back(pPos->y);
+				v.oneVertex.push_back(pPos->z);
+
+				v.oneVertex.push_back(pTexCoord->x);
+				v.oneVertex.push_back(pTexCoord->y);
+
+				v.oneVertex.push_back(pNormal->x);
+				v.oneVertex.push_back(pNormal->y);
+				v.oneVertex.push_back(pNormal->z);
 
 				oneMesh->vertices.push_back(v);
 			}
@@ -102,7 +128,7 @@ Vector<Mesh*>* MeshManager::LoadMeshFromFile(const string& fileName)
 				oneMesh->indices.push_back(face.mIndices[2]);
 			}
 
-			oneMesh->CalcNormals();
+			//oneMesh->CalcNormals();
 
 			oneMesh->GenBuffers();
 

@@ -1,11 +1,9 @@
 ﻿const char* BaseLight_frag = STRINGIFY(
 
-const int kMaxPointLightNum = 2;
-const int kMaxSpotLightNum = 2;
-
 in vec2 o_tex_coord;
 in vec3 o_world_normal;
 in vec3 o_world_pos;
+
 out vec4 color;
 
 //基础光照模型基类
@@ -21,8 +19,8 @@ struct DirectionLight
 {
 	BaseLight base;
 	vec3 direction;                                                                 
-}; 
-                                                                                
+};
+
 //点光
 struct PointLight                                                                           
 {                                                                                           

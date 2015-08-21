@@ -21,6 +21,7 @@ enum eShaderVertAttribute
 	eShaderVertAttribute_normal,
 	eShaderVertAttribute_blend_weight,
 	eShaderVertAttribute_blend_index,
+	eShaderVertAttribute_tangent,
 
 	eShaderVertAttribute_num,
 };

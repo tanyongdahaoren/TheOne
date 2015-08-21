@@ -294,7 +294,7 @@ int Director::Run()
 	
 	//3d sprite
  	{
-		auto meshs = MeshManager::GetInstance()->LoadMeshFromFile("box.obj");
+		auto meshs = MeshManager::GetInstance()->LoadMeshFromFile("box.obj", aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs/* | aiProcess_CalcTangentSpace*/);
 		Mesh* mesh = meshs->at(0);
 		//mesh->CalcNormals();
 		mesh->GenBuffers();

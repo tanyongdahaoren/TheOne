@@ -165,7 +165,14 @@ void ShaderManager::LoadDefaultShaders()
 
 	LoadShaders(PositionTexture3D_vert, PositionTexture3D_frag, shader_position_texure_3D, [](){return new Shader();});
 
-	LoadShaders(BaseLight_vert, BaseLight_frag, shader_base_light_3D, [](){return new ShaderBaseLight(); });
+	GLchar buff[256];
+	_snprintf(buff, sizeof(buff) - 1,
+		"\nconst int kMaxPointLightNum =  %d; \n"
+		"\nconst int kMaxSpotLightNum = %d; \n",
+		kMaxPointLightNum,
+		kMaxSpotLightNum);
+	string str = string(buff) + string(BaseLight_frag);
+	LoadShaders(BaseLight_vert, str.c_str(), shader_base_light_3D, [](){return new ShaderBaseLight(); });
 }
 
 Shader* ShaderManager::GetShader(string shaderName)
