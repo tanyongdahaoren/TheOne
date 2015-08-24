@@ -29,16 +29,19 @@ GLFWwindow* window;
 #include "Texture2D.h"
 #include "MeshManager.h"
 
-
+static bool sDragMouse = false;
 static vec2 sPreCursorPos = vec2(sWinW/2, sWinH/2);
 static void cursor_position_callback(GLFWwindow* window, double x, double y)
 {
 	printf("Cursor position: %f %f\n", x, y);
 
-	vec2 delta = sPreCursorPos - vec2(x, y);
+	if (sDragMouse)
+	{
+		vec2 delta = sPreCursorPos - vec2(x, y);
+		Director::GetInstance()->GetCurrentTree()->GetCurrentCamera()->ChangeCameraAngle(delta);
+	}
+	
 	sPreCursorPos = vec2(x, y);
-
-	Director::GetInstance()->GetCurrentTree()->GetCurrentCamera()->ChangeCameraAngle(delta);
 }
 
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
@@ -133,6 +136,14 @@ static const char* get_action_name(int action)
 }
 static void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 {
+	if (action == GLFW_PRESS)
+	{
+		sDragMouse = true;
+	}
+	else
+	{
+		sDragMouse = false;
+	}
 	printf("Mouse button %i (%s) (with%s) was %s\n",
 		button,
 		get_button_name(button),
@@ -294,9 +305,8 @@ int Director::Run()
 	
 	//3d sprite
  	{
-		auto meshs = MeshManager::GetInstance()->LoadMeshFromFile("box.obj", aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs/* | aiProcess_CalcTangentSpace*/);
+		auto meshs = MeshManager::GetInstance()->LoadMeshFromFile("box.obj", aiProcess_Triangulate | /*aiProcess_GenSmoothNormals |*/ aiProcess_FlipUVs/* | aiProcess_CalcTangentSpace*/);
 		Mesh* mesh = meshs->at(0);
-		//mesh->CalcNormals();
 		mesh->GenBuffers();
 		
 		EasyImage* image = new EasyImage;

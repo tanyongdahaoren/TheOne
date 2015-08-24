@@ -5,7 +5,7 @@
 #include "Texture2D.h"
 #include "Shader.h"
 
-#define DEBUG_SPRITE3D 0
+#define DEBUG_SPRITE3D 1
 #include "DrawNode.h"
 
 class Sprite3D : public Node

@@ -64,19 +64,3 @@ struct V2F_T2F
 	vec2 vertex;
 	vec2 texcood;
 };
-
-struct V3F_T2F_V3N
-{
-	vec3 vertex;
-	vec2 texcood;
-	vec3 normal;
-
-	V3F_T2F_V3N(){}
-
-	V3F_T2F_V3N(const vec3& pos, const vec2& tex, const vec3& normal = vec3(0, 0, 0))
-	{
-		this->vertex = pos;
-		this->texcood = tex;
-		this->normal = normal;
-	}
-};

@@ -28,10 +28,17 @@ bool Sprite3D::InitWithMesh(Mesh* mesh)
 	this->AddChild(_dp);
 	_dl = new DrawLines;
 	this->AddChild(_dl);
-	for (auto& it:mesh->vertices)
+	int vNum = mesh->vertices.size() / mesh->sizePerVertex;
+	for (int i = 0; i < vNum; i++)
 	{
-		_dp->DrawPoint(it.vertex, Color3B::RED);
-		_dl->DrawLine(it.vertex, it.vertex + it.normal, Color3B::RED, Color3B::GREEN);
+		int pos_idx = mesh->GetVertexAttribIdx(i, eShaderVertAttribute_pos);
+		vec3 pos = vec3(mesh->vertices[pos_idx], mesh->vertices[pos_idx+1], mesh->vertices[pos_idx+2]);
+
+		int normal_idx = mesh->GetVertexAttribIdx(i, eShaderVertAttribute_normal);
+		vec3 normal = vec3(mesh->vertices[normal_idx], mesh->vertices[normal_idx + 1], mesh->vertices[normal_idx + 2]);
+
+		_dp->DrawPoint(pos, Color3B::RED);
+		_dl->DrawLine(pos, pos + normal, Color3B::RED, Color3B::GREEN);
 	}
 #endif
 

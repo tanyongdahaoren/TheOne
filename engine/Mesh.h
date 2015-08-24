@@ -1,5 +1,6 @@
 #pragma once
 
+#include <map>
 #include <vector>
 using namespace std;
 
@@ -8,11 +9,13 @@ using namespace std;
 
 struct MeshVertexAttrib
 {
-	MeshVertexAttrib(GLuint size, int vertexAttrib)
+	MeshVertexAttrib(){}
+	MeshVertexAttrib(GLuint size, int vertexAttrib, int offset)
 	{
 		this->size = size;
 		this->vertexAttrib = vertexAttrib;
 		this->attribSizeBytes = size * sizeof(float);
+		this->offset = offset;
 	}
 	//attribute size
 	GLint size;
@@ -22,27 +25,29 @@ struct MeshVertexAttrib
 	int  vertexAttrib;
 	//size in bytes
 	int attribSizeBytes;
-};
 
-struct MeshVertex
-{
-	vector<float> oneVertex;
+	int offset;
 };
 
 class Mesh : public Ref
 {
+	friend class Sprite3D;
+	friend class MeshManager;
 public:
 	Mesh();
 	~Mesh();
-
 	void GenBuffers();
 	void UseBuffers();
+protected:
 	void CalcNormals();
+	int  GetVertexAttribIdx(int idx, int attrib);
+	void SetVertexAttribValue(int idx, int attrib, float* pValue);
 public:
 	int sizePerVertex;
-	vector<MeshVertexAttrib> attribs;
-	std::vector<MeshVertex> vertices;
-	std::vector<GLuint> indices;
+	int stridePerVertex;
+	map<int, MeshVertexAttrib> attribs;
+	vector<float> vertices;
+	vector<GLuint> indices;
 	string _textureName;
 
 	GLuint _ebo;

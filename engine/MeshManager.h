@@ -1,7 +1,7 @@
 #pragma once
 
-#include <Importer.hpp>      // C++ importer interface
-#include <scene.h>       // Output data structure
+#include <Importer.hpp> // C++ importer interface
+#include <scene.h>      // Output data structure
 #include <postprocess.h> // Post processing flags
 
 #include "Ref.h"

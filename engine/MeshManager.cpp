@@ -68,19 +68,31 @@ Vector<Mesh*>* MeshManager::LoadMeshFromFile(const string& fileName, unsigned in
 			}
 		}
 
-		vector<MeshVertexAttrib> atts;
-		atts.push_back(MeshVertexAttrib(3, eShaderVertAttribute_pos));
-		atts.push_back(MeshVertexAttrib(2, eShaderVertAttribute_texcood));
-		atts.push_back(MeshVertexAttrib(3, eShaderVertAttribute_normal));
+		int sizePerVertex = 0;
+		map<int, MeshVertexAttrib> atts;
+		atts.insert(make_pair(eShaderVertAttribute_pos,
+			MeshVertexAttrib(3, eShaderVertAttribute_pos, sizePerVertex)));
+		sizePerVertex += 3;
+		
+		atts.insert(make_pair(eShaderVertAttribute_texcood,
+			MeshVertexAttrib(2, eShaderVertAttribute_texcood, sizePerVertex)));
+		sizePerVertex += 2;
+
+		atts.insert(make_pair(eShaderVertAttribute_normal,
+			MeshVertexAttrib(3, eShaderVertAttribute_normal, sizePerVertex)));
+		sizePerVertex += 3;
+		
 		if (flag & aiProcess_CalcTangentSpace)
 		{
-			atts.push_back(MeshVertexAttrib(3, eShaderVertAttribute_tangent));
+			atts.insert(make_pair(eShaderVertAttribute_tangent,
+				MeshVertexAttrib(3, eShaderVertAttribute_tangent, sizePerVertex)));
+			sizePerVertex += 3;
 		}
 
-		int sizePerVertex = 0;
-		for (int i = 0; i < atts.size(); i++)
+		int stridePerVertex = 0;
+		for (auto it : atts)
 		{
-			sizePerVertex += atts[i].attribSizeBytes;
+			stridePerVertex += it.second.attribSizeBytes;
 		}
 
 		// meshs
@@ -94,6 +106,8 @@ Vector<Mesh*>* MeshManager::LoadMeshFromFile(const string& fileName, unsigned in
 
 			oneMesh->attribs = atts;
 
+			oneMesh->stridePerVertex = stridePerVertex;
+
 			oneMesh->sizePerVertex = sizePerVertex;
 
 			const aiVector3D Zero3D(0.0f, 0.0f, 0.0f);
@@ -101,22 +115,28 @@ Vector<Mesh*>* MeshManager::LoadMeshFromFile(const string& fileName, unsigned in
 			for (unsigned int i = 0; i < paiMesh->mNumVertices; i++)
 			{
 				const aiVector3D* pPos = &paiMesh->mVertices[i];
-				const aiVector3D* pNormal = &paiMesh->mNormals[i];
+				oneMesh->vertices.push_back(pPos->x);
+				oneMesh->vertices.push_back(pPos->y);
+				oneMesh->vertices.push_back(pPos->z);
+
 				const aiVector3D* pTexCoord = paiMesh->HasTextureCoords(0) ? &(paiMesh->mTextureCoords[0][i]) : &Zero3D;
+				oneMesh->vertices.push_back(pTexCoord->x);
+				oneMesh->vertices.push_back(pTexCoord->y);
 
-				MeshVertex v;
-				v.oneVertex.push_back(pPos->x);
-				v.oneVertex.push_back(pPos->y);
-				v.oneVertex.push_back(pPos->z);
-
-				v.oneVertex.push_back(pTexCoord->x);
-				v.oneVertex.push_back(pTexCoord->y);
-
-				v.oneVertex.push_back(pNormal->x);
-				v.oneVertex.push_back(pNormal->y);
-				v.oneVertex.push_back(pNormal->z);
-
-				oneMesh->vertices.push_back(v);
+				//如果模型有法线 则使用模型法线 否则 后续进行计算
+				if (flag & aiProcess_GenSmoothNormals)
+				{
+					const aiVector3D* pNormal = &paiMesh->mNormals[i];
+					oneMesh->vertices.push_back(pNormal->x);
+					oneMesh->vertices.push_back(pNormal->y);
+					oneMesh->vertices.push_back(pNormal->z);
+				}
+				else
+				{
+					oneMesh->vertices.push_back(0);
+					oneMesh->vertices.push_back(0);
+					oneMesh->vertices.push_back(0);
+				}
 			}
 
 			for (unsigned int i = 0; i < paiMesh->mNumFaces; i++)
@@ -128,10 +148,12 @@ Vector<Mesh*>* MeshManager::LoadMeshFromFile(const string& fileName, unsigned in
 				oneMesh->indices.push_back(face.mIndices[2]);
 			}
 
-			//oneMesh->CalcNormals();
-
-			oneMesh->GenBuffers();
-
+			//根据顶点计算法线
+			if (!(flag & aiProcess_GenSmoothNormals))
+			{
+				oneMesh->CalcNormals();
+			}
+			
 			meshs->push_back(oneMesh);
 		}
 
