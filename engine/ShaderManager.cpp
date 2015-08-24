@@ -55,7 +55,8 @@ bool compileShader(GLuint * shader, GLenum type, const GLchar* source)
 		"uniform mat4 u_MVP;\n"
 		"uniform mat4 u_M;\n"
 		"uniform mat4 u_V;\n"
-		"uniform sampler2D u_sampler;\n",
+		"uniform sampler2D u_texture_color_sampler;\n",
+		"uniform sampler2D u_texture_normal_map_sampler;\n",
 		source,
 	};
 
@@ -173,6 +174,9 @@ void ShaderManager::LoadDefaultShaders()
 		kMaxSpotLightNum);
 	string str = string(buff) + string(BaseLight_frag);
 	LoadShaders(BaseLight_vert, str.c_str(), shader_base_light_3D, [](){return new ShaderBaseLight(); });
+
+	str = string(buff) + string(BaseLight_NormalMap_frag);
+	LoadShaders(BaseLight_NormalMap_vert, str.c_str(), shader_base_light_3D_with_normal_map, [](){return new ShaderBaseLight(); });
 }
 
 Shader* ShaderManager::GetShader(string shaderName)

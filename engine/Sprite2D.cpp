@@ -73,7 +73,7 @@ void Sprite2D::InitBuffers()
 	glBindVertexArray(0);
 
 	_program->Active();
-	_program->SetUniformLocationWith1i(UNIFORM_NAME_SAMPLER, 0);
+	_program->SetUniformLocationWith1i(UNIFORM_TEXTURE_COLOR_SAMPLER, 0);
 }
 
 void Sprite2D::Draw(Camera* camera)
@@ -86,7 +86,7 @@ void Sprite2D::Draw(Camera* camera)
 	const mat4& projectTransform = camera->GetProjectTransform();
 	const mat4& viewTransform = camera->GetViewTransform();
 	glm::mat4 MVP = projectTransform * viewTransform * _toWorldTransform;
-	_program->SetUniformLocationWithMatrix4fv(UNIFORM_NAME_MVP, &MVP[0][0]);
+	_program->SetUniformLocationWithMatrix4fv(UNIFORM_MVP, &MVP[0][0]);
 
 	glBindVertexArray(_vao);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebo);

@@ -12,3 +12,6 @@
 
 #include "shaders/BaseLight.vert"
 #include "shaders/BaseLight.frag"
+
+#include "shaders/BaseLight_NormalMap.vert"
+#include "shaders/BaseLight_NormalMap.frag"

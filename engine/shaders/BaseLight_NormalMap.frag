@@ -1,10 +1,13 @@
-﻿const char* BaseLight_frag = STRINGIFY(
+﻿const char* BaseLight_NormalMap_frag = STRINGIFY(
 
 in vec2 o_tex_coord;
 in vec3 o_world_normal;
 in vec3 o_world_pos;
+in vec3 o_world_tangent;
 
 out vec4 color;
+
+vec3 use_normal;
 
 //基础光照模型基类
 struct BaseLight
@@ -62,7 +65,7 @@ vec4 CalculateLightInternal(BaseLight light, vec3 direction)
     
 	//漫反射系数
 	//***取决于方向光向量与顶点法线向量的夹角
-	float diffuseFactor = dot(o_world_normal, -direction);
+	float diffuseFactor = dot(use_normal, -direction);
 
 	vec4 diffuseColor  = vec4(0, 0, 0, 0);                                                  
     vec4 specularColor = vec4(0, 0, 0, 0);                                                  
@@ -72,7 +75,7 @@ vec4 CalculateLightInternal(BaseLight light, vec3 direction)
 		diffuseColor = vec4(light.color * light.diffuseIntensity * diffuseFactor, 1.0f);
 
 		vec3 vertex2eye = normalize(u_world_eyepos - o_world_pos);
-        vec3 lightReflect = normalize(reflect(direction, o_world_normal));   
+        vec3 lightReflect = normalize(reflect(direction, use_normal));   
 		float specularFactor = dot(vertex2eye, lightReflect);
 		if (specularFactor > 0)
 		{                                                           
@@ -115,9 +118,26 @@ vec4 CalculateSpotLight(SpotLight light)
         return vec4(0,0,0,0);                                                               
     }                                                                                       
 }
-
+                                                                                            
+vec3 CalculateBumpedNormal()
+{
+	vec3 normal = normalize(o_world_normal);
+	vec3 tangent = normalize(o_world_tangent);
+	tangent = normalize(tangent - dot(tangent, normal) * normal);
+	vec3 bitangent = cross(tangent, normal);
+	vec3 bumpMapNormal = texture(u_texture_normal_map_sampler, o_tex_coord).xyz;
+	bumpMapNormal = 2.0 * bumpMapNormal - vec3(1.0, 1.0, 1.0);
+	vec3 newNormal;
+	mat3 TBN = mat3(tangent, bitangent, normal);
+	newNormal = TBN * bumpMapNormal;
+	newNormal = normalize(newNormal);
+	return newNormal;
+}                                                                                           
+  
 void main()
 {
+	use_normal = CalculateBumpedNormal();
+
 	vec4 totalLight;
 	
 	vec4 directionLight = CalculateLightInternal(u_direction_light.base, u_direction_light.direction);                                                                   

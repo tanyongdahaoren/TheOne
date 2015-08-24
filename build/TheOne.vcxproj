@@ -142,6 +142,8 @@
   <ItemGroup>
     <None Include="..\engine\shaders\BaseLight.frag" />
     <None Include="..\engine\shaders\BaseLight.vert" />
+    <None Include="..\engine\shaders\BaseLight_NormalMap.frag" />
+    <None Include="..\engine\shaders\BaseLight_NormalMap.vert" />
     <None Include="..\engine\shaders\PositionColor.frag" />
     <None Include="..\engine\shaders\PositionColor.vert" />
     <None Include="..\engine\shaders\PositionTexture2D.frag" />

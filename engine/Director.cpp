@@ -305,25 +305,34 @@ int Director::Run()
 	
 	//3d sprite
  	{
-		auto meshs = MeshManager::GetInstance()->LoadMeshFromFile("box.obj", aiProcess_Triangulate | /*aiProcess_GenSmoothNormals |*/ aiProcess_FlipUVs/* | aiProcess_CalcTangentSpace*/);
+		auto meshs = MeshManager::GetInstance()->LoadMeshFromFile("box.obj", 
+			aiProcess_Triangulate
+			| aiProcess_GenSmoothNormals
+			| aiProcess_FlipUVs
+			| aiProcess_CalcTangentSpace
+			);
 		Mesh* mesh = meshs->at(0);
 		mesh->GenBuffers();
 		
 		EasyImage* image = new EasyImage;
-		bool b = image->InitWithFileName("bricks.jpg");
-		if (b)
-		{
-			Texture2D* texture = new Texture2D;
-			texture->LoadWithImage(image);
+		image->InitWithFileName("bricks.jpg");
+		Texture2D* texture = new Texture2D;
+		texture->LoadWithImage(image);
 
-			Sprite3D* sp = new Sprite3D;
-			sp->SetScale(vec3(10,10,10));
-			sp->InitWithMesh(mesh);
-			sp->SetTexture2D(texture);
-			par->AddChild(sp);
+		EasyImage* normal_image = new EasyImage;
+		normal_image->InitWithFileName("bricks_normal_map.jpg");
+		Texture2D* normal_texture = new Texture2D;
+		normal_texture->LoadWithImage(image);
 
-			sp3d = sp;
-		}
+		Sprite3D* sp = new Sprite3D;
+		sp->SetScale(vec3(10, 10, 10));
+		sp->InitWithMesh(mesh);
+		sp->SetTexture(texture);
+		sp->SetNormalTexture(normal_texture);
+		par->AddChild(sp);
+
+		sp3d = sp;
+		
 	}
  	
 	//line

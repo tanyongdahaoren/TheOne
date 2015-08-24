@@ -28,13 +28,15 @@ void Shader::Active()
 
 void Shader::InitUniformsLocation()
 {
-	_uniformsLocation[UNIFORM_NAME_M] = GetUniformLocation(UNIFORM_NAME_M.c_str());
+	_uniformsLocation[UNIFORM_M] = GetUniformLocation(UNIFORM_M.c_str());
 	
-	_uniformsLocation[UNIFORM_NAME_V] = GetUniformLocation(UNIFORM_NAME_V.c_str());
+	_uniformsLocation[UNIFORM_V] = GetUniformLocation(UNIFORM_V.c_str());
 
-	_uniformsLocation[UNIFORM_NAME_MVP] = GetUniformLocation(UNIFORM_NAME_MVP.c_str());
+	_uniformsLocation[UNIFORM_MVP] = GetUniformLocation(UNIFORM_MVP.c_str());
 
-	_uniformsLocation[UNIFORM_NAME_SAMPLER] = GetUniformLocation(UNIFORM_NAME_SAMPLER.c_str());
+	_uniformsLocation[UNIFORM_TEXTURE_COLOR_SAMPLER] = GetUniformLocation(UNIFORM_TEXTURE_COLOR_SAMPLER.c_str());
+
+	_uniformsLocation[UNIFORM_TEXTURE_NORMAL_MAP_SAMPLER] = GetUniformLocation(UNIFORM_TEXTURE_NORMAL_MAP_SAMPLER.c_str());
 }
 
 void Shader::SetUniformLocationWith1i(string uniform, GLint i1)

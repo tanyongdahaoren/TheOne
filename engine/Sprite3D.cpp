@@ -4,14 +4,16 @@
 
 Sprite3D::Sprite3D()
 	: _mesh(NULL)
-	, _texture2D(NULL)
+	, _texture(NULL)
+	, _normalTexture(NULL)
 	, _program(NULL)
 {
 }
 
 Sprite3D::~Sprite3D()
 {
-	SAFE_RELEASE(_texture2D);
+	SAFE_RELEASE(_texture);
+	SAFE_RELEASE(_normalTexture);
 	SAFE_RELEASE(_mesh);
 }
 
@@ -21,7 +23,15 @@ bool Sprite3D::InitWithMesh(Mesh* mesh)
 	_mesh = mesh;
 	_mesh->Retain();
 
-	SetShader(shader_base_light_3D);
+	bool haveTangent = _mesh->HaveAttribute(eShaderVertAttribute_tangent);
+	if (haveTangent)
+	{
+		SetShader(shader_base_light_3D_with_normal_map);
+	}
+	else
+	{
+		SetShader(shader_base_light_3D);
+	}	
 
 #if DEBUG_SPRITE3D
 	_dp = new DrawPoints;
@@ -50,29 +60,40 @@ void Sprite3D::SetShader(string shaderName)
 	_program = ShaderManager::GetInstance()->GetShader(shaderName);
 }
 
-void Sprite3D::SetTexture2D(Texture2D* texture2D)
+void Sprite3D::SetTexture(Texture2D* texture2D)
 {
-	SAFE_RELEASE(_texture2D);
+	SAFE_RELEASE(_texture);
 	texture2D->Retain();
-	_texture2D = texture2D;
+	_texture = texture2D;
+}
+
+void Sprite3D::SetNormalTexture(Texture2D* texture2D)
+{
+	SAFE_RELEASE(_normalTexture);
+	texture2D->Retain();
+	_normalTexture = texture2D;
 }
 
 void Sprite3D::Draw(Camera* camera)
 {
 	_program->Active();
 
-	_program->SetUniformLocationWith1i(UNIFORM_NAME_SAMPLER, 0);
-	
 	const mat4& projectTransform = camera->GetProjectTransform();
 	const mat4& viewTransform = camera->GetViewTransform();
 	glm::mat4 MVP = projectTransform * viewTransform * _toWorldTransform;
-	_program->SetUniformLocationWithMatrix4fv(UNIFORM_NAME_M, &_toWorldTransform[0][0]);
-	_program->SetUniformLocationWithMatrix4fv(UNIFORM_NAME_V, &viewTransform[0][0]);
-	_program->SetUniformLocationWithMatrix4fv(UNIFORM_NAME_MVP, &MVP[0][0]);
+	_program->SetUniformLocationWithMatrix4fv(UNIFORM_M, &_toWorldTransform[0][0]);
+	_program->SetUniformLocationWithMatrix4fv(UNIFORM_V, &viewTransform[0][0]);
+	_program->SetUniformLocationWithMatrix4fv(UNIFORM_MVP, &MVP[0][0]);
 
 	_program->CustomEffect();
 
-	_texture2D->Bind(COLOR_TEXTURE);
+	_program->SetUniformLocationWith1i(UNIFORM_TEXTURE_COLOR_SAMPLER, COLOR_TEXTURE_INDEX);
+	_texture->Bind(COLOR_TEXTURE);
+	if (_normalTexture)
+	{
+		_program->SetUniformLocationWith1i(UNIFORM_TEXTURE_NORMAL_MAP_SAMPLER, NORMAL_TEXTURE_INDEX);
+		_normalTexture->Bind(NORMAL_TEXTURE);
+	}
 
 	_mesh->UseBuffers();
 

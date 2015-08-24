@@ -70,6 +70,16 @@ void Mesh::UseBuffers()
 	glBindVertexArray(0);
 }
 
+bool Mesh::HaveAttribute(int attrib)
+{
+	auto it = attribs.find(attrib);
+	if (it == attribs.end())
+	{
+		return false;
+	}
+	return true;
+}
+
 void Mesh::CalcNormals()
 {
 	int offset = 0;
@@ -139,4 +149,9 @@ void Mesh::SetVertexAttribValue(int idx, int attrib, float* pValue)
 	{
 		vertices[attribIdx + i] = *(pValue + i);
 	}
+}
+
+void Mesh::CalcTangents()
+{
+
 }

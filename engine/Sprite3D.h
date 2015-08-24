@@ -14,21 +14,21 @@ public:
 	Sprite3D();
 	~Sprite3D();
 public:
-	bool InitWithModel(MeshManager* model, int idx);
-
 	bool InitWithMesh(Mesh* mesh);
 
 	void SetShader(string shaderName);
 
-	void SetTexture2D(Texture2D* texture2D);
+	void SetTexture(Texture2D* texture2D);
 
+	void SetNormalTexture(Texture2D* texture2D);
 protected:
 	virtual void Visit(const mat4& parentToWorldTransform);
 	void InitProgram();
 	virtual void Draw(Camera* camera);
 private:
 	Mesh* _mesh;
-	Texture2D* _texture2D;
+	Texture2D* _texture;
+	Texture2D* _normalTexture;
 	Shader* _program;
 
 #if DEBUG_SPRITE3D

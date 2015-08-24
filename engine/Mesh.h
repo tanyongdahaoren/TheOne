@@ -7,6 +7,9 @@ using namespace std;
 #include "Types.h"
 #include "Ref.h"
 
+#define VERTEX_CAL_NORMAL true
+#define VERTEX_CAL_TANGENT false
+
 struct MeshVertexAttrib
 {
 	MeshVertexAttrib(){}
@@ -38,8 +41,10 @@ public:
 	~Mesh();
 	void GenBuffers();
 	void UseBuffers();
+	bool HaveAttribute(int attrib);
 protected:
 	void CalcNormals();
+	void CalcTangents();
 	int  GetVertexAttribIdx(int idx, int attrib);
 	void SetVertexAttribValue(int idx, int attrib, float* pValue);
 public:

@@ -114,17 +114,19 @@ Vector<Mesh*>* MeshManager::LoadMeshFromFile(const string& fileName, unsigned in
 
 			for (unsigned int i = 0; i < paiMesh->mNumVertices; i++)
 			{
+				//顶点位置
 				const aiVector3D* pPos = &paiMesh->mVertices[i];
 				oneMesh->vertices.push_back(pPos->x);
 				oneMesh->vertices.push_back(pPos->y);
 				oneMesh->vertices.push_back(pPos->z);
 
+				//纹理坐标
 				const aiVector3D* pTexCoord = paiMesh->HasTextureCoords(0) ? &(paiMesh->mTextureCoords[0][i]) : &Zero3D;
 				oneMesh->vertices.push_back(pTexCoord->x);
 				oneMesh->vertices.push_back(pTexCoord->y);
 
 				//如果模型有法线 则使用模型法线 否则 后续进行计算
-				if (flag & aiProcess_GenSmoothNormals)
+				if (!VERTEX_CAL_NORMAL)
 				{
 					const aiVector3D* pNormal = &paiMesh->mNormals[i];
 					oneMesh->vertices.push_back(pNormal->x);
@@ -136,6 +138,24 @@ Vector<Mesh*>* MeshManager::LoadMeshFromFile(const string& fileName, unsigned in
 					oneMesh->vertices.push_back(0);
 					oneMesh->vertices.push_back(0);
 					oneMesh->vertices.push_back(0);
+				}
+
+				//切线
+				if (flag & aiProcess_CalcTangentSpace)
+				{
+					if (!VERTEX_CAL_TANGENT)
+					{
+						const aiVector3D* pTangent = &(paiMesh->mTangents[i]);
+						oneMesh->vertices.push_back(pTangent->x);
+						oneMesh->vertices.push_back(pTangent->y);
+						oneMesh->vertices.push_back(pTangent->z);
+					}
+					else
+					{
+						oneMesh->vertices.push_back(0);
+						oneMesh->vertices.push_back(0);
+						oneMesh->vertices.push_back(0);
+					}
 				}
 			}
 
@@ -149,9 +169,14 @@ Vector<Mesh*>* MeshManager::LoadMeshFromFile(const string& fileName, unsigned in
 			}
 
 			//根据顶点计算法线
-			if (!(flag & aiProcess_GenSmoothNormals))
+			if (VERTEX_CAL_NORMAL)
 			{
 				oneMesh->CalcNormals();
+			}
+			//需要切线 并且要计算
+			if ((flag & aiProcess_CalcTangentSpace) && VERTEX_CAL_TANGENT)
+			{
+				oneMesh->CalcTangents();
 			}
 			
 			meshs->push_back(oneMesh);

@@ -6,6 +6,6 @@ out vec4 color;
 
 void main()
 {
-	color = texture2D(u_sampler, o_tex_coord.xy);
+	color = texture2D(u_texture_color_sampler, o_tex_coord.xy);
 }
 );
