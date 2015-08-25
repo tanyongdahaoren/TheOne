@@ -123,17 +123,23 @@ vec3 CalculateBumpedNormal()
 {
 	vec3 normal = normalize(o_world_normal);
 	vec3 tangent = normalize(o_world_tangent);
+	//求得与法线垂直的切线
 	tangent = normalize(tangent - dot(tangent, normal) * normal);
+	//通过叉乘求得副切线
 	vec3 bitangent = cross(tangent, normal);
-	vec3 bumpMapNormal = texture(u_texture_normal_map_sampler, o_tex_coord).xyz;
-	bumpMapNormal = 2.0 * bumpMapNormal - vec3(1.0, 1.0, 1.0);
-	vec3 newNormal;
+	//通过3个互相正交的向量 得到TBN变换
 	mat3 TBN = mat3(tangent, bitangent, normal);
-	newNormal = TBN * bumpMapNormal;
-	newNormal = normalize(newNormal);
+
+	//从法线纹理得到法线bumpMapNormal
+	vec3 bumpMapNormal = texture(u_texture_normal_map_sampler, o_tex_coord).xyz;
+	//由于bumpMapNormal范围是0~1，进行简单的映射至-1~1
+	bumpMapNormal = 2.0 * bumpMapNormal - vec3(1.0, 1.0, 1.0);
+
+	//将法线经由TBN矩阵变换至世界坐标
+	vec3 newNormal = normalize(TBN * bumpMapNormal);
 	return newNormal;
 }                                                                                           
-  
+
 void main()
 {
 	use_normal = CalculateBumpedNormal();

@@ -33,6 +33,7 @@ static const char* ATTRIBUTE_NAME_TEX_COORD = "a_tex_coord";
 static const char* ATTRIBUTE_NAME_NORMAL = "a_model_normal";
 static const char* ATTRIBUTE_NAME_BLEND_WEIGHT = "a_blend_weight";
 static const char* ATTRIBUTE_NAME_BLEND_INDEX = "a_blend_index";
+static const char* ATTRIBUTE_NAME_TANGENT = "a_model_tangent";
 
 //uniform
 static const string UNIFORM_MVP = "u_MVP";

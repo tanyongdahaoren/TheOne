@@ -7,7 +7,7 @@ using namespace std;
 #include "Types.h"
 #include "Ref.h"
 
-#define VERTEX_CAL_NORMAL true
+#define VERTEX_CAL_NORMAL false
 #define VERTEX_CAL_TANGENT false
 
 struct MeshVertexAttrib

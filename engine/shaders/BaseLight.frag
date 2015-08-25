@@ -6,6 +6,8 @@ in vec3 o_world_pos;
 
 out vec4 color;
 
+vec3 use_normal;
+
 //基础光照模型基类
 struct BaseLight
 {                                                                                   
@@ -62,7 +64,7 @@ vec4 CalculateLightInternal(BaseLight light, vec3 direction)
     
 	//漫反射系数
 	//***取决于方向光向量与顶点法线向量的夹角
-	float diffuseFactor = dot(o_world_normal, -direction);
+	float diffuseFactor = dot(use_normal, -direction);
 
 	vec4 diffuseColor  = vec4(0, 0, 0, 0);                                                  
     vec4 specularColor = vec4(0, 0, 0, 0);                                                  
@@ -72,7 +74,7 @@ vec4 CalculateLightInternal(BaseLight light, vec3 direction)
 		diffuseColor = vec4(light.color * light.diffuseIntensity * diffuseFactor, 1.0f);
 
 		vec3 vertex2eye = normalize(u_world_eyepos - o_world_pos);
-        vec3 lightReflect = normalize(reflect(direction, o_world_normal));   
+        vec3 lightReflect = normalize(reflect(direction, use_normal));   
 		float specularFactor = dot(vertex2eye, lightReflect);
 		if (specularFactor > 0)
 		{                                                           
@@ -118,6 +120,8 @@ vec4 CalculateSpotLight(SpotLight light)
 
 void main()
 {
+	use_normal = normalize(o_world_normal);
+
 	vec4 totalLight;
 	
 	vec4 directionLight = CalculateLightInternal(u_direction_light.base, u_direction_light.direction);                                                                   

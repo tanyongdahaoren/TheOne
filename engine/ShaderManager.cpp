@@ -95,6 +95,7 @@ void bindPredefinedVertexAttribs(GLuint program)
 		{ ATTRIBUTE_NAME_NORMAL, eShaderVertAttribute_normal },
 		{ ATTRIBUTE_NAME_BLEND_WEIGHT, eShaderVertAttribute_blend_weight },
 		{ ATTRIBUTE_NAME_BLEND_INDEX, eShaderVertAttribute_blend_index },
+		{ ATTRIBUTE_NAME_TANGENT, eShaderVertAttribute_tangent },
 	};
 
 	const int size = ARRAY_SIZE(attribute_locations);

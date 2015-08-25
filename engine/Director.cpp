@@ -33,7 +33,7 @@ static bool sDragMouse = false;
 static vec2 sPreCursorPos = vec2(sWinW/2, sWinH/2);
 static void cursor_position_callback(GLFWwindow* window, double x, double y)
 {
-	printf("Cursor position: %f %f\n", x, y);
+	//printf("Cursor position: %f %f\n", x, y);
 
 	if (sDragMouse)
 	{
@@ -233,11 +233,11 @@ int Director::Run()
 	Camera* camera = new Camera;
 	camera->Perspective(60, sWinW / sWinH, 0.1f, 1000.0);
 	//camera->orthographic(sWinW, sWinH, .1, 100);
-	vec3 eye(0, 0, 30);
+	vec3 eye(-30, 0, -5);
 	vec3 center(0, 0, 0);
 	camera->SetEyePos(eye);
 	camera->SetTarget(center);
-	camera->SetMouseSpeed(0.3f);
+	camera->SetMouseSpeed(0.5f);
 	tree->AddCamera(camera);
 
 	Node* par = new Node;
@@ -251,8 +251,8 @@ int Director::Run()
 		DirectionLight* dirlight = new DirectionLight;
 		dirlight->SetColor(Color3F::WHITE);
 		dirlight->SetDirection(vec3(1, 0, 0));
-		dirlight->SetAmbientIntensity(0.2);
-		dirlight->SetDiffuseIntensity(0.2);
+		dirlight->SetAmbientIntensity(0.1);
+		dirlight->SetDiffuseIntensity(1.0);
 		par->AddChild(dirlight);
 
 // 		PointLight* pointLight1 = new PointLight;
@@ -274,17 +274,17 @@ int Director::Run()
 // 		pointLight2->SetPosition(vec3(-1, 5, -5));
 // 		par->AddChild(pointLight2);
 
-// 		SpotLight* spotLight1 = new SpotLight;
-// 		spotLight1->SetColor(Color3F::WHITE);
-// 		spotLight1->SetAmbientIntensity(0);
-// 		spotLight1->SetDiffuseIntensity(0.9);
-// 		spotLight1->SetConstant(1.0f);
-// 		spotLight1->SetLinear(0.1f);
-// 		spotLight1->SetExp(0);
-// 		spotLight1->SetCutoff(0.8);
-// 		spotLight1->SetDirection(vec3(0, 0, -1));
-// 		spotLight1->SetPosition(vec3(0,0,20));
-// 		par->AddChild(spotLight1);
+// 		SpotLight* spotLight = new SpotLight;
+// 		spotLight->SetColor(Color3F::WHITE);
+// 		spotLight->SetAmbientIntensity(0);
+// 		spotLight->SetDiffuseIntensity(0.3);
+// 		spotLight->SetConstant(1.0f);
+// 		spotLight->SetLinear(0.1f);
+// 		spotLight->SetExp(0);
+// 		spotLight->SetCutoff(0.8);
+// 		spotLight->SetDirection(vec3(1, 0, 0));
+// 		spotLight->SetPosition(vec3(-20,0,0));
+// 		par->AddChild(spotLight);
 	}
 
 
