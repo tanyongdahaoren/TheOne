@@ -53,7 +53,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 	vec3 right = camera->GetRight();
 	vec3 pos = camera->GetEyePos();
 
-	static float sCameraMoveSpeed = 0.5f;
+	static float sCameraMoveSpeed = 1.5;
 	switch (key)
 	{
 	case GLFW_KEY_W:
@@ -233,7 +233,7 @@ int Director::Run()
 	Camera* camera = new Camera;
 	camera->Perspective(60, sWinW / sWinH, 0.1f, 1000.0);
 	//camera->orthographic(sWinW, sWinH, .1, 100);
-	vec3 eye(-30, 0, -5);
+	vec3 eye(30, 30, 30);
 	vec3 center(0, 0, 0);
 	camera->SetEyePos(eye);
 	camera->SetTarget(center);
@@ -243,16 +243,16 @@ int Director::Run()
 	Node* par = new Node;
 	tree->AddChild(par);
 	
-	BaseLight::SetSpecularIntensity(1);
+	BaseLight::SetSpecularIntensity(1.5);
 	BaseLight::SetSpecularPower(32);
 
 	{
 		//dir light
 		DirectionLight* dirlight = new DirectionLight;
 		dirlight->SetColor(Color3F::WHITE);
-		dirlight->SetDirection(vec3(1, 0, 0));
-		dirlight->SetAmbientIntensity(0.1);
-		dirlight->SetDiffuseIntensity(1.0);
+		dirlight->SetDirection(vec3(-1, -1, -1));
+		dirlight->SetAmbientIntensity(0.2);
+		dirlight->SetDiffuseIntensity(0.8);
 		par->AddChild(dirlight);
 
 // 		PointLight* pointLight1 = new PointLight;
@@ -264,15 +264,6 @@ int Director::Run()
 // 		pointLight1->SetExp(0);
 // 		pointLight1->SetPosition(vec3(-5,1,-1));
 // 		par->AddChild(pointLight1);
-// 		PointLight* pointLight2 = new PointLight;
-// 		pointLight2->SetColor(Color3F::WHITE);
-// 		pointLight2->SetAmbientIntensity(0);
-// 		pointLight2->SetDiffuseIntensity(0.1);
-// 		pointLight2->SetConstant(1.0f);
-// 		pointLight2->SetLinear(0.1f);
-// 		pointLight2->SetExp(0);
-// 		pointLight2->SetPosition(vec3(-1, 5, -5));
-// 		par->AddChild(pointLight2);
 
 // 		SpotLight* spotLight = new SpotLight;
 // 		spotLight->SetColor(Color3F::WHITE);
@@ -285,22 +276,6 @@ int Director::Run()
 // 		spotLight->SetDirection(vec3(1, 0, 0));
 // 		spotLight->SetPosition(vec3(-20,0,0));
 // 		par->AddChild(spotLight);
-	}
-
-
-	//2d sprite
-	{
-// 		EasyImage* image = new EasyImage;
-// 		image->initWithFileName("2d.gif");
-// 		Texture2D* texture = new Texture2D;
-// 		texture->loadWithImage(image);
-// 		texture->retain();
-// 		Sprite2D* sp = new Sprite2D;
-// 		sp->setPosition(vec3(50,50,0));
-// 		sp->setScale(vec3(.3f, .3f, 1));
-// 		sp->setRotation(vec3(0, 60, 0));
-// 		sp->initWithTexture2D(texture);
-// 		par->addChild(sp);
 	}
 	
 	//3d sprite
@@ -322,10 +297,9 @@ int Director::Run()
 		EasyImage* normal_image = new EasyImage;
 		normal_image->InitWithFileName("bricks_normal_map.jpg");
 		Texture2D* normal_texture = new Texture2D;
-		normal_texture->LoadWithImage(image);
+		normal_texture->LoadWithImage(normal_image);
 
 		Sprite3D* sp = new Sprite3D;
-		sp->SetScale(vec3(10, 10, 10));
 		sp->InitWithMesh(mesh);
 		sp->SetTexture(texture);
 		sp->SetNormalTexture(normal_texture);
@@ -395,8 +369,8 @@ void Director::MainLoop()
 	{
 		sCurrentTree = tree;
 
-		//sp3d->SetRotation(vec3(0, rot, 0));
-		//rot+=1;
+		sp3d->SetRotation(vec3(0, rot, 0));
+		rot+=0.1;
 
 		tree->Travel();
 	}

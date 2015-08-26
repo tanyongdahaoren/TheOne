@@ -118,7 +118,7 @@ vec4 CalculateSpotLight(SpotLight light)
         return vec4(0,0,0,0);                                                               
     }                                                                                       
 }
-                                                                                            
+
 vec3 CalculateBumpedNormal()
 {
 	vec3 normal = normalize(o_world_normal);
@@ -130,15 +130,15 @@ vec3 CalculateBumpedNormal()
 	//通过3个互相正交的向量 得到TBN变换
 	mat3 TBN = mat3(tangent, bitangent, normal);
 
-	//从法线纹理得到法线bumpMapNormal
-	vec3 bumpMapNormal = texture(u_texture_normal_map_sampler, o_tex_coord).xyz;
-	//由于bumpMapNormal范围是0~1，进行简单的映射至-1~1
-	bumpMapNormal = 2.0 * bumpMapNormal - vec3(1.0, 1.0, 1.0);
+	//从法线纹理得到法线 该法线位于三角形局部空间（切线空间 tangent_space）
+	vec3 tangent_bumped_normal = texture(u_texture_normal_map_sampler, o_tex_coord).xyz;
+	//由于tangent_normal范围是0~1，进行简单的映射至-1~1
+	tangent_bumped_normal = 2.0 * tangent_bumped_normal - vec3(1.0, 1.0, 1.0);
 
 	//将法线经由TBN矩阵变换至世界坐标
-	vec3 newNormal = normalize(TBN * bumpMapNormal);
-	return newNormal;
-}                                                                                           
+	vec3 world_bumped_normal = normalize(TBN * tangent_bumped_normal);
+	return world_bumped_normal;
+}
 
 void main()
 {

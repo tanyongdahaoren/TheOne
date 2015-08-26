@@ -68,25 +68,29 @@ Vector<Mesh*>* MeshManager::LoadMeshFromFile(const string& fileName, unsigned in
 			}
 		}
 
+		//attributes
 		int sizePerVertex = 0;
 		map<int, MeshVertexAttrib> atts;
-		atts.insert(make_pair(eShaderVertAttribute_pos,
-			MeshVertexAttrib(3, eShaderVertAttribute_pos, sizePerVertex)));
-		sizePerVertex += 3;
-		
-		atts.insert(make_pair(eShaderVertAttribute_texcood,
-			MeshVertexAttrib(2, eShaderVertAttribute_texcood, sizePerVertex)));
-		sizePerVertex += 2;
+		vector<float> tempV;
+		map<int, vector<float> > vertexDatas;
 
-		atts.insert(make_pair(eShaderVertAttribute_normal,
-			MeshVertexAttrib(3, eShaderVertAttribute_normal, sizePerVertex)));
+		atts.insert(make_pair(eShaderVertAttribute_pos,	MeshVertexAttrib(3, eShaderVertAttribute_pos, sizePerVertex)));
 		sizePerVertex += 3;
+		vertexDatas.insert(make_pair(eShaderVertAttribute_pos, tempV));
+		
+		atts.insert(make_pair(eShaderVertAttribute_texcood,	MeshVertexAttrib(2, eShaderVertAttribute_texcood, sizePerVertex)));
+		sizePerVertex += 2;
+		vertexDatas.insert(make_pair(eShaderVertAttribute_texcood, tempV));
+
+		atts.insert(make_pair(eShaderVertAttribute_normal, MeshVertexAttrib(3, eShaderVertAttribute_normal, sizePerVertex)));
+		sizePerVertex += 3;
+		vertexDatas.insert(make_pair(eShaderVertAttribute_normal, tempV));
 		
 		if (flag & aiProcess_CalcTangentSpace)
 		{
-			atts.insert(make_pair(eShaderVertAttribute_tangent,
-				MeshVertexAttrib(3, eShaderVertAttribute_tangent, sizePerVertex)));
+			atts.insert(make_pair(eShaderVertAttribute_tangent, MeshVertexAttrib(3, eShaderVertAttribute_tangent, sizePerVertex)));
 			sizePerVertex += 3;
+			vertexDatas.insert(make_pair(eShaderVertAttribute_tangent, tempV));
 		}
 
 		int stridePerVertex = 0;
@@ -110,34 +114,30 @@ Vector<Mesh*>* MeshManager::LoadMeshFromFile(const string& fileName, unsigned in
 
 			oneMesh->sizePerVertex = sizePerVertex;
 
+			oneMesh->vertexDatas = vertexDatas;
+
 			const aiVector3D Zero3D(0.0f, 0.0f, 0.0f);
 
 			for (unsigned int i = 0; i < paiMesh->mNumVertices; i++)
 			{
 				//顶点位置
 				const aiVector3D* pPos = &paiMesh->mVertices[i];
-				oneMesh->vertices.push_back(pPos->x);
-				oneMesh->vertices.push_back(pPos->y);
-				oneMesh->vertices.push_back(pPos->z);
+				oneMesh->vertexDatas[eShaderVertAttribute_pos].push_back(pPos->x);
+				oneMesh->vertexDatas[eShaderVertAttribute_pos].push_back(pPos->y);
+				oneMesh->vertexDatas[eShaderVertAttribute_pos].push_back(pPos->z);
 
 				//纹理坐标
 				const aiVector3D* pTexCoord = paiMesh->HasTextureCoords(0) ? &(paiMesh->mTextureCoords[0][i]) : &Zero3D;
-				oneMesh->vertices.push_back(pTexCoord->x);
-				oneMesh->vertices.push_back(pTexCoord->y);
+				oneMesh->vertexDatas[eShaderVertAttribute_texcood].push_back(pTexCoord->x);
+				oneMesh->vertexDatas[eShaderVertAttribute_texcood].push_back(pTexCoord->y);
 
 				//如果模型有法线 则使用模型法线 否则 后续进行计算
 				if (!VERTEX_CAL_NORMAL)
 				{
 					const aiVector3D* pNormal = &paiMesh->mNormals[i];
-					oneMesh->vertices.push_back(pNormal->x);
-					oneMesh->vertices.push_back(pNormal->y);
-					oneMesh->vertices.push_back(pNormal->z);
-				}
-				else
-				{
-					oneMesh->vertices.push_back(0);
-					oneMesh->vertices.push_back(0);
-					oneMesh->vertices.push_back(0);
+					oneMesh->vertexDatas[eShaderVertAttribute_normal].push_back(pNormal->x);
+					oneMesh->vertexDatas[eShaderVertAttribute_normal].push_back(pNormal->y);
+					oneMesh->vertexDatas[eShaderVertAttribute_normal].push_back(pNormal->z);
 				}
 
 				//切线
@@ -146,15 +146,9 @@ Vector<Mesh*>* MeshManager::LoadMeshFromFile(const string& fileName, unsigned in
 					if (!VERTEX_CAL_TANGENT)
 					{
 						const aiVector3D* pTangent = &(paiMesh->mTangents[i]);
-						oneMesh->vertices.push_back(pTangent->x);
-						oneMesh->vertices.push_back(pTangent->y);
-						oneMesh->vertices.push_back(pTangent->z);
-					}
-					else
-					{
-						oneMesh->vertices.push_back(0);
-						oneMesh->vertices.push_back(0);
-						oneMesh->vertices.push_back(0);
+						oneMesh->vertexDatas[eShaderVertAttribute_tangent].push_back(pTangent->x);
+						oneMesh->vertexDatas[eShaderVertAttribute_tangent].push_back(pTangent->y);
+						oneMesh->vertexDatas[eShaderVertAttribute_tangent].push_back(pTangent->z);
 					}
 				}
 			}

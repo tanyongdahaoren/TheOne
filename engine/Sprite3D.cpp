@@ -38,14 +38,13 @@ bool Sprite3D::InitWithMesh(Mesh* mesh)
 	this->AddChild(_dp);
 	_dl = new DrawLines;
 	this->AddChild(_dl);
-	int vNum = mesh->vertices.size() / mesh->sizePerVertex;
-	for (int i = 0; i < vNum; i++)
-	{
-		int pos_idx = mesh->GetVertexAttribIdx(i, eShaderVertAttribute_pos);
-		vec3 pos = vec3(mesh->vertices[pos_idx], mesh->vertices[pos_idx+1], mesh->vertices[pos_idx+2]);
 
-		int normal_idx = mesh->GetVertexAttribIdx(i, eShaderVertAttribute_normal);
-		vec3 normal = vec3(mesh->vertices[normal_idx], mesh->vertices[normal_idx + 1], mesh->vertices[normal_idx + 2]);
+	vector<float>& allPos = mesh->vertexDatas[eShaderVertAttribute_pos];
+	vector<float>& allNormal = mesh->vertexDatas[eShaderVertAttribute_normal];
+	for (int i = 0; i < allPos.size(); i += 3)
+	{
+		vec3 normal = vec3(allNormal[i], allNormal[i + 1], allNormal[i + 2]);
+		vec3 pos = vec3(allPos[i], allPos[i + 1], allPos[i + 2]);
 
 		_dp->DrawPoint(pos, Color3B::RED);
 		_dl->DrawLine(pos, pos + normal, Color3B::RED, Color3B::GREEN);
@@ -89,7 +88,7 @@ void Sprite3D::Draw(Camera* camera)
 
 	_program->SetUniformLocationWith1i(UNIFORM_TEXTURE_COLOR_SAMPLER, COLOR_TEXTURE_INDEX);
 	_texture->Bind(COLOR_TEXTURE);
-	if (_normalTexture)
+	if (_mesh->HaveAttribute(eShaderVertAttribute_tangent) && _normalTexture)
 	{
 		_program->SetUniformLocationWith1i(UNIFORM_TEXTURE_NORMAL_MAP_SAMPLER, NORMAL_TEXTURE_INDEX);
 		_normalTexture->Bind(NORMAL_TEXTURE);

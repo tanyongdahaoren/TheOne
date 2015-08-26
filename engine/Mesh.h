@@ -7,8 +7,8 @@ using namespace std;
 #include "Types.h"
 #include "Ref.h"
 
-#define VERTEX_CAL_NORMAL false
-#define VERTEX_CAL_TANGENT false
+#define VERTEX_CAL_NORMAL true
+#define VERTEX_CAL_TANGENT true
 
 struct MeshVertexAttrib
 {
@@ -45,19 +45,24 @@ public:
 protected:
 	void CalcNormals();
 	void CalcTangents();
-	int  GetVertexAttribIdx(int idx, int attrib);
-	void SetVertexAttribValue(int idx, int attrib, float* pValue);
+	float* GetVertex(int attrib, int vertexIdx);
+	void SetVertex(int attrib, int vertexIdx, float* pValue);
 public:
 	int sizePerVertex;
 	int stridePerVertex;
+
+	//key是attribute
 	map<int, MeshVertexAttrib> attribs;
-	vector<float> vertices;
+
+	//每个属性是一个vector key同样是attribute
+	map<int, vector<float> > vertexDatas;
+
 	vector<GLuint> indices;
 	string _textureName;
 
 	GLuint _ebo;
-	GLuint _vbo;
 	GLuint _vao;
+	map<int, GLuint> _vbos;
 };
 
 
