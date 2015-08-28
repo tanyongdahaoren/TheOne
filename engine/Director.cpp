@@ -21,6 +21,7 @@ GLFWwindow* window;
 #include "Tree.h"
 #include "ShaderManager.h"
 #include "FileUtils.h"
+#include "Camera.h"
 //test
 #include "DrawNode.h"
 #include "Sprite2D.h"
@@ -38,7 +39,9 @@ static void cursor_position_callback(GLFWwindow* window, double x, double y)
 	if (sDragMouse)
 	{
 		vec2 delta = sPreCursorPos - vec2(x, y);
-		Director::GetInstance()->GetCurrentTree()->GetCurrentCamera()->ChangeCameraAngle(delta);
+		delta = delta * 0.1f;
+		vec3 rotation = Director::GetInstance()->GetCurrentTree()->GetCurrentCamera()->GetRotation();
+		Director::GetInstance()->GetCurrentTree()->GetCurrentCamera()->SetRotation(rotation + vec3(delta.y, delta.x, 0));
 	}
 	
 	sPreCursorPos = vec2(x, y);
@@ -49,21 +52,22 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 	if (action != GLFW_REPEAT && action != GLFW_PRESS)
 		return;
 	Camera* camera = Director::GetInstance()->GetCurrentTree()->GetCurrentCamera();
-	vec3 dir = camera->GetDirection();
-	vec3 right = camera->GetRight();
-	vec3 pos = camera->GetEyePos();
+	mat4 m = camera->GetToWorldTransform();
+	vec3 forward = vec3(-m[2][0], -m[2][1], -m[2][2]);
+	vec3 right = vec3(m[0][0], m[0][1], m[0][2]);
+	vec3 pos = camera->GetPosition();
 
 	static float sCameraMoveSpeed = 1.5;
 	switch (key)
 	{
 	case GLFW_KEY_W:
 		{
-			pos += dir * sCameraMoveSpeed;
+			pos += forward * sCameraMoveSpeed;
 		}
 		break;
 	case GLFW_KEY_S:
 		{
-			pos -= dir * sCameraMoveSpeed;
+			pos -= forward * sCameraMoveSpeed;
 		}
 		break;
 	case GLFW_KEY_A:
@@ -77,7 +81,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 		}
 		break;
 	}
-	camera->SetEyePos(pos);
+	camera->SetPosition(pos);
 }
 
 static const char* get_button_name(int button)
@@ -229,20 +233,21 @@ int Director::Run()
 	Tree* tree = new Tree;
 	_trees.push_back(tree);
 
- 	//camera
-	Camera* camera = new Camera;
-	camera->Perspective(60, sWinW / sWinH, 0.1f, 1000.0);
-	//camera->orthographic(sWinW, sWinH, .1, 100);
-	vec3 eye(30, 30, 30);
-	vec3 center(0, 0, 0);
-	camera->SetEyePos(eye);
-	camera->SetTarget(center);
-	camera->SetMouseSpeed(0.5f);
-	tree->AddCamera(camera);
-
 	Node* par = new Node;
 	tree->AddChild(par);
 	
+	
+	//camera
+	Camera* camera = new Camera;
+	camera->Perspective(60, sWinW / sWinH, 0.1f, 1000.0);
+	//camera->orthographic(sWinW, sWinH, .1, 100);
+	vec3 eye(0, 0, 5);
+	vec3 center(0, 0, 0);
+	camera->SetPosition(eye);
+	camera->LookAt(center);
+	//camera->SetMouseSpeed(0.5f);
+	par->AddChild(camera);
+
 	BaseLight::SetSpecularIntensity(1.5);
 	BaseLight::SetSpecularPower(32);
 

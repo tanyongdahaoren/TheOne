@@ -1,6 +1,7 @@
 #include "Sprite3D.h"
 #include "ShaderValue.h"
 #include "ShaderManager.h"
+#include "Camera.h"
 
 Sprite3D::Sprite3D()
 	: _mesh(NULL)

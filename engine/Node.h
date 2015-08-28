@@ -3,8 +3,8 @@
 #include "List.h"
 #include "Ref.h"
 #include "MathH.h"
-#include "Camera.h"
 
+class Camera;
 class Node : public Ref
 {
 public:

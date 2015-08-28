@@ -1,6 +1,7 @@
 #include "Node.h"
 #include "Director.h"
 #include "Tree.h"
+#include "Camera.h"
 
 Node::Node()
 	:_parent(NULL)
@@ -204,6 +205,10 @@ void Node::Visit(const mat4& parentToWorldTransform)
 {
 	_toWorldTransform = parentToWorldTransform * GetToParentTransform();
 
+	if (dynamic_cast<Camera*>(this))
+	{
+		Director::GetInstance()->GetCurrentTree()->AddCamera(((Camera*)this));
+	}
 	if (dynamic_cast<SpotLight*>(this))
 	{
 		Director::GetInstance()->GetCurrentTree()->AddSpotLight((SpotLight*)this);

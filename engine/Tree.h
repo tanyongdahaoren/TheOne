@@ -23,7 +23,7 @@ public:
 
 	Camera* GetCurrentCamera();
 public:
-	Vector<Camera*> _cameras;
+	vector<Camera*> _cameras;
 
 	DirectionLight* _directionLight;
 

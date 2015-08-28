@@ -1,6 +1,7 @@
 #include "Sprite2D.h"
 #include "ShaderManager.h"
 #include "ShaderValue.h"
+#include "Camera.h"
 
 Sprite2D::Sprite2D()
 	: _texture2D(NULL)

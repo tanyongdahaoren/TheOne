@@ -1,6 +1,7 @@
 #include "ShaderBaseLight.h"
 #include "Director.h"
 #include "Tree.h"
+#include "Camera.h"
 
 void ShaderBaseLight::InitUniformsLocation()
 {
@@ -101,7 +102,7 @@ void ShaderBaseLight::CustomEffect()
 	glUniform1f(_specularIntensity, specularIntensity);
 
 	Camera* camera = Director::GetInstance()->GetCurrentTree()->GetCurrentCamera();
-	vec3 eyePos = camera->GetEyePos();
+	vec3 eyePos = camera->GetPositionInWorld();
 	glUniform3f(_eyeWorldPos, eyePos.x, eyePos.y, eyePos.z);
 
 	DirectionLight* dirLight = Director::GetInstance()->GetCurrentTree()->_directionLight;

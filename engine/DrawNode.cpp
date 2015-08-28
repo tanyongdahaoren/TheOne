@@ -1,6 +1,7 @@
 #include "DrawNode.h"
 #include "ShaderManager.h"
 #include "ShaderValue.h"
+#include "Camera.h"
 
 //---------------
 //DrawNode

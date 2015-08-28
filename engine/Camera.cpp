@@ -1,7 +1,7 @@
 #include "Camera.h"
 
 Camera::Camera()
-	:_mouseSpeed(1.0f)
+	:_viewDirty(true)
 {
 
 }
@@ -23,109 +23,35 @@ const mat4& Camera::GetProjectTransform()
 
 const mat4& Camera::GetViewTransform()
 {
-	if (_viewDirty)
-	{
-		UpdateViewTransform();
-		_viewDirty = false;
-	}
+
+	UpdateViewTransform();
+	_viewDirty = false;
+	
 	return _viewTransform;
-}
-
-glm::vec3 Camera::GetEyePos()
-{
-	return _eyePos;
-}
-
-void Camera::SetEyePos(vec3 pos)
-{
-	_eyePos = pos;
-
-	_viewDirty = true;
-}
-
-void Camera::SetTarget(vec3 target)
-{
-	_direction = normalize(target - _eyePos);
-
-	vec3 hDir(_direction.x, 0.0, _direction.z);
-	hDir = normalize(hDir);
-
-	_verticalAngle = glm::degrees(asin(_direction.y));
-
-	if (hDir.z >= 0.0f)
-	{
-		if (hDir.x >= 0.0f)
-		{
-			_horizontalAngle = 360.0f - glm::degrees(asin(hDir.z));
-		}
-		else
-		{
-			_horizontalAngle = 180.0f + glm::degrees(asin(hDir.z));
-		}
-	}
-	else
-	{
-		if (hDir.x >= 0.0f)
-		{
-			_horizontalAngle = glm::degrees(asin(-hDir.z));
-		}
-		else
-		{
-			_horizontalAngle = 90.0f + glm::degrees(asin(-hDir.z));
-		}
-	}
-
-	_viewDirty = true;
-}
-
-void Camera::ChangeCameraAngle(vec2 delta)
-{
-	_horizontalAngle += delta.x * _mouseSpeed;
-	_verticalAngle += delta.y * _mouseSpeed;
-
-	_viewDirty = true;
 }
 
 void Camera::UpdateViewTransform()
 {
-	float vangle = radians(_verticalAngle);
-	float hangle = radians(_horizontalAngle);
-
-	_direction = vec3(
-		cos(vangle) * cos(hangle),
-		sin(vangle),
-		-cos(vangle) * sin(hangle)
-		);
-
-	// Right vector
-	vec3 right = GetRight();
-
-	// Up vector
-	glm::vec3 up = glm::cross(right, _direction);
-	_viewTransform = glm::lookAt(_eyePos, _eyePos + _direction, up);
+	mat4 viewInv = GetToWorldTransform();
+	_viewTransform = glm::inverse(viewInv);
 }
 
-
-void Camera::SetMouseSpeed(float speed)
+void Camera::LookAt(const vec3& lookAtPos, const vec3& up /*= vec3(0,1,0)*/)
 {
-	_mouseSpeed = max(0.0f, min(1.0f, speed));
-}
+	vec3 upv = normalize(up);
+	
+	vec3 zaxis = normalize(this->GetPosition() - lookAtPos);
 
-glm::vec3 Camera::GetDirection()
-{
-	return _direction;
-}
+	vec3 xaxis = normalize(cross(upv, zaxis));
 
-glm::vec3 Camera::GetRight()
-{
-	float vangle = radians(_verticalAngle);
-	float hangle = radians(_horizontalAngle);
+	vec3 yaxis = normalize(cross(zaxis, xaxis));
 
-	vec3 right = vec3(
-		cos(hangle - 3.14f / 2.0f),
-		0,
-		-sin(hangle - 3.14f / 2.0f)
-		);
-	return right;
+	mat4  rotation;
+	rotation[0] = vec4(xaxis.x, xaxis.y, xaxis.z, 0);
+	rotation[1] = vec4(yaxis.x, yaxis.y, yaxis.z, 0);
+	rotation[2] = vec4(zaxis.x, zaxis.y, zaxis.z, 0);
+
+	quat q = quat(rotation);
+	SetRotationQuat(q);
 }
 
