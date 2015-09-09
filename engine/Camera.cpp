@@ -23,7 +23,6 @@ const mat4& Camera::GetProjectTransform()
 
 const mat4& Camera::GetViewTransform()
 {
-
 	UpdateViewTransform();
 	_viewDirty = false;
 	

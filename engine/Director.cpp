@@ -283,15 +283,10 @@ int Director::Run()
 // 		par->AddChild(spotLight);
 	}
 	
-	//3d sprite
+	//3d sprite/
+	/*
  	{
-		auto meshs = MeshManager::GetInstance()->LoadMeshFromFile("box.obj", 
-			aiProcess_Triangulate
-			| aiProcess_GenSmoothNormals
-			| aiProcess_FlipUVs
-			| aiProcess_CalcTangentSpace
-			);
-		Mesh* mesh = meshs->at(0);
+		Mesh* mesh = MeshManager::GetInstance()->LoadMeshFromFile("box.obj", true);
 		mesh->GenBuffers();
 		
 		EasyImage* image = new EasyImage;
@@ -311,7 +306,22 @@ int Director::Run()
 		par->AddChild(sp);
 
 		sp3d = sp;
-		
+	}*/
+
+	//2d sprite
+	{
+		EasyImage* image = new EasyImage;
+		image->InitWithFileName("bricks.jpg");
+		Texture2D* texture = new Texture2D;
+		texture->LoadWithImage(image);
+
+		Sprite2D* sp = new Sprite2D;
+		sp->InitWithTexture2D(texture);
+		sp->SetAnchorPoint(vec2(0.5f, 0.5f));
+		sp->SetScale(vec3(0.01f, 0.01f, 1));
+		par->AddChild(sp);
+
+		sp3d = sp;
 	}
  	
 	//line
@@ -360,7 +370,7 @@ void Director::MainLoop()
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
-	glEnable(GL_CULL_FACE);
+	
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glFrontFace(GL_CCW);

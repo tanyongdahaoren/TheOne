@@ -28,160 +28,30 @@ MeshManager::~MeshManager()
 
 }
 
-Vector<Mesh*>* MeshManager::LoadMeshFromFile(const string& fileName, unsigned int flag)
+Mesh* MeshManager::LoadMeshFromFile(const string& fileName, bool tangent)
 {
-	Vector<Mesh*>* meshs = GetMeshs(fileName);
-	if (meshs)
+	Mesh* mesh = GetMesh(fileName);
+	if (mesh)
 	{
-		return meshs;
+		return mesh;
 	}
 
-	Assimp::Importer importer;
-
-	const aiScene* pScene = importer.ReadFile(fileName.c_str(), flag);
-
-	if (!pScene)
+	unsigned int flag = aiProcess_Triangulate| aiProcess_GenNormals	| aiProcess_FlipUVs;
+	if (tangent)
 	{
-		printf("Error parsing '%s': '%s'\n", fileName.c_str(), importer.GetErrorString());
-		return NULL;
+		flag |= aiProcess_CalcTangentSpace;
 	}
-	else
+	
+	mesh = new Mesh;
+	if (mesh->InitFromFile(fileName, flag))
 	{
-		Vector<Mesh*>* meshs = new Vector < Mesh* > ;
-
-		//textures
-		vector<string> textureNames;
-		textureNames.resize(pScene->mNumMaterials);
-
-		for (unsigned int i = 0; i < pScene->mNumMaterials; i++)
-		{
-			const aiMaterial* pMaterial = pScene->mMaterials[i];
-
-			if (pMaterial->GetTextureCount(aiTextureType_DIFFUSE) > 0)
-			{
-				aiString Path;
-
-				if (pMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &Path, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS)
-				{
-					textureNames[i] = Path.data;
-				}
-			}
-		}
-
-		//attributes
-		int sizePerVertex = 0;
-		map<int, MeshVertexAttrib> atts;
-		vector<float> tempV;
-		map<int, vector<float> > vertexDatas;
-
-		atts.insert(make_pair(eShaderVertAttribute_pos,	MeshVertexAttrib(3, eShaderVertAttribute_pos, sizePerVertex)));
-		sizePerVertex += 3;
-		vertexDatas.insert(make_pair(eShaderVertAttribute_pos, tempV));
-		
-		atts.insert(make_pair(eShaderVertAttribute_texcood,	MeshVertexAttrib(2, eShaderVertAttribute_texcood, sizePerVertex)));
-		sizePerVertex += 2;
-		vertexDatas.insert(make_pair(eShaderVertAttribute_texcood, tempV));
-
-		atts.insert(make_pair(eShaderVertAttribute_normal, MeshVertexAttrib(3, eShaderVertAttribute_normal, sizePerVertex)));
-		sizePerVertex += 3;
-		vertexDatas.insert(make_pair(eShaderVertAttribute_normal, tempV));
-		
-		if (flag & aiProcess_CalcTangentSpace)
-		{
-			atts.insert(make_pair(eShaderVertAttribute_tangent, MeshVertexAttrib(3, eShaderVertAttribute_tangent, sizePerVertex)));
-			sizePerVertex += 3;
-			vertexDatas.insert(make_pair(eShaderVertAttribute_tangent, tempV));
-		}
-
-		int stridePerVertex = 0;
-		for (auto it : atts)
-		{
-			stridePerVertex += it.second.attribSizeBytes;
-		}
-
-		// meshs
-		for (unsigned int i = 0; i < pScene->mNumMeshes; i++)
-		{
-			const aiMesh* paiMesh = pScene->mMeshes[i];
-
-			Mesh* oneMesh = new Mesh;
-
-			oneMesh->_textureName = textureNames[paiMesh->mMaterialIndex];
-
-			oneMesh->attribs = atts;
-
-			oneMesh->stridePerVertex = stridePerVertex;
-
-			oneMesh->sizePerVertex = sizePerVertex;
-
-			oneMesh->vertexDatas = vertexDatas;
-
-			const aiVector3D Zero3D(0.0f, 0.0f, 0.0f);
-
-			for (unsigned int i = 0; i < paiMesh->mNumVertices; i++)
-			{
-				//顶点位置
-				const aiVector3D* pPos = &paiMesh->mVertices[i];
-				oneMesh->vertexDatas[eShaderVertAttribute_pos].push_back(pPos->x);
-				oneMesh->vertexDatas[eShaderVertAttribute_pos].push_back(pPos->y);
-				oneMesh->vertexDatas[eShaderVertAttribute_pos].push_back(pPos->z);
-
-				//纹理坐标
-				const aiVector3D* pTexCoord = paiMesh->HasTextureCoords(0) ? &(paiMesh->mTextureCoords[0][i]) : &Zero3D;
-				oneMesh->vertexDatas[eShaderVertAttribute_texcood].push_back(pTexCoord->x);
-				oneMesh->vertexDatas[eShaderVertAttribute_texcood].push_back(pTexCoord->y);
-
-				//如果模型有法线 则使用模型法线 否则 后续进行计算
-				if (!VERTEX_CAL_NORMAL)
-				{
-					const aiVector3D* pNormal = &paiMesh->mNormals[i];
-					oneMesh->vertexDatas[eShaderVertAttribute_normal].push_back(pNormal->x);
-					oneMesh->vertexDatas[eShaderVertAttribute_normal].push_back(pNormal->y);
-					oneMesh->vertexDatas[eShaderVertAttribute_normal].push_back(pNormal->z);
-				}
-
-				//切线
-				if (flag & aiProcess_CalcTangentSpace)
-				{
-					if (!VERTEX_CAL_TANGENT)
-					{
-						const aiVector3D* pTangent = &(paiMesh->mTangents[i]);
-						oneMesh->vertexDatas[eShaderVertAttribute_tangent].push_back(pTangent->x);
-						oneMesh->vertexDatas[eShaderVertAttribute_tangent].push_back(pTangent->y);
-						oneMesh->vertexDatas[eShaderVertAttribute_tangent].push_back(pTangent->z);
-					}
-				}
-			}
-
-			for (unsigned int i = 0; i < paiMesh->mNumFaces; i++)
-			{
-				const aiFace& face = paiMesh->mFaces[i];
-				assert(face.mNumIndices == 3);
-				oneMesh->indices.push_back(face.mIndices[0]);
-				oneMesh->indices.push_back(face.mIndices[1]);
-				oneMesh->indices.push_back(face.mIndices[2]);
-			}
-
-			//根据顶点计算法线
-			if (VERTEX_CAL_NORMAL)
-			{
-				oneMesh->CalcNormals();
-			}
-			//需要切线 并且要计算
-			if ((flag & aiProcess_CalcTangentSpace) && VERTEX_CAL_TANGENT)
-			{
-				oneMesh->CalcTangents();
-			}
-			
-			meshs->push_back(oneMesh);
-		}
-
-		AddMeshsToCache(fileName, meshs);
-		return GetMeshs(fileName);
-	}	
+		AddMeshToCache(fileName, mesh);
+		return mesh;
+	}
+	return NULL;	
 }
 
-Vector<Mesh*>* MeshManager::GetMeshs(string filename)
+Mesh* MeshManager::GetMesh(string filename)
 {
 	auto it = _meshCache.find(filename);
 	if (it != _meshCache.end())
@@ -191,8 +61,8 @@ Vector<Mesh*>* MeshManager::GetMeshs(string filename)
 	return NULL;
 }
 
-void MeshManager::AddMeshsToCache(string fileName, Vector<Mesh*>* meshs)
+void MeshManager::AddMeshToCache(string fileName, Mesh* mesh)
 {
-	_meshCache.insert(make_pair(fileName, meshs));
+	_meshCache.insert(make_pair(fileName, mesh));
 }
 

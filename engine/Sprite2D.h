@@ -1,27 +1,19 @@
 #pragma once
 
-#include "Node.h"
-#include "Types.h"
-#include "Texture2D.h"
-#include "Shader.h"
+#include "Sprite3D.h"
 
-class Sprite2D : public Node
+class Sprite2D : public Sprite3D
 {
 public:
 	Sprite2D();
-	~Sprite2D();
 
-	void InitWithTexture2D(Texture2D* texture2d);
-	void InitBuffers();
+	void InitWithTexture2D(Texture2D* texture2d, Rect uv = Rect(0,0,1.0f,1.0f));
+
+	void SetAnchorPoint(vec2 v);
 protected:
+	void UpdateMeshVertexPos(Mesh* mesh);
 	virtual void Draw(Camera* camera);
 protected:
-	Size _size;
-	Texture2D* _texture2D;
-
-	Shader* _program;
-
-	GLuint _ebo;
-	GLuint _vbo;
-	GLuint _vao;
+	bool _meshVertexDirty;
+	vec2 _anchorPoint;
 };

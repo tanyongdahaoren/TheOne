@@ -1,14 +1,15 @@
 #pragma once
 
+#include <Importer.hpp> // C++ importer interface
+#include <scene.h>      // Output data structure
+#include <postprocess.h> // Post processing flags
+
 #include <map>
 #include <vector>
 using namespace std;
 
 #include "Types.h"
 #include "Ref.h"
-
-#define VERTEX_CAL_NORMAL true
-#define VERTEX_CAL_TANGENT true
 
 struct MeshVertexAttrib
 {
@@ -34,20 +35,26 @@ struct MeshVertexAttrib
 
 class Mesh : public Ref
 {
+	friend class Sprite2D;
 	friend class Sprite3D;
 	friend class MeshManager;
 public:
 	Mesh();
 	~Mesh();
+	bool InitFromFile(const string& fileName, unsigned int flag);
 	void GenBuffers();
 	void UseBuffers();
 	bool HaveAttribute(int attrib);
 protected:
+	void BindBufferDatas();
 	void CalcNormals();
 	void CalcTangents();
 	float* GetVertex(int attrib, int vertexIdx);
 	void SetVertex(int attrib, int vertexIdx, float* pValue);
+	void FillVertexAttributeWithFlag();
 public:
+	unsigned int attribFlag;
+
 	int sizePerVertex;
 	int stridePerVertex;
 
@@ -57,12 +64,14 @@ public:
 	//每个属性是一个vector key同样是attribute
 	map<int, vector<float> > vertexDatas;
 
+	//顶点buffer
 	vector<GLuint> indices;
-	string _textureName;
 
 	GLuint _ebo;
 	GLuint _vao;
 	map<int, GLuint> _vbos;
+
+	bool _bufferDirty;
 };
 
 

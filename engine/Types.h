@@ -12,6 +12,19 @@ struct Size
 	float h;
 };
 
+struct Rect
+{
+	Rect(float x, float y, float width, float height);
+	float getMinX() const;
+	float getMidX() const;
+	float getMaxX() const;
+	float getMinY() const;
+	float getMidY() const;
+	float getMaxY() const; /// return the topmost y-value of current rect
+	vec2 origin;
+	Size size;
+};
+
 struct Color3B
 {
 	Color3B();

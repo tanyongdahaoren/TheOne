@@ -4,104 +4,90 @@
 #include "Camera.h"
 
 Sprite2D::Sprite2D()
-	: _texture2D(NULL)
-	, _vao(INVALID_OGL_VALUE)
-	, _vbo(INVALID_OGL_VALUE)
-	, _ebo(INVALID_OGL_VALUE)
-	, _program(NULL)
+	: _anchorPoint(0,0)
+	, _meshVertexDirty(true)
 {
 
 }
 
-Sprite2D::~Sprite2D()
+void Sprite2D::InitWithTexture2D(Texture2D* texture2d, Rect uv /*= Rect(0,0,1.0f,1.0f)*/)
 {
-	if (_vbo != INVALID_OGL_VALUE)
-		glDeleteBuffers(1, &_vbo);
-	if (_ebo != INVALID_OGL_VALUE)
-		glDeleteBuffers(1, &_ebo);
-	if (_vao != INVALID_OGL_VALUE)
-		glDeleteVertexArrays(1, &_vao);
-}
+	SetTexture(texture2d);
 
-void Sprite2D::InitWithTexture2D(Texture2D* texture2d)
-{
-	_texture2D = texture2d;
-	_size = Size(texture2d->_width, texture2d->_height);
+	_cullBack = true;
 
-	InitBuffers();
-}
+	Mesh* mesh = new Mesh;
 
-void Sprite2D::InitBuffers()
-{
-	_program = ShaderManager::GetInstance()->GetShader(shader_position_texure_2D);
+	mesh->attribFlag = aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs;
+
+	mesh->FillVertexAttributeWithFlag();
 
 	//------------
 	//   v3------v2
 	//    |      |
 	//   v0------v1
 	//---------------
-	static GLubyte vertex_idx[] = {
-		0, 1, 3,
-		1, 2, 3
-	};
-	V2F_T2F v0 = { vec2(-_size.w/2, -_size.h/2), vec2(0,1) };
-	V2F_T2F v1 = { vec2(_size.w/2, -_size.h/2), vec2(1, 1) };
-	V2F_T2F v2 = { vec2(_size.w/2, _size.h/2), vec2(1, 0) };
-	V2F_T2F v3 = { vec2(-_size.w/2, _size.h/2), vec2(0, 0) };
-	V2F_T2F vertex[] = {
-		v0,v1,v2,v3
-	};
 
-	glGenVertexArrays(1, &_vao);
-	glBindVertexArray(_vao);
+	mesh->indices.push_back(0);
+	mesh->indices.push_back(1);
+	mesh->indices.push_back(3);
 
-	glGenBuffers(1, &_vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertex), vertex, GL_STATIC_DRAW);
+	mesh->indices.push_back(1);
+	mesh->indices.push_back(2);
+	mesh->indices.push_back(3);
 
-	glEnableVertexAttribArray(eShaderVertAttribute_pos);
-	glVertexAttribPointer(eShaderVertAttribute_pos, 2, GL_FLOAT, GL_FALSE, sizeof(V2F_T2F), (GLvoid *)offsetof(V2F_T2F, vertex));
-	
-	glEnableVertexAttribArray(eShaderVertAttribute_texcood);
-	glVertexAttribPointer(eShaderVertAttribute_texcood, 2, GL_FLOAT, GL_FALSE, sizeof(V2F_T2F), (GLvoid *)offsetof(V2F_T2F, texcood));
+	vec2 uvs[4] = { uv.origin, vec2(uv.getMaxX(), uv.getMinY()), vec2(uv.getMaxX(), uv.getMaxY()), vec2(uv.getMinX(), uv.getMaxY()) };
+	for (int i = 0; i < 4; i++)
+	{
+		mesh->vertexDatas[eShaderVertAttribute_texcood].push_back(uvs[i].x);
+		mesh->vertexDatas[eShaderVertAttribute_texcood].push_back(uvs[i].y);
+	}
 
-	glGenBuffers(1, &_ebo);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebo);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(vertex_idx), vertex_idx, GL_STATIC_DRAW);
+	for (int i = 0; i < 4; i++)
+	{
+		mesh->vertexDatas[eShaderVertAttribute_pos].push_back(0);
+		mesh->vertexDatas[eShaderVertAttribute_pos].push_back(0);
+		mesh->vertexDatas[eShaderVertAttribute_pos].push_back(0);
+	}
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
+	UpdateMeshVertexPos(mesh);
 
-	_program->Active();
-	_program->SetUniformLocationWith1i(UNIFORM_TEXTURE_COLOR_SAMPLER, 0);
+	mesh->CalcNormals();
+
+	mesh->GenBuffers();
+
+	InitWithMesh(mesh);
+}
+
+void Sprite2D::SetAnchorPoint(vec2 v)
+{
+	_anchorPoint = v;
+
+	_meshVertexDirty = true;
+	_mesh->_bufferDirty = true;
+}
+
+void Sprite2D::UpdateMeshVertexPos(Mesh* mesh)
+{
+	float offsetX = _anchorPoint.x * _texture->_width;
+	float offsetY = _anchorPoint.y * _texture->_height;
+
+	vec2 pos[4] = { vec2(0, 0), vec2(_texture->_width, 0), vec2(_texture->_width, _texture->_height), vec2(0, _texture->_height) };
+	for (int i = 0; i < 4; i++)
+	{
+		mesh->vertexDatas[eShaderVertAttribute_pos][i * 3] = pos[i].x - offsetX;
+		mesh->vertexDatas[eShaderVertAttribute_pos][i * 3 + 1] = pos[i].y - offsetY;
+	}
+
+	_meshVertexDirty = false;
 }
 
 void Sprite2D::Draw(Camera* camera)
 {
-	glDisable(GL_CULL_FACE);
+	if (_meshVertexDirty)
+	{
+		UpdateMeshVertexPos(_mesh);
+	}
 
-	// Use shader
-	_program->Active();
-	
-	const mat4& projectTransform = camera->GetProjectTransform();
-	const mat4& viewTransform = camera->GetViewTransform();
-	glm::mat4 MVP = projectTransform * viewTransform * _toWorldTransform;
-	_program->SetUniformLocationWithMatrix4fv(UNIFORM_MVP, &MVP[0][0]);
-
-	glBindVertexArray(_vao);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _ebo);
-
-	glEnableVertexAttribArray(eShaderVertAttribute_pos);
-	glEnableVertexAttribArray(eShaderVertAttribute_texcood);
-	
-	_texture2D->Bind(GL_TEXTURE0);
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, 0);
-
-	glDisableVertexAttribArray(eShaderVertAttribute_pos);
-	glDisableVertexAttribArray(eShaderVertAttribute_texcood);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
+	Sprite3D::Draw(camera);
 }
-

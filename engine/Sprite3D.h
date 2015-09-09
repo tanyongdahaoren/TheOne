@@ -23,14 +23,13 @@ public:
 	void SetNormalTexture(Texture2D* texture2D);
 protected:
 	virtual void Visit(const mat4& parentToWorldTransform);
-	void InitProgram();
 	virtual void Draw(Camera* camera);
-private:
+protected:
 	Mesh* _mesh;
 	Texture2D* _texture;
 	Texture2D* _normalTexture;
 	Shader* _program;
-
+	bool _cullBack;
 #if DEBUG_SPRITE3D
 	DrawPoints* _dp;
 	DrawLines* _dl;

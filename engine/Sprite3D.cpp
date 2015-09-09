@@ -8,6 +8,7 @@ Sprite3D::Sprite3D()
 	, _texture(NULL)
 	, _normalTexture(NULL)
 	, _program(NULL)
+	, _cullBack(true)
 {
 }
 
@@ -76,6 +77,15 @@ void Sprite3D::SetNormalTexture(Texture2D* texture2D)
 
 void Sprite3D::Draw(Camera* camera)
 {
+	if (_cullBack)
+	{
+		glEnable(GL_CULL_FACE);
+	}
+	else
+	{
+		glDisable(GL_CULL_FACE);
+	}
+
 	_program->Active();
 
 	const mat4& projectTransform = camera->GetProjectTransform();

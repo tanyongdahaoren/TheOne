@@ -13,6 +13,49 @@ Size::Size(float _w, float _h)
 {}
 
 
+
+/**
+* Rect constants
+*/
+Rect::Rect(float x, float y, float width, float height)
+{
+	origin.x = x;
+	origin.y = y;
+
+	size.w = width;
+	size.h = height;
+}
+
+float Rect::getMaxX() const
+{
+	return origin.x + size.w;
+}
+
+float Rect::getMidX() const
+{
+	return origin.x + size.w / 2.0f;
+}
+
+float Rect::getMinX() const
+{
+	return origin.x;
+}
+
+float Rect::getMaxY() const
+{
+	return origin.y + size.h;
+}
+
+float Rect::getMidY() const
+{
+	return origin.y + size.h / 2.0f;
+}
+
+float Rect::getMinY() const
+{
+	return origin.y;
+}
+
 /**
 * Color3B constants
 */

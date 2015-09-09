@@ -23,11 +23,11 @@ public:
 
 	~MeshManager();
 
-	Vector<Mesh*>* LoadMeshFromFile(const string& fileName, unsigned int flag);
+	Mesh* LoadMeshFromFile(const string& fileName, bool tangent);
 
-	Vector<Mesh*>* GetMeshs(string fileName);
+	Mesh* GetMesh(string fileName);
 
-	void AddMeshsToCache(string fileName, Vector<Mesh*>* meshs);
+	void AddMeshToCache(string fileName, Mesh* meshs);
 public:
-	map<string, Vector<Mesh*>* > _meshCache;
+	map<string, Mesh*> _meshCache;
 };

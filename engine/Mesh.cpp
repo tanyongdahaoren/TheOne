@@ -4,6 +4,9 @@
 Mesh::Mesh()
 	: _vao(INVALID_OGL_VALUE)
 	, _ebo(INVALID_OGL_VALUE)
+	, attribFlag(0)
+	, sizePerVertex(0)
+	, stridePerVertex(0)
 {
 
 }
@@ -20,6 +23,70 @@ Mesh::~Mesh()
 	}
 }
 
+bool Mesh::InitFromFile(const string& fileName, unsigned int flag)
+{
+	this->attribFlag = flag;
+
+	Assimp::Importer importer;
+
+	const aiScene* pScene = importer.ReadFile(fileName.c_str(), flag);
+
+	if (!pScene)
+	{
+		printf("Error parsing '%s': '%s'\n", fileName.c_str(), importer.GetErrorString());
+		return false;
+	}
+
+	// mesh
+	// 只解析第一个Mesh
+	const aiMesh* paiMesh = pScene->mMeshes[0];
+
+	//attributes
+	FillVertexAttributeWithFlag();
+
+	const aiVector3D Zero3D(0.0f, 0.0f, 0.0f);
+
+	for (unsigned int i = 0; i < paiMesh->mNumVertices; i++)
+	{
+		//顶点位置
+		const aiVector3D* pPos = &paiMesh->mVertices[i];
+		this->vertexDatas[eShaderVertAttribute_pos].push_back(pPos->x);
+		this->vertexDatas[eShaderVertAttribute_pos].push_back(pPos->y);
+		this->vertexDatas[eShaderVertAttribute_pos].push_back(pPos->z);
+
+		//纹理坐标
+		const aiVector3D* pTexCoord = paiMesh->HasTextureCoords(0) ? &(paiMesh->mTextureCoords[0][i]) : &Zero3D;
+		this->vertexDatas[eShaderVertAttribute_texcood].push_back(pTexCoord->x);
+		this->vertexDatas[eShaderVertAttribute_texcood].push_back(pTexCoord->y);
+
+		//法线
+		const aiVector3D* pNormal = &paiMesh->mNormals[i];
+		this->vertexDatas[eShaderVertAttribute_normal].push_back(pNormal->x);
+		this->vertexDatas[eShaderVertAttribute_normal].push_back(pNormal->y);
+		this->vertexDatas[eShaderVertAttribute_normal].push_back(pNormal->z);
+
+		//切线
+		if (flag & aiProcess_CalcTangentSpace)
+		{
+			const aiVector3D* pTangent = &(paiMesh->mTangents[i]);
+			this->vertexDatas[eShaderVertAttribute_tangent].push_back(pTangent->x);
+			this->vertexDatas[eShaderVertAttribute_tangent].push_back(pTangent->y);
+			this->vertexDatas[eShaderVertAttribute_tangent].push_back(pTangent->z);
+		}
+	}
+
+	for (unsigned int i = 0; i < paiMesh->mNumFaces; i++)
+	{
+		const aiFace& face = paiMesh->mFaces[i];
+		assert(face.mNumIndices == 3);
+		this->indices.push_back(face.mIndices[0]);
+		this->indices.push_back(face.mIndices[1]);
+		this->indices.push_back(face.mIndices[2]);
+	}
+
+	return true;
+}
+
 void Mesh::GenBuffers()
 {
 	glGenVertexArrays(1, &_vao);
@@ -31,12 +98,10 @@ void Mesh::GenBuffers()
 		MeshVertexAttrib& attrib = it.second;
 		GLuint vbo;
 		glGenBuffers(1, &vbo);
-		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertexDatas[attribType].size(), &vertexDatas[attribType][0], GL_STATIC_DRAW);
-		glEnableVertexAttribArray(attribType);
-		glVertexAttribPointer(attribType, attrib.size, GL_FLOAT, GL_FALSE, 0, 0);
 		_vbos.insert(make_pair(attribType, vbo));
 	}
+
+	BindBufferDatas();
 
 	glGenBuffers( 1, &_ebo );
 	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER, _ebo );
@@ -45,9 +110,29 @@ void Mesh::GenBuffers()
 	glBindVertexArray(0);
 }
 
+void Mesh::BindBufferDatas()
+{
+	for (auto it : attribs)
+	{
+		int attribType = it.first;
+		MeshVertexAttrib& attrib = it.second;
+		glBindBuffer(GL_ARRAY_BUFFER, _vbos[attribType]);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertexDatas[attribType].size(), &vertexDatas[attribType][0], GL_STATIC_DRAW);
+		glEnableVertexAttribArray(attribType);
+		glVertexAttribPointer(attribType, attrib.size, GL_FLOAT, GL_FALSE, 0, 0);
+	}
+
+	_bufferDirty = false;
+}
+
 void Mesh::UseBuffers()
 {
 	glBindVertexArray(_vao);
+
+	if (_bufferDirty)
+	{
+		BindBufferDatas();
+	}
 
  	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 
@@ -171,5 +256,36 @@ void Mesh::SetVertex(int attrib, int vertexIdx, float* pValue)
 	for (int i = 0; i < attribSize; i++)
 	{
 		*(p + i) = *(pValue + i);
+	}
+}
+
+void Mesh::FillVertexAttributeWithFlag()
+{
+	vector<float> tempV;
+	sizePerVertex = 0;
+	stridePerVertex = 0;
+
+	attribs.insert(make_pair(eShaderVertAttribute_pos, MeshVertexAttrib(3, eShaderVertAttribute_pos, sizePerVertex)));
+	sizePerVertex += 3;
+	vertexDatas.insert(make_pair(eShaderVertAttribute_pos, tempV));
+
+	attribs.insert(make_pair(eShaderVertAttribute_texcood, MeshVertexAttrib(2, eShaderVertAttribute_texcood, sizePerVertex)));
+	sizePerVertex += 2;
+	vertexDatas.insert(make_pair(eShaderVertAttribute_texcood, tempV));
+
+	attribs.insert(make_pair(eShaderVertAttribute_normal, MeshVertexAttrib(3, eShaderVertAttribute_normal, sizePerVertex)));
+	sizePerVertex += 3;
+	vertexDatas.insert(make_pair(eShaderVertAttribute_normal, tempV));
+
+	if (attribFlag & aiProcess_CalcTangentSpace)
+	{
+		attribs.insert(make_pair(eShaderVertAttribute_tangent, MeshVertexAttrib(3, eShaderVertAttribute_tangent, sizePerVertex)));
+		sizePerVertex += 3;
+		vertexDatas.insert(make_pair(eShaderVertAttribute_tangent, tempV));
+	}
+
+	for (auto it : attribs)
+	{
+		stridePerVertex += it.second.attribSizeBytes;
 	}
 }
