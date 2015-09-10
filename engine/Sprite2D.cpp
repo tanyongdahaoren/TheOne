@@ -14,7 +14,7 @@ void Sprite2D::InitWithTexture2D(Texture2D* texture2d, Rect uv /*= Rect(0,0,1.0f
 {
 	SetTexture(texture2d);
 
-	_cullBack = true;
+	_cullBack = false;
 
 	Mesh* mesh = new Mesh;
 

@@ -40,17 +40,6 @@ bool Sprite3D::InitWithMesh(Mesh* mesh)
 	this->AddChild(_dp);
 	_dl = new DrawLines;
 	this->AddChild(_dl);
-
-	vector<float>& allPos = mesh->vertexDatas[eShaderVertAttribute_pos];
-	vector<float>& allNormal = mesh->vertexDatas[eShaderVertAttribute_normal];
-	for (int i = 0; i < allPos.size(); i += 3)
-	{
-		vec3 normal = vec3(allNormal[i], allNormal[i + 1], allNormal[i + 2]);
-		vec3 pos = vec3(allPos[i], allPos[i + 1], allPos[i + 2]);
-
-		_dp->DrawPoint(pos, Color3B::RED);
-		_dl->DrawLine(pos, pos + normal, Color3B::RED, Color3B::GREEN);
-	}
 #endif
 
 	return true;
@@ -106,6 +95,21 @@ void Sprite3D::Draw(Camera* camera)
 	}
 
 	_mesh->UseBuffers();
+
+#if DEBUG_SPRITE3D
+	_dp->Clear();
+	_dl->Clear();
+	vector<float>& allPos = _mesh->vertexDatas[eShaderVertAttribute_pos];
+	vector<float>& allNormal = _mesh->vertexDatas[eShaderVertAttribute_normal];
+	for (int i = 0; i < allPos.size(); i += 3)
+	{
+		vec3 normal = vec3(allNormal[i], allNormal[i + 1], allNormal[i + 2]);
+		vec3 pos = vec3(allPos[i], allPos[i + 1], allPos[i + 2]);
+
+		_dp->DrawPoint(pos, Color3B::RED);
+		_dl->DrawLine(pos, pos + normal, Color3B::RED, Color3B::GREEN);
+	}
+#endif
 
 	Node::Draw(camera);
 }
