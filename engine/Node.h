@@ -3,6 +3,7 @@
 #include "List.h"
 #include "Ref.h"
 #include "MathH.h"
+#include "Types.h"
 
 class Camera;
 class Node : public Ref
@@ -41,20 +42,28 @@ public:
 	vec3 GetRotation();
 	quat GetRotationQuat();
 
-	void SetScaleX(float x);
-	void SetScaleY(float y);
-	void SetScaleZ(float z);
-	void SetScale(vec3 scale);
-	vec3 GetScale();
+	virtual void SetScaleX(float x);
+	virtual void SetScaleY(float y);
+	virtual void SetScaleZ(float z);
+	virtual void SetScale(vec3 scale);
+	virtual vec3 GetScale();
 	
+	Size3D GetModelSize();
+
+	void SetAnchorPoint(vec3 p);
+	vec3 GetAnchorPoint();
+
 	const mat4& GetToParentTransform();
 	mat4 GetToWorldTransform();
 protected:
+	void SetModelSize(Size3D size);
+
 	//-----------------------------
 	//render
 	//-----------------------------
 	virtual void Visit(const mat4& parentToWorldTransform);
 	virtual void Draw(Camera* camera);
+	virtual void CalculateWorldTransorm(const mat4& parentToWorldTransform);
 
 	//-----------------------------
 	//transform
@@ -86,4 +95,8 @@ protected:
 	mat4 _toWorldTransform;
 	mat4 _toParentTransform;
 	bool _transformDirty;
+
+	Size3D _modelSize;
+
+	vec3 _anchorPoint;
 };

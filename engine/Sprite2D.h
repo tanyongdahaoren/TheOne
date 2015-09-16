@@ -5,15 +5,35 @@
 class Sprite2D : public Sprite3D
 {
 public:
+	enum eBillBoardType
+	{
+		eBillBoardType_nun,
+		eBillBoardType_plane
+	};
+public:
 	Sprite2D();
 
 	void InitWithTexture2D(Texture2D* texture2d, Rect uv = Rect(0,0,1.0f,1.0f));
 
-	void SetAnchorPoint(vec2 v);
+	void EnableBillBoard(eBillBoardType type = eBillBoardType_plane);
+
+	//-------------
+	//For Sprite2D, make mesh's vertex not change because change texture by scale the transform
+	//-------------
+	virtual void SetScaleX(float x);
+	virtual void SetScaleY(float y);
+	void SetScale2D(vec2 scale);
+	vec2 GetScale2D();
 protected:
-	void UpdateMeshVertexPos(Mesh* mesh);
-	virtual void Draw(Camera* camera);
+	//------------------
+	//Not used in Sprite2D
+	//------------------
+	virtual void SetScale(vec3 scale);
+	virtual vec3 GetScale();
+
+	virtual void CalculateWorldTransorm(const mat4& parentToWorldTransform);
 protected:
-	bool _meshVertexDirty;
-	vec2 _anchorPoint;
+	vec2 _modelScale;
+
+	eBillBoardType _billBoardType;
 };

@@ -12,6 +12,16 @@ struct Size
 	float h;
 };
 
+struct Size3D
+{
+	Size3D();
+	Size3D(float _w, float _h, float _d);
+
+	float w;
+	float h;
+	float d;
+};
+
 struct Rect
 {
 	Rect(float x, float y, float width, float height);

@@ -5,7 +5,7 @@
 #include "Texture2D.h"
 #include "Shader.h"
 
-#define DEBUG_SPRITE3D 1
+#define DEBUG_SPRITE3D 0
 #include "DrawNode.h"
 
 class Sprite3D : public Node
@@ -22,7 +22,6 @@ public:
 
 	void SetNormalTexture(Texture2D* texture2D);
 protected:
-	virtual void Visit(const mat4& parentToWorldTransform);
 	virtual void Draw(Camera* camera);
 protected:
 	Mesh* _mesh;

@@ -113,8 +113,3 @@ void Sprite3D::Draw(Camera* camera)
 
 	Node::Draw(camera);
 }
-
-void Sprite3D::Visit(const mat4& parentToWorldTransform)
-{
-	Node::Visit(parentToWorldTransform);
-}

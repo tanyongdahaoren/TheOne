@@ -12,7 +12,19 @@ Size::Size(float _w, float _h)
 	, h(_h)
 {}
 
-
+/**
+* Size3D constants
+*/
+Size3D::Size3D()
+	: w(0)
+	, h(0)
+	, d(0)
+{}
+Size3D::Size3D(float _w, float _h, float _d)
+	: w(_w)
+	, h(_h)
+	, d(_d)
+{}
 
 /**
 * Rect constants

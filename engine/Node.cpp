@@ -4,14 +4,15 @@
 #include "Camera.h"
 
 Node::Node()
-	:_parent(NULL)
-	,_rotationX(0)
-	,_rotationY(0)
-	,_rotationZ(0)
-	,_scaleX(1)
-	,_scaleY(1)
-	,_scaleZ(1)
-	,_transformDirty(false)
+	: _parent(NULL)
+	, _rotationX(0)
+	, _rotationY(0)
+	, _rotationZ(0)
+	, _scaleX(1)
+	, _scaleY(1)
+	, _scaleZ(1)
+	, _transformDirty(false)
+	, _anchorPoint(0.5,0.5,0.5)
 {
 }
 
@@ -156,6 +157,28 @@ glm::vec3 Node::GetScale()
 	return vec3(_scaleX, _scaleY, _scaleZ);
 }
 
+void Node::SetModelSize(Size3D size)
+{
+	_modelSize = size;
+	_transformDirty = true;
+}
+
+Size3D Node::GetModelSize()
+{
+	return _modelSize;
+}
+
+void Node::SetAnchorPoint(vec3 p)
+{
+	_anchorPoint = p;
+	_transformDirty = true;
+}
+
+glm::vec3 Node::GetAnchorPoint()
+{
+	return _anchorPoint;
+}
+
 void Node::UpdateRotation()
 {
 	_rotationX = pitch(_rotationQuat);
@@ -179,8 +202,20 @@ const mat4& Node::GetToParentTransform()
 
 	mat4 r = glm::mat4_cast(_rotationQuat);
 
+	vec3 offset;
+	if (_modelSize.w!=0 && _modelSize.h!=0)
+	{
+		vec3 zeroAnchorPointOffset = vec3(0.5f, 0.5f, 0.5f);
+		vec3 currentAnchorPointOffset = zeroAnchorPointOffset - _anchorPoint;
+		offset = vec3(
+			_modelSize.w * _scaleX * currentAnchorPointOffset.x,
+			_modelSize.h * _scaleY * currentAnchorPointOffset.y,
+			_modelSize.d * _scaleZ * currentAnchorPointOffset.z);
+	}
+
 	mat4 t;
-	t = glm::translate(t, _position);
+	offset = offset + _position;
+	t = glm::translate(t, offset);
 
 	_toParentTransform = t * r * s;
 
@@ -201,9 +236,14 @@ glm::mat4 Node::GetToWorldTransform()
 	return m;
 }
 
-void Node::Visit(const mat4& parentToWorldTransform)
+void Node::CalculateWorldTransorm(const mat4& parentToWorldTransform)
 {
 	_toWorldTransform = parentToWorldTransform * GetToParentTransform();
+}
+
+void Node::Visit(const mat4& parentToWorldTransform)
+{
+	CalculateWorldTransorm(parentToWorldTransform);
 
 	if (dynamic_cast<Camera*>(this))
 	{
