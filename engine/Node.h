@@ -8,6 +8,7 @@
 class Camera;
 class Node : public Ref
 {
+	friend class Sprite2D;
 public:
 	typedef List<Node*>::iterator NodeIterator;
 	Node();
@@ -63,7 +64,7 @@ protected:
 	//-----------------------------
 	virtual void Visit(const mat4& parentToWorldTransform);
 	virtual void Draw(Camera* camera);
-	virtual void CalculateWorldTransorm(const mat4& parentToWorldTransform);
+	virtual void UpdateWorldTransorm(const mat4& parentToWorldTransform);
 
 	//-----------------------------
 	//transform

@@ -31,7 +31,7 @@ protected:
 	virtual void SetScale(vec3 scale);
 	virtual vec3 GetScale();
 
-	virtual void CalculateWorldTransorm(const mat4& parentToWorldTransform);
+	virtual void UpdateWorldTransorm(const mat4& parentToWorldTransform);
 protected:
 	vec2 _modelScale;
 

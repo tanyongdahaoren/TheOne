@@ -236,12 +236,11 @@ int Director::Run()
 	Node* par = new Node;
 	tree->AddChild(par);
 	
-	
 	//camera
 	Camera* camera = new Camera;
 	camera->Perspective(60, sWinW / sWinH, 0.1f, 1000.0);
 	//camera->orthographic(sWinW, sWinH, .1, 100);
-	vec3 eye(0, 0, 100);
+	vec3 eye(0, 0, 10);
 	vec3 center(0, 0, 0);
 	camera->SetPosition(eye);
 	camera->LookAt(center);
@@ -311,14 +310,15 @@ int Director::Run()
 	//2d sprite
 	{
 		EasyImage* image = new EasyImage;
-		image->InitWithFileName("png.png");
+		image->InitWithFileName("bricks.jpg");
 		Texture2D* texture = new Texture2D;
 		texture->LoadWithImage(image);
 
 		Sprite2D* sp = new Sprite2D;
 		sp->InitWithTexture2D(texture);
-		sp->SetAnchorPoint(vec3(0.5, 0.5, 0));
+		sp->SetAnchorPoint(vec3(0, 0, 0));
 		sp->SetScale2D(vec2(0.1, 0.1));
+		sp->EnableBillBoard();
 		par->AddChild(sp);
 
 		sp3d = sp;

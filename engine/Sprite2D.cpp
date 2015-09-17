@@ -2,6 +2,8 @@
 #include "ShaderManager.h"
 #include "ShaderValue.h"
 #include "Camera.h"
+#include "Director.h"
+#include "Tree.h"
 
 Sprite2D::Sprite2D()
 	: _modelScale(1, 1)
@@ -100,7 +102,32 @@ void Sprite2D::EnableBillBoard(eBillBoardType type /*= eBillBoardType_plane*/)
 	_billBoardType = type;
 }
 
-void Sprite2D::CalculateWorldTransorm(const mat4& parentToWorldTransform)
+void Sprite2D::UpdateWorldTransorm(const mat4& parentToWorldTransform)
 {
+	Node::UpdateWorldTransorm(parentToWorldTransform);
 
+	Camera* camera = Director::GetInstance()->GetCurrentTree()->GetCurrentCamera();
+	if (!camera)
+	{
+		return;
+	}
+	mat4 cameraWorldTransform = camera->_toWorldTransform;
+	vec4 camX = cameraWorldTransform[0];
+	camX = normalize(camX);
+	vec4 camY = cameraWorldTransform[1];
+	camY = normalize(camY);
+	vec4 camZ = cameraWorldTransform[2];
+	camZ = normalize(camZ);
+
+	mat4 m = _toWorldTransform;
+
+	float xlen = sqrtf(m[0][0] * m[0][0] + m[0][1] * m[0][1] + m[0][2] * m[0][2]);
+	float ylen = sqrtf(m[1][0] * m[1][0] + m[1][1] * m[1][1] + m[1][2] * m[1][2]);
+	float zlen = sqrtf(m[2][0] * m[2][0] + m[2][1] * m[2][1] + m[2][2] * m[2][2]);
+
+	m[0] = camX * xlen;
+	m[1] = camY * ylen;
+	m[2] = camZ * zlen;
+
+	_toWorldTransform = m;
 }

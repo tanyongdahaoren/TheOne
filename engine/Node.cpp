@@ -236,14 +236,14 @@ glm::mat4 Node::GetToWorldTransform()
 	return m;
 }
 
-void Node::CalculateWorldTransorm(const mat4& parentToWorldTransform)
+void Node::UpdateWorldTransorm(const mat4& parentToWorldTransform)
 {
 	_toWorldTransform = parentToWorldTransform * GetToParentTransform();
 }
 
 void Node::Visit(const mat4& parentToWorldTransform)
 {
-	CalculateWorldTransorm(parentToWorldTransform);
+	UpdateWorldTransorm(parentToWorldTransform);
 
 	if (dynamic_cast<Camera*>(this))
 	{
