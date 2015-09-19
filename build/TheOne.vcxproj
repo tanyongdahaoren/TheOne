@@ -95,6 +95,7 @@
     <ClInclude Include="..\engine\DrawNode.h" />
     <ClInclude Include="..\engine\EasyImage.h" />
     <ClInclude Include="..\engine\FileUtils.h" />
+    <ClInclude Include="..\engine\RenderToTexture.h" />
     <ClInclude Include="..\engine\GLHeader.h" />
     <ClInclude Include="..\engine\List.h" />
     <ClInclude Include="..\engine\MathH.h" />
@@ -123,6 +124,7 @@
     <ClCompile Include="..\engine\DrawNode.cpp" />
     <ClCompile Include="..\engine\EasyImage.cpp" />
     <ClCompile Include="..\engine\FileUtils.cpp" />
+    <ClCompile Include="..\engine\RenderToTexture.cpp" />
     <ClCompile Include="..\engine\glew.c" />
     <ClCompile Include="..\engine\Mesh.cpp" />
     <ClCompile Include="..\engine\MeshManager.cpp" />

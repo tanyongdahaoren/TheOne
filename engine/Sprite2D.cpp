@@ -106,18 +106,37 @@ void Sprite2D::UpdateWorldTransorm(const mat4& parentToWorldTransform)
 {
 	Node::UpdateWorldTransorm(parentToWorldTransform);
 
+	if (_billBoardType == eBillBoardType_nun)
+	{
+		return;
+	}
+
 	Camera* camera = Director::GetInstance()->GetCurrentTree()->GetCurrentCamera();
 	if (!camera)
 	{
 		return;
 	}
+
 	mat4 cameraWorldTransform = camera->_toWorldTransform;
 	vec4 camX = cameraWorldTransform[0];
-	camX = normalize(camX);
 	vec4 camY = cameraWorldTransform[1];
-	camY = normalize(camY);
 	vec4 camZ = cameraWorldTransform[2];
-	camZ = normalize(camZ);
+
+	vec4 newX, newY, newZ;
+	if (_billBoardType == eBillBoardType_plane)
+	{	
+		newX = normalize(camX);	
+		newY = normalize(camY);
+		newZ = normalize(camZ);
+	}
+	else if (_billBoardType == eBillBoardType_rotate_y)
+	{
+		newY = vec4(0, 1, 0, 0);
+		vec3 z = cross(vec3(camX), vec3(newY)); z = normalize(z);
+		newZ = vec4(z.x, z.y, z.z, 0);
+		vec3 x = cross(vec3(newZ), vec3(newY)); x = normalize(x);
+		newX = vec4(x.x, x.y, x.z, 0);
+	}
 
 	mat4 m = _toWorldTransform;
 
@@ -125,9 +144,9 @@ void Sprite2D::UpdateWorldTransorm(const mat4& parentToWorldTransform)
 	float ylen = sqrtf(m[1][0] * m[1][0] + m[1][1] * m[1][1] + m[1][2] * m[1][2]);
 	float zlen = sqrtf(m[2][0] * m[2][0] + m[2][1] * m[2][1] + m[2][2] * m[2][2]);
 
-	m[0] = camX * xlen;
-	m[1] = camY * ylen;
-	m[2] = camZ * zlen;
+	m[0] = newX * xlen;
+	m[1] = newY * ylen;
+	m[2] = newZ * zlen;
 
 	_toWorldTransform = m;
 }

@@ -283,7 +283,6 @@ int Director::Run()
 	}
 	
 	//3d sprite/
-	/*
  	{
 		Mesh* mesh = MeshManager::GetInstance()->LoadMeshFromFile("box.obj", true);
 		mesh->GenBuffers();
@@ -292,11 +291,13 @@ int Director::Run()
 		image->InitWithFileName("bricks.jpg");
 		Texture2D* texture = new Texture2D;
 		texture->LoadWithImage(image);
+		texture->SetWrapType(eWrapType_reapeat);
 
 		EasyImage* normal_image = new EasyImage;
 		normal_image->InitWithFileName("bricks_normal_map.jpg");
 		Texture2D* normal_texture = new Texture2D;
 		normal_texture->LoadWithImage(normal_image);
+		normal_texture->SetWrapType(eWrapType_reapeat);
 
 		Sprite3D* sp = new Sprite3D;
 		sp->InitWithMesh(mesh);
@@ -305,23 +306,22 @@ int Director::Run()
 		par->AddChild(sp);
 
 		sp3d = sp;
-	}*/
+	}
 
 	//2d sprite
 	{
 		EasyImage* image = new EasyImage;
-		image->InitWithFileName("bricks.jpg");
+		image->InitWithFileName("png.png");
 		Texture2D* texture = new Texture2D;
 		texture->LoadWithImage(image);
 
 		Sprite2D* sp = new Sprite2D;
+		sp->SetPosition(vec3(0, 3, 0) );
 		sp->InitWithTexture2D(texture);
-		sp->SetAnchorPoint(vec3(0, 0, 0));
-		sp->SetScale2D(vec2(0.1, 0.1));
-		sp->EnableBillBoard();
+		sp->SetAnchorPoint(vec3(0.5, 0.5, 0));
+		sp->SetScale2D(vec2(0.01, 0.01));
+		sp->EnableBillBoard(Sprite2D::eBillBoardType_rotate_y);
 		par->AddChild(sp);
-
-		sp3d = sp;
 	}
  	
 	//line
@@ -383,7 +383,7 @@ void Director::MainLoop()
 	{
 		sCurrentTree = tree;
 
-		sp3d->SetRotation(vec3(0, rot, 0));
+		//sp3d->SetRotation(vec3(0, rot, 0));
 		rot+=0.1;
 
 		tree->Travel();

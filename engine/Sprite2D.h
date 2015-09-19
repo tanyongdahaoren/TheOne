@@ -8,7 +8,8 @@ public:
 	enum eBillBoardType
 	{
 		eBillBoardType_nun,
-		eBillBoardType_plane
+		eBillBoardType_plane,
+		eBillBoardType_rotate_y,
 	};
 public:
 	Sprite2D();

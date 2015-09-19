@@ -1,22 +1,31 @@
 #include "Texture2D.h"
 #include "EasyImage.h"
+#include "Defines.h"
+
+typedef PixelFormatInfoMap::value_type PixelFormatInfoMapValue;
+static const PixelFormatInfoMapValue TexturePixelFormatInfoTablesValue[] =
+{
+	PixelFormatInfoMapValue(PixelFormat::RGBA8888, PixelFormatInfo(GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, 32, false, true)),
+	PixelFormatInfoMapValue(PixelFormat::RGB565,   PixelFormatInfo(GL_RGB, GL_RGB, GL_UNSIGNED_SHORT_5_6_5, 16, false, false)),
+	PixelFormatInfoMapValue(PixelFormat::RGB888,   PixelFormatInfo(GL_RGB, GL_RGB, GL_UNSIGNED_BYTE, 24, false, false)),
+	PixelFormatInfoMapValue(PixelFormat::depth,    PixelFormatInfo(GL_DEPTH_COMPONENT, GL_DEPTH_COMPONENT, GL_FLOAT, 4, false, false)),
+};
+
+const PixelFormatInfoMap Texture2D::_pixelFormatInfoTables(TexturePixelFormatInfoTablesValue,
+	TexturePixelFormatInfoTablesValue + ARRAY_SIZE(TexturePixelFormatInfoTablesValue));
 
 bool Texture2D::LoadWithImage(EasyImage* easyImage)
 {
 	const Magick::Image image = easyImage->GetImage();
 	const Magick::Blob& blob = easyImage->GetBlob();
 
-	return Load(GL_RGBA, image.columns(), image.rows(), (unsigned char*)blob.data());
+	return Load(PixelFormat::RGBA8888, image.columns(), image.rows(), (unsigned char*)blob.data());
 }
 
-void Texture2D::Bind(GLenum TextureUnit)
+bool Texture2D::Load(PixelFormat pixelFormat, int w, int h, unsigned char * data)
 {
-	glActiveTexture(TextureUnit);
-	glBindTexture(GL_TEXTURE_2D, _textureID);
-}
+	const PixelFormatInfo& info = _pixelFormatInfoTables.at(pixelFormat);
 
-bool Texture2D::Load(GLenum format, int w, int h, unsigned char * data)
-{
 	_width = w;
 	_height = h;
 
@@ -26,8 +35,8 @@ bool Texture2D::Load(GLenum format, int w, int h, unsigned char * data)
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-//  	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-//  	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+ 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+ 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 	// clean possible GL error
 	GLenum err = glGetError();
@@ -36,15 +45,7 @@ bool Texture2D::Load(GLenum format, int w, int h, unsigned char * data)
 		printf("glError: 0x%04X", err);
 	}
 
-	glTexImage2D(GL_TEXTURE_2D,
-		0,
-		format,
-		_width,
-		_height,
-		0,
-		format,
-		GL_UNSIGNED_BYTE,
-		data);
+	glTexImage2D(GL_TEXTURE_2D, 0, info.internalFormat, _width, _height, 0, info.format, info.type, data);
 
 	err = glGetError();
 	if (err != GL_NO_ERROR)
@@ -56,4 +57,26 @@ bool Texture2D::Load(GLenum format, int w, int h, unsigned char * data)
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	return true;
+}
+
+void Texture2D::Bind(GLenum TextureUnit)
+{
+	glActiveTexture(TextureUnit);
+	glBindTexture(GL_TEXTURE_2D, _textureID);
+}
+
+void Texture2D::SetFilterType(eFilterType type)
+{
+	glBindTexture(GL_TEXTURE_2D, _textureID);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, type);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, type);
+}
+
+void Texture2D::SetWrapType(eWrapType type)
+{
+	glBindTexture(GL_TEXTURE_2D, _textureID);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, type);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, type);
 }

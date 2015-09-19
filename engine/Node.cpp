@@ -202,22 +202,25 @@ const mat4& Node::GetToParentTransform()
 
 	mat4 r = glm::mat4_cast(_rotationQuat);
 
-	vec3 offset;
+	mat4 offsetMat;
+	
 	if (_modelSize.w!=0 && _modelSize.h!=0)
 	{
+		vec3 offset;
 		vec3 zeroAnchorPointOffset = vec3(0.5f, 0.5f, 0.5f);
 		vec3 currentAnchorPointOffset = zeroAnchorPointOffset - _anchorPoint;
 		offset = vec3(
-			_modelSize.w * _scaleX * currentAnchorPointOffset.x,
-			_modelSize.h * _scaleY * currentAnchorPointOffset.y,
-			_modelSize.d * _scaleZ * currentAnchorPointOffset.z);
+			_modelSize.w * currentAnchorPointOffset.x,
+			_modelSize.h * currentAnchorPointOffset.y,
+			_modelSize.d * currentAnchorPointOffset.z);
+
+		offsetMat = glm::translate(offsetMat, offset);
 	}
-
+	
 	mat4 t;
-	offset = offset + _position;
-	t = glm::translate(t, offset);
+	t = glm::translate(t, _position);
 
-	_toParentTransform = t * r * s;
+	_toParentTransform = t * r * s * offsetMat;
 
 	_transformDirty = false;
 
