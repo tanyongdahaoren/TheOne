@@ -16,7 +16,7 @@ public:
 protected:
 	virtual void InitBuffers();
 	virtual void EnsureCapacity(int count);
-	virtual void Draw(Camera* camera);
+	virtual void Render(Camera* camera);
 	void SetMode(GLenum mode){ _mode = mode; }
 protected:
 	Shader* _program;
@@ -41,7 +41,7 @@ public:
 
 	void SetLineWidth(int w);
 protected:
-	void Draw(Camera* camera);
+	void Render(Camera* camera);
 protected:
 	int _lineWidth;
 };
@@ -55,7 +55,7 @@ public:
 
 	void SetPointSize(int s);
 protected:
-	void Draw(Camera* camera);
+	void Render(Camera* camera);
 protected:
 	int _pointSize;
 };

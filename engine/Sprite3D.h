@@ -22,7 +22,7 @@ public:
 
 	void SetNormalTexture(Texture2D* texture2D);
 protected:
-	virtual void Draw(Camera* camera);
+	virtual void Render(Camera* camera);
 protected:
 	Mesh* _mesh;
 	Texture2D* _texture;

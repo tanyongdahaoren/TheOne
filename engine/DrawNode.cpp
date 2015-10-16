@@ -61,7 +61,7 @@ DrawNode::~DrawNode()
 	_vao = _vbo = 0;
 }
 
-void DrawNode::Draw(Camera* camera)
+void DrawNode::Render(Camera* camera)
 {
 	// Use our shader
 	_program->Active();
@@ -128,11 +128,11 @@ void DrawLines::DrawLine(vec3 from, vec3 to, Color3B c1, Color3B c2)
 	AddVert(to, c2);
 }
 
-void DrawLines::Draw(Camera* camera)
+void DrawLines::Render(Camera* camera)
 {
 	glLineWidth(_lineWidth);
 
-	DrawNode::Draw(camera);
+	DrawNode::Render(camera);
 }
 
 void DrawLines::SetLineWidth(int w)
@@ -155,11 +155,11 @@ void DrawPoints::DrawPoint(vec3 pos, Color3B c)
 	AddVert(pos, c);
 }
 
-void DrawPoints::Draw(Camera* camera)
+void DrawPoints::Render(Camera* camera)
 {
 	glPointSize(_pointSize);
 
-	DrawNode::Draw(camera);
+	DrawNode::Render(camera);
 }
 
 void DrawPoints::SetPointSize(int s)

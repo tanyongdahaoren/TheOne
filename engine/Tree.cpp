@@ -31,13 +31,13 @@ void Tree::Travel()
 	_cameras.clear();
 
 	mat4 identity;
-	Visit(identity);
+	VisitTransform(identity);
 
 	for ( const auto &camera: _cameras )
 	{
 		sCurrentCamera = camera;
 
-		Draw(camera);
+		VisitRender(camera);
 	}
 }
 
@@ -50,4 +50,3 @@ Camera* Tree::GetCurrentCamera()
 {
 	return sCurrentCamera;
 }
-

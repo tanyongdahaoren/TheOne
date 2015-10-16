@@ -62,8 +62,9 @@ protected:
 	//-----------------------------
 	//render
 	//-----------------------------
-	virtual void Visit(const mat4& parentToWorldTransform);
-	virtual void Draw(Camera* camera);
+	virtual void VisitTransform(const mat4& parentToWorldTransform);
+	virtual void VisitRender(Camera* camera);
+	virtual void Render(Camera* camera){}
 	virtual void UpdateWorldTransorm(const mat4& parentToWorldTransform);
 
 	//-----------------------------

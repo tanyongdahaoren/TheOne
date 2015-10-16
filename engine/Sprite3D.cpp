@@ -64,7 +64,7 @@ void Sprite3D::SetNormalTexture(Texture2D* texture2D)
 	_normalTexture = texture2D;
 }
 
-void Sprite3D::Draw(Camera* camera)
+void Sprite3D::Render(Camera* camera)
 {
 	if (_cullBack)
 	{
@@ -110,6 +110,4 @@ void Sprite3D::Draw(Camera* camera)
 		_dl->DrawLine(pos, pos + normal, Color3B::RED, Color3B::GREEN);
 	}
 #endif
-
-	Node::Draw(camera);
 }

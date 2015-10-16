@@ -244,7 +244,7 @@ void Node::UpdateWorldTransorm(const mat4& parentToWorldTransform)
 	_toWorldTransform = parentToWorldTransform * GetToParentTransform();
 }
 
-void Node::Visit(const mat4& parentToWorldTransform)
+void Node::VisitTransform(const mat4& parentToWorldTransform)
 {
 	UpdateWorldTransorm(parentToWorldTransform);
 
@@ -267,14 +267,16 @@ void Node::Visit(const mat4& parentToWorldTransform)
 
 	for ( const auto &child: _children )
 	{
-		child->Visit(_toWorldTransform);
+		child->VisitTransform(_toWorldTransform);
 	}
 }
 
-void Node::Draw(Camera* camera)
+void Node::VisitRender(Camera* camera)
 {
-	for ( const auto &child: _children )
+	Render(camera);
+
+	for (const auto &child : _children)
 	{
-		child->Draw(camera);
+		child->VisitRender(camera);
 	}
 }
