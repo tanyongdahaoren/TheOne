@@ -20,6 +20,12 @@ void Sprite2D::InitWithTexture2D(Texture2D* texture2d, Rect uv /*= Rect(0,0,1.0f
 
 	Mesh* mesh = new Mesh;
 
+	mesh->_entries.resize(1);
+	mesh->_entries[0].MaterialIndex = 0;
+	mesh->_entries[0].NumIndices = 6;
+	mesh->_entries[0].BaseVertex = 0;
+	mesh->_entries[0].BaseIndex = 0;
+
 	mesh->attribFlag = aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs;
 
 	mesh->FillVertexAttributeWithFlag();

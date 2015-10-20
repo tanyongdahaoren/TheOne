@@ -11,6 +11,10 @@ using namespace std;
 #include "Types.h"
 #include "Ref.h"
 
+#include "Texture2D.h"
+#include "Vector.h"
+#define INVALID_MATERIAL 0xFFFFFFFF
+
 struct MeshVertexAttrib
 {
 	MeshVertexAttrib(){}
@@ -38,14 +42,31 @@ class Mesh : public Ref
 	friend class Sprite2D;
 	friend class Sprite3D;
 	friend class MeshManager;
+
+	struct MeshEntry 
+	{
+		MeshEntry()
+		{
+			NumIndices = 0;
+			BaseVertex = 0;
+			BaseIndex = 0;
+			MaterialIndex = INVALID_MATERIAL;
+		}
+		unsigned int NumIndices;
+		unsigned int BaseVertex;
+		unsigned int BaseIndex;
+		unsigned int MaterialIndex;
+	};
 public:
 	Mesh();
 	~Mesh();
 	bool InitFromFile(const string& fileName, unsigned int flag);
 	void GenBuffers();
+	void GenTextures();
 	void UseBuffers();
 	bool HaveAttribute(int attrib);
 protected:
+	void InitMaterials(const aiScene* pScene, const std::string& Filename);
 	void BindBufferDatas();
 	void CalcNormals();
 	void CalcTangents();
@@ -57,6 +78,8 @@ public:
 
 	int sizePerVertex;
 	int stridePerVertex;
+
+	vector<MeshEntry> _entries;
 
 	//key «attribute
 	map<int, MeshVertexAttrib> attribs;
@@ -72,6 +95,9 @@ public:
 	map<int, GLuint> _vbos;
 
 	bool _bufferDirty;
+
+	vector<string> _textureNames;
+	Vector<Texture2D*> _textures;
 };
 
 

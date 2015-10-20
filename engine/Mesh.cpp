@@ -36,52 +36,71 @@ bool Mesh::InitFromFile(const string& fileName, unsigned int flag)
 		printf("Error parsing '%s': '%s'\n", fileName.c_str(), importer.GetErrorString());
 		return false;
 	}
+	
+	//init entries
+	_entries.resize(pScene->mNumMeshes);
+	uint NumVertices = 0;
+	uint NumIndices = 0;
+	for (uint i = 0; i < _entries.size(); i++)
+	{
+		_entries[i].MaterialIndex = pScene->mMeshes[i]->mMaterialIndex;
+		_entries[i].NumIndices = pScene->mMeshes[i]->mNumFaces * 3;
+		_entries[i].BaseVertex = NumVertices;
+		_entries[i].BaseIndex = NumIndices;
 
-	// mesh
-	// 只解析第一个Mesh
-	const aiMesh* paiMesh = pScene->mMeshes[0];
+		NumVertices += pScene->mMeshes[i]->mNumVertices;
+		NumIndices += _entries[i].NumIndices;
+	}
+
+	//materials
+	InitMaterials(pScene, fileName);
 
 	//attributes
 	FillVertexAttributeWithFlag();
 
+	// mesh
 	const aiVector3D Zero3D(0.0f, 0.0f, 0.0f);
-
-	for (unsigned int i = 0; i < paiMesh->mNumVertices; i++)
+	for (uint i = 0; i < _entries.size(); i++)
 	{
-		//顶点位置
-		const aiVector3D* pPos = &paiMesh->mVertices[i];
-		this->vertexDatas[eShaderVertAttribute_pos].push_back(pPos->x);
-		this->vertexDatas[eShaderVertAttribute_pos].push_back(pPos->y);
-		this->vertexDatas[eShaderVertAttribute_pos].push_back(pPos->z);
-
-		//纹理坐标
-		const aiVector3D* pTexCoord = paiMesh->HasTextureCoords(0) ? &(paiMesh->mTextureCoords[0][i]) : &Zero3D;
-		this->vertexDatas[eShaderVertAttribute_texcood].push_back(pTexCoord->x);
-		this->vertexDatas[eShaderVertAttribute_texcood].push_back(pTexCoord->y);
-
-		//法线
-		const aiVector3D* pNormal = &paiMesh->mNormals[i];
-		this->vertexDatas[eShaderVertAttribute_normal].push_back(pNormal->x);
-		this->vertexDatas[eShaderVertAttribute_normal].push_back(pNormal->y);
-		this->vertexDatas[eShaderVertAttribute_normal].push_back(pNormal->z);
-
-		//切线
-		if (flag & aiProcess_CalcTangentSpace)
+		const aiMesh* paiMesh = pScene->mMeshes[i];
+		
+		for (unsigned int i = 0; i < paiMesh->mNumVertices; i++)
 		{
-			const aiVector3D* pTangent = &(paiMesh->mTangents[i]);
-			this->vertexDatas[eShaderVertAttribute_tangent].push_back(pTangent->x);
-			this->vertexDatas[eShaderVertAttribute_tangent].push_back(pTangent->y);
-			this->vertexDatas[eShaderVertAttribute_tangent].push_back(pTangent->z);
-		}
-	}
+			//顶点位置
+			const aiVector3D* pPos = &paiMesh->mVertices[i];
+			this->vertexDatas[eShaderVertAttribute_pos].push_back(pPos->x);
+			this->vertexDatas[eShaderVertAttribute_pos].push_back(pPos->y);
+			this->vertexDatas[eShaderVertAttribute_pos].push_back(pPos->z);
 
-	for (unsigned int i = 0; i < paiMesh->mNumFaces; i++)
-	{
-		const aiFace& face = paiMesh->mFaces[i];
-		assert(face.mNumIndices == 3);
-		this->indices.push_back(face.mIndices[0]);
-		this->indices.push_back(face.mIndices[1]);
-		this->indices.push_back(face.mIndices[2]);
+			//纹理坐标
+			const aiVector3D* pTexCoord = paiMesh->HasTextureCoords(0) ? &(paiMesh->mTextureCoords[0][i]) : &Zero3D;
+			this->vertexDatas[eShaderVertAttribute_texcood].push_back(pTexCoord->x);
+			this->vertexDatas[eShaderVertAttribute_texcood].push_back(pTexCoord->y);
+
+			//法线
+			const aiVector3D* pNormal = &paiMesh->mNormals[i];
+			this->vertexDatas[eShaderVertAttribute_normal].push_back(pNormal->x);
+			this->vertexDatas[eShaderVertAttribute_normal].push_back(pNormal->y);
+			this->vertexDatas[eShaderVertAttribute_normal].push_back(pNormal->z);
+
+			//切线
+			if (flag & aiProcess_CalcTangentSpace)
+			{
+				const aiVector3D* pTangent = &(paiMesh->mTangents[i]);
+				this->vertexDatas[eShaderVertAttribute_tangent].push_back(pTangent->x);
+				this->vertexDatas[eShaderVertAttribute_tangent].push_back(pTangent->y);
+				this->vertexDatas[eShaderVertAttribute_tangent].push_back(pTangent->z);
+			}
+		}
+
+		for (unsigned int i = 0; i < paiMesh->mNumFaces; i++)
+		{
+			const aiFace& face = paiMesh->mFaces[i];
+			assert(face.mNumIndices == 3);
+			this->indices.push_back(face.mIndices[0]);
+			this->indices.push_back(face.mIndices[1]);
+			this->indices.push_back(face.mIndices[2]);
+		}
 	}
 
 	return true;
@@ -134,7 +153,24 @@ void Mesh::UseBuffers()
 		BindBufferDatas();
 	}
 
- 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+	for (uint i = 0; i < _entries.size(); i++)
+	{
+		const uint MaterialIndex = _entries[i].MaterialIndex;
+		
+		if (MaterialIndex < _textures.size() && _textures[MaterialIndex])
+		{
+			_textures[MaterialIndex]->Bind(GL_TEXTURE0);
+		}
+
+		glDrawElementsBaseVertex(
+			GL_TRIANGLES,
+			_entries[i].NumIndices,
+			GL_UNSIGNED_INT,
+			(void*)(sizeof(uint) * _entries[i].BaseIndex),
+			_entries[i].BaseVertex);
+	}
+	
+/*	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);*/
 
 	glBindVertexArray(0);
 }
@@ -287,5 +323,54 @@ void Mesh::FillVertexAttributeWithFlag()
 	for (auto it : attribs)
 	{
 		stridePerVertex += it.second.attribSizeBytes;
+	}
+}
+
+void Mesh::InitMaterials(const aiScene* pScene, const std::string& Filename)
+{
+	// Extract the directory part from the file name
+	std::string::size_type SlashIndex = Filename.find_last_of("/");
+	std::string Dir;
+
+	if (SlashIndex == std::string::npos) 
+	{
+		Dir = ".";
+	}
+	else if (SlashIndex == 0)
+	{
+		Dir = "/";
+	}
+	else
+	{
+		Dir = Filename.substr(0, SlashIndex);
+	}
+
+	// Initialize the materials
+	for (unsigned int i = 0; i < pScene->mNumMaterials; i++)
+	{
+		const aiMaterial* pMaterial = pScene->mMaterials[i];
+
+		if (pMaterial->GetTextureCount(aiTextureType_DIFFUSE) > 0)
+		{
+			aiString Path;
+
+			if (pMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &Path, NULL, NULL, NULL, NULL, NULL) == AI_SUCCESS)
+			{
+				std::string FullPath = Dir + "/" + Path.data;
+				_textureNames.push_back(FullPath);
+			}
+		}
+	}
+}
+
+void Mesh::GenTextures()
+{
+	for (int i = 0; i < _textureNames.size(); i++)
+	{
+		EasyImage* image = new EasyImage;
+		image->InitWithFileName(_textureNames[i]);
+		Texture2D* texture = new Texture2D;
+		texture->LoadWithImage(image);
+		_textures.push_back(texture);
 	}
 }

@@ -85,13 +85,17 @@ void Sprite3D::Render(Camera* camera)
 	_program->SetUniformLocationWithMatrix4fv(UNIFORM_MVP, &MVP[0][0]);
 
 	_program->CustomEffect();
-
-	_program->SetUniformLocationWith1i(UNIFORM_TEXTURE_COLOR_SAMPLER, COLOR_TEXTURE_INDEX);
-	_texture->Bind(COLOR_TEXTURE);
+	
 	if (_mesh->HaveAttribute(eShaderVertAttribute_tangent) && _normalTexture)
 	{
 		_program->SetUniformLocationWith1i(UNIFORM_TEXTURE_NORMAL_MAP_SAMPLER, NORMAL_TEXTURE_INDEX);
 		_normalTexture->Bind(NORMAL_TEXTURE);
+	}
+	
+	_program->SetUniformLocationWith1i(UNIFORM_TEXTURE_COLOR_SAMPLER, COLOR_TEXTURE_INDEX);
+	if (_texture)
+	{
+		_texture->Bind(COLOR_TEXTURE);
 	}
 
 	_mesh->UseBuffers();

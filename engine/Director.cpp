@@ -254,7 +254,7 @@ int Director::Run()
 		//dir light
 		DirectionLight* dirlight = new DirectionLight;
 		dirlight->SetColor(Color3F::WHITE);
-		dirlight->SetDirection(vec3(-1, -1, -1));
+		dirlight->SetDirection(vec3(0, 0, -1));
 		dirlight->SetAmbientIntensity(0.2);
 		dirlight->SetDiffuseIntensity(0.8);
 		par->AddChild(dirlight);
@@ -282,11 +282,16 @@ int Director::Run()
 // 		par->AddChild(spotLight);
 	}
 	
+	bool is_show_3dsp = false;
+	bool is_show_2dsp = false;
+	bool is_show_skelon = true;
+
 	//3d sprite/
+	if (is_show_3dsp)
  	{
 		Mesh* mesh = MeshManager::GetInstance()->LoadMeshFromFile("box.obj", true);
 		mesh->GenBuffers();
-		
+
 		EasyImage* image = new EasyImage;
 		image->InitWithFileName("bricks.jpg");
 		Texture2D* texture = new Texture2D;
@@ -304,11 +309,27 @@ int Director::Run()
 		sp->SetTexture(texture);
 		sp->SetNormalTexture(normal_texture);
 		par->AddChild(sp);
+		
+		sp3d = sp;
+	}
 
+	//3d skelon sprite/
+	if (is_show_skelon)
+	{
+		Mesh* mesh = MeshManager::GetInstance()->LoadMeshFromFile("boblampclean.md5mesh", false);
+		mesh->GenBuffers();
+		mesh->GenTextures();
+	
+		Sprite3D* sp = new Sprite3D;
+		sp->InitWithMesh(mesh);
+		par->AddChild(sp);
+		sp->SetScale(vec3(0.1,0.1,0.1));
+		sp->SetRotation(vec3(-90,0,0));
 		sp3d = sp;
 	}
 
 	//2d sprite
+	if (is_show_2dsp)
 	{
 		EasyImage* image = new EasyImage;
 		image->InitWithFileName("png.png");
