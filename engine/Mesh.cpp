@@ -58,6 +58,15 @@ bool Mesh::InitFromFile(const string& fileName, unsigned int flag)
 	//attributes
 	FillVertexAttributeWithFlag();
 
+	//resize array
+	for (auto it : attribs)
+	{
+		int attribType = it.first;
+		MeshVertexAttrib& attrib = it.second;
+		this->vertexDatas[attribType].reserve(attrib.size * NumVertices);
+	}
+	this->indices.reserve(NumIndices);
+
 	// mesh
 	const aiVector3D Zero3D(0.0f, 0.0f, 0.0f);
 	for (uint i = 0; i < _entries.size(); i++)
@@ -162,12 +171,7 @@ void Mesh::UseBuffers()
 			_textures[MaterialIndex]->Bind(GL_TEXTURE0);
 		}
 
-		glDrawElementsBaseVertex(
-			GL_TRIANGLES,
-			_entries[i].NumIndices,
-			GL_UNSIGNED_INT,
-			(void*)(sizeof(uint) * _entries[i].BaseIndex),
-			_entries[i].BaseVertex);
+		glDrawElementsBaseVertex(GL_TRIANGLES, _entries[i].NumIndices, GL_UNSIGNED_INT, (void*)(sizeof(uint) * _entries[i].BaseIndex), _entries[i].BaseVertex);
 	}
 	
 /*	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);*/
