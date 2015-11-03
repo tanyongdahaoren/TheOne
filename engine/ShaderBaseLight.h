@@ -1,14 +1,23 @@
 #pragma once
 
 #include "Shader.h"
+#include<vector>
+using namespace std;
 
 const int kMaxPointLightNum = 2;
 const int kMaxSpotLightNum = 2;
+const int kMaxBoneNum = 100;
 
 //由于这里的uniform比较多  所以没有实用string为每个uniform变量命名
 
 class ShaderBaseLight : public Shader
 {
+public:
+	static string GetVertShader();
+	static string GetFragShader();
+
+	static string GetNormalVertShader();
+	static string GetNormalFragShader();
 protected:
 	virtual void InitUniformsLocation();
 	virtual void CustomEffect();
@@ -48,4 +57,17 @@ protected:
 	GLuint _eyeWorldPos;
 	GLuint _specularIntensity;
 	GLuint _specularPower;
+};
+
+class ShaderBaseLightSkelon :public ShaderBaseLight
+{
+public:
+	static string GetVertShader();
+	static string GetFragShader();
+	void SetBonesTransform(vector<mat4> transforms);
+protected:
+	virtual void InitUniformsLocation();
+	virtual void CustomEffect();
+protected:
+	GLuint _boneLocation[kMaxBoneNum];
 };

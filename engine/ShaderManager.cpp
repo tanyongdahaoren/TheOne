@@ -75,6 +75,10 @@ bool compileShader(GLuint * shader, GLenum type, const GLchar* source)
 		glGetShaderSource(*shader, length, nullptr, src);
 		printf("ERROR: Failed to compile shader:\n%s", src);
 
+		GLchar InfoLog[1024];
+		glGetShaderInfoLog(*shader, 1024, NULL, InfoLog);
+		fprintf(stderr, "Error compiling shader : '%s'\n", InfoLog);
+
 		free(src);
 
 		return false;;
@@ -167,17 +171,11 @@ void ShaderManager::LoadDefaultShaders()
 
 	LoadShaders(PositionTexture3D_vert, PositionTexture3D_frag, shader_position_texure_3D, [](){return new Shader();});
 
-	GLchar buff[256];
-	_snprintf(buff, sizeof(buff) - 1,
-		"\nconst int kMaxPointLightNum =  %d; \n"
-		"\nconst int kMaxSpotLightNum = %d; \n",
-		kMaxPointLightNum,
-		kMaxSpotLightNum);
-	string str = string(buff) + string(BaseLight_frag);
-	LoadShaders(BaseLight_vert, str.c_str(), shader_base_light_3D, [](){return new ShaderBaseLight(); });
+	LoadShaders(ShaderBaseLight::GetVertShader().c_str(), ShaderBaseLight::GetFragShader().c_str(), shader_base_light_3D, [](){return new ShaderBaseLight(); });
 
-	str = string(buff) + string(BaseLight_NormalMap_frag);
-	LoadShaders(BaseLight_NormalMap_vert, str.c_str(), shader_base_light_3D_with_normal_map, [](){return new ShaderBaseLight(); });
+	LoadShaders(ShaderBaseLightSkelon::GetVertShader().c_str(), ShaderBaseLightSkelon::GetFragShader().c_str(), shader_base_light_skelon_3D, [](){return new ShaderBaseLightSkelon(); });
+
+	LoadShaders(ShaderBaseLight::GetNormalVertShader().c_str(), ShaderBaseLight::GetNormalFragShader().c_str(), shader_base_light_3D_with_normal_map, [](){return new ShaderBaseLight(); });
 }
 
 Shader* ShaderManager::GetShader(string shaderName)

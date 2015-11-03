@@ -14,5 +14,7 @@ extern const GLchar * PositionTexture3D_frag;
 extern const GLchar * BaseLight_vert;
 extern const GLchar * BaseLight_frag;
 
+extern const GLchar * BaseLightSkelon_vert;
+
 extern const GLchar * BaseLight_NormalMap_vert;
 extern const GLchar * BaseLight_NormalMap_frag;

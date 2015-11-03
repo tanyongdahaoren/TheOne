@@ -2,6 +2,8 @@
 #include "Director.h"
 #include "Tree.h"
 #include "Camera.h"
+#include "ShaderName.h"
+#include "Defines.h"
 
 void ShaderBaseLight::InitUniformsLocation()
 {
@@ -25,25 +27,25 @@ void ShaderBaseLight::InitUniformsLocation()
 		char Name[128];
 		memset(Name, 0, sizeof(Name));
 
-		sprintf(Name, "u_point_lights[%d].base.color", i);
+		SNPRINTF(Name, sizeof(Name), "u_point_lights[%d].base.color", i);
 		_pointLightsLocation[i].color = GetUniformLocation(Name);
 
-		sprintf(Name, "u_point_lights[%d].base.ambientIntensity", i);
+		SNPRINTF(Name, sizeof(Name), "u_point_lights[%d].base.ambientIntensity", i);
 		_pointLightsLocation[i].ambientIntensity = GetUniformLocation(Name);
 
-		sprintf(Name, "u_point_lights[%d].base.diffuseIntensity", i);
+		SNPRINTF(Name, sizeof(Name), "u_point_lights[%d].base.diffuseIntensity", i);
 		_pointLightsLocation[i].diffuseIntensity = GetUniformLocation(Name);
 
-		sprintf(Name, "u_point_lights[%d].world_pos", i);
+		SNPRINTF(Name, sizeof(Name), "u_point_lights[%d].world_pos", i);
 		_pointLightsLocation[i].worldPos = GetUniformLocation(Name);
 
-		sprintf(Name, "u_point_lights[%d].constant", i);
+		SNPRINTF(Name, sizeof(Name), "u_point_lights[%d].constant", i);
 		_pointLightsLocation[i].constant = GetUniformLocation(Name);
 
-		sprintf(Name, "u_point_lights[%d].linear", i);
+		SNPRINTF(Name, sizeof(Name), "u_point_lights[%d].linear", i);
 		_pointLightsLocation[i].linear = GetUniformLocation(Name);
 
-		sprintf(Name, "u_point_lights[%d].exp", i);
+		SNPRINTF(Name, sizeof(Name), "u_point_lights[%d].exp", i);
 		_pointLightsLocation[i].exp = GetUniformLocation(Name);
 	}
 
@@ -56,34 +58,33 @@ void ShaderBaseLight::InitUniformsLocation()
 		char Name[128];
 		memset(Name, 0, sizeof(Name));
 
-		sprintf(Name, "u_spot_light[%d].base.base.color", i);
+		SNPRINTF(Name, sizeof(Name), "u_spot_light[%d].base.base.color", i);
 		_spotLightsLocation[i].color = GetUniformLocation(Name);
 
-		sprintf(Name, "u_spot_light[%d].base.base.ambientIntensity", i);
+		SNPRINTF(Name, sizeof(Name), "u_spot_light[%d].base.base.ambientIntensity", i);
 		_spotLightsLocation[i].ambientIntensity = GetUniformLocation(Name);
 
-		sprintf(Name, "u_spot_light[%d].base.base.diffuseIntensity", i);
+		SNPRINTF(Name, sizeof(Name), "u_spot_light[%d].base.base.diffuseIntensity", i);
 		_spotLightsLocation[i].diffuseIntensity = GetUniformLocation(Name);
 
-		sprintf(Name, "u_spot_light[%d].base.world_pos", i);
+		SNPRINTF(Name, sizeof(Name), "u_spot_light[%d].base.world_pos", i);
 		_spotLightsLocation[i].worldPos = GetUniformLocation(Name);
 
-		sprintf(Name, "u_spot_light[%d].base.constant", i);
+		SNPRINTF(Name, sizeof(Name), "u_spot_light[%d].base.constant", i);
 		_spotLightsLocation[i].constant = GetUniformLocation(Name);
 
-		sprintf(Name, "u_spot_light[%d].base.linear", i);
+		SNPRINTF(Name, sizeof(Name), "u_spot_light[%d].base.linear", i);
 		_spotLightsLocation[i].linear = GetUniformLocation(Name);
 
-		sprintf(Name, "u_spot_light[%d].base.exp", i);
+		SNPRINTF(Name, sizeof(Name), "u_spot_light[%d].base.exp", i);
 		_spotLightsLocation[i].exp = GetUniformLocation(Name);
 
-		sprintf(Name, "u_spot_light[%d].direction", i);
+		SNPRINTF(Name, sizeof(Name), "u_spot_light[%d].direction", i);
 		_spotLightsLocation[i].direction = GetUniformLocation(Name);
 
-		sprintf(Name, "u_spot_light[%d].cutoff", i);
+		SNPRINTF(Name, sizeof(Name), "u_spot_light[%d].cutoff", i);
 		_spotLightsLocation[i].cutoff = GetUniformLocation(Name);
 	}
-
 
 	//others
 	_eyeWorldPos = GetUniformLocation("u_world_eyepos");
@@ -173,3 +174,78 @@ void ShaderBaseLight::CustomEffect()
 	}
 }
 
+std::string ShaderBaseLight::GetVertShader()
+{
+	return string(BaseLight_vert);
+}
+
+std::string ShaderBaseLight::GetFragShader()
+{
+	GLchar buff[256];
+	SNPRINTF(buff, sizeof(buff) - 1,
+		"\nconst int kMaxPointLightNum =  %d; \n"
+		"\nconst int kMaxSpotLightNum = %d; \n",
+		kMaxPointLightNum,
+		kMaxSpotLightNum);
+	string str = string(buff) + string(BaseLight_frag);
+	return str;
+}
+
+std::string ShaderBaseLight::GetNormalFragShader()
+{
+	GLchar buff[256];
+	SNPRINTF(buff, sizeof(buff) - 1,
+		"\nconst int kMaxPointLightNum =  %d; \n"
+		"\nconst int kMaxSpotLightNum = %d; \n",
+		kMaxPointLightNum,
+		kMaxSpotLightNum);
+	string str = string(buff) + string(BaseLight_NormalMap_frag);
+	return str;
+}
+
+std::string ShaderBaseLight::GetNormalVertShader()
+{
+	return string(BaseLight_NormalMap_vert);
+}
+
+
+void ShaderBaseLightSkelon::InitUniformsLocation()
+{
+	ShaderBaseLight::InitUniformsLocation();
+
+	for (int i = 0; i < kMaxBoneNum; i++)
+	{
+		char Name[128];
+		memset(Name, 0, sizeof(Name));
+		SNPRINTF(Name, sizeof(Name), "u_bone[%d]", i);
+		_boneLocation[i] = GetUniformLocation(Name);
+	}
+}
+
+void ShaderBaseLightSkelon::CustomEffect()
+{
+	ShaderBaseLight::CustomEffect();
+}
+
+std::string ShaderBaseLightSkelon::GetVertShader()
+{
+	GLchar buff[256];
+	SNPRINTF(buff, sizeof(buff) - 1,
+		"\nuniform mat4 u_bone[%d]; \n",
+		kMaxBoneNum);
+	string str = string(buff) + string(BaseLightSkelon_vert);
+	return str;
+}
+
+std::string ShaderBaseLightSkelon::GetFragShader()
+{
+	return ShaderBaseLight::GetFragShader();
+}
+
+void ShaderBaseLightSkelon::SetBonesTransform(vector<mat4> transforms)
+{
+	for (uint i = 0; i < transforms.size(); i++)
+	{
+		glUniformMatrix4fv(_boneLocation[i], 1, GL_FALSE, (const GLfloat*)&transforms[i][0][0]);
+	}
+}

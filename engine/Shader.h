@@ -5,6 +5,7 @@
 #include <string>
 #include <map>
 using namespace std;
+#include "MathH.h"
 
 class Shader
 {
@@ -18,7 +19,7 @@ public:
 
 	void SetUniformLocationWith1i(string uniform, GLint i1);
 
-	void SetUniformLocationWithMatrix4fv(string uniform, const GLfloat* matrixArray);
+	void SetUniformLocationWithMatrix4(string uniform, const mat4& matrix);
 
 	virtual void CustomEffect(){}
 

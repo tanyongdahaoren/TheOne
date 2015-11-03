@@ -69,7 +69,7 @@ void DrawNode::Render(Camera* camera)
 	const mat4& projectTransform = camera->GetProjectTransform();
 	const mat4& viewTransform = camera->GetViewTransform();
 	glm::mat4 MVP = projectTransform * viewTransform * _toWorldTransform;
-	_program->SetUniformLocationWithMatrix4fv(UNIFORM_MVP, &MVP[0][0]);
+	_program->SetUniformLocationWithMatrix4(UNIFORM_MVP, MVP);
 
 	if (_dirty)
 	{

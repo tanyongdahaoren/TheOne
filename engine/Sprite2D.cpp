@@ -26,8 +26,8 @@ void Sprite2D::InitWithTexture2D(Texture2D* texture2d, Rect uv /*= Rect(0,0,1.0f
 	mesh->_entries[0].BaseVertex = 0;
 	mesh->_entries[0].BaseIndex = 0;
 
-	mesh->attribFlag = aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs;
-
+	mesh->_attribFlag = aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs;
+	mesh->_skelon = false;
 	mesh->FillVertexAttributeWithFlag();
 
 	//------------
@@ -36,27 +36,27 @@ void Sprite2D::InitWithTexture2D(Texture2D* texture2d, Rect uv /*= Rect(0,0,1.0f
 	//   v0------v1
 	//---------------
 
-	mesh->indices.push_back(0);
-	mesh->indices.push_back(1);
-	mesh->indices.push_back(3);
+	mesh->_indices.push_back(0);
+	mesh->_indices.push_back(1);
+	mesh->_indices.push_back(3);
 
-	mesh->indices.push_back(1);
-	mesh->indices.push_back(2);
-	mesh->indices.push_back(3);
+	mesh->_indices.push_back(1);
+	mesh->_indices.push_back(2);
+	mesh->_indices.push_back(3);
 
 	vec2 uvs[4] = { uv.origin, vec2(uv.getMaxX(), uv.getMinY()), vec2(uv.getMaxX(), uv.getMaxY()), vec2(uv.getMinX(), uv.getMaxY()) };
 	for (int i = 0; i < 4; i++)
 	{
-		mesh->vertexDatas[eShaderVertAttribute_texcood].push_back(uvs[i].x);
-		mesh->vertexDatas[eShaderVertAttribute_texcood].push_back(uvs[i].y);
+		mesh->_vertexDatas[eShaderVertAttribute_texcood].push_back(uvs[i].x);
+		mesh->_vertexDatas[eShaderVertAttribute_texcood].push_back(uvs[i].y);
 	}
 
 	vec2 pos[4] = { vec2(-0.5f, -0.5f), vec2(0.5f, -0.5f), vec2(0.5f, 0.5f), vec2(-0.5f, 0.5f) };
 	for (int i = 0; i < 4; i++)
 	{
-		mesh->vertexDatas[eShaderVertAttribute_pos].push_back(pos[i].x);
-		mesh->vertexDatas[eShaderVertAttribute_pos].push_back(pos[i].y);
-		mesh->vertexDatas[eShaderVertAttribute_pos].push_back(0);
+		mesh->_vertexDatas[eShaderVertAttribute_pos].push_back(pos[i].x);
+		mesh->_vertexDatas[eShaderVertAttribute_pos].push_back(pos[i].y);
+		mesh->_vertexDatas[eShaderVertAttribute_pos].push_back(0);
 	}
 
 	mesh->CalcNormals();

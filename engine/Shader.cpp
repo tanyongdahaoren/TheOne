@@ -44,9 +44,9 @@ void Shader::SetUniformLocationWith1i(string uniform, GLint i1)
 	glUniform1i(_uniformsLocation[uniform], i1);
 }
 
-void Shader::SetUniformLocationWithMatrix4fv(string uniform, const GLfloat* matrixArray)
+void Shader::SetUniformLocationWithMatrix4(string uniform, const mat4& matrix)
 {
-	glUniformMatrix4fv(_uniformsLocation[uniform], 1, GL_FALSE, matrixArray);
+	glUniformMatrix4fv(_uniformsLocation[uniform], 1, GL_FALSE, &matrix[0][0]);
 }
 
 GLint Shader::GetUniformLocation(const char* pUniformName)

@@ -23,7 +23,7 @@ public:
 
 	~MeshManager();
 
-	Mesh* LoadMeshFromFile(const string& fileName, bool tangent);
+	Mesh* LoadMeshFromFile(const string& fileName, bool skelon, bool tangent);
 
 	Mesh* GetMesh(string fileName);
 

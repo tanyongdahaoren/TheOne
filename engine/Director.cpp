@@ -289,7 +289,7 @@ int Director::Run()
 	//3d sprite/
 	if (is_show_3dsp)
  	{
-		Mesh* mesh = MeshManager::GetInstance()->LoadMeshFromFile("box.obj", true);
+		Mesh* mesh = MeshManager::GetInstance()->LoadMeshFromFile("box.obj", false, true);
 		mesh->GenBuffers();
 
 		EasyImage* image = new EasyImage;
@@ -309,19 +309,19 @@ int Director::Run()
 		sp->SetTexture(texture);
 		sp->SetNormalTexture(normal_texture);
 		par->AddChild(sp);
-		
+
 		sp3d = sp;
 	}
-
+	Mesh* skelonMesh = NULL;
 	//3d skelon sprite/
 	if (is_show_skelon)
 	{
-		Mesh* mesh = MeshManager::GetInstance()->LoadMeshFromFile("boblampclean.md5mesh", false);
-		mesh->GenBuffers();
-		mesh->GenTextures();
+		skelonMesh = MeshManager::GetInstance()->LoadMeshFromFile("boblampclean.md5mesh", true, false);
+		skelonMesh->GenBuffers();
+		skelonMesh->GenTextures();
 	
 		Sprite3D* sp = new Sprite3D;
-		sp->InitWithMesh(mesh);
+		sp->InitWithMesh(skelonMesh);
 		par->AddChild(sp);
 		sp->SetScale(vec3(0.1,0.1,0.1));
 		sp->SetRotation(vec3(-90,0,0));
@@ -360,10 +360,12 @@ int Director::Run()
 		current = glfwGetTime();
 		during += current - last;
 		last = current;
-
+		
 		while (during > 1.0 / (double)N)
 		{
 			during -= 1.0 / (double)N;
+
+			skelonMesh->BoneTransform(current);
 
 			MainLoop();
 
@@ -381,8 +383,6 @@ int Director::Run()
 
 	return 0;
 }
-
-static float rot = 0;
 
 void Director::MainLoop()
 {
@@ -403,9 +403,6 @@ void Director::MainLoop()
 	for ( const auto &tree: _trees )
 	{
 		sCurrentTree = tree;
-
-		//sp3d->SetRotation(vec3(0, rot, 0));
-		rot+=0.1;
 
 		tree->Travel();
 	}

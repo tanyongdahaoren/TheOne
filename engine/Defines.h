@@ -13,4 +13,15 @@ const float sWinH = 768.0;
 
 #define ARRAY_SIZE(a) (sizeof(a)/sizeof(a[0]))
 
+#ifdef WIN32
+#define SNPRINTF _snprintf_s
+#define RANDOM rand
+#define SRANDOM srand((unsigned)time(NULL))
+float fmax(float a, float b);
+#else
+#define SNPRINTF snprintf
+#define RANDOM random
+#define SRANDOM srandom(getpid())
+#endif
+
 //#define STRINGIFY(A)  #A

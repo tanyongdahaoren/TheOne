@@ -45,7 +45,7 @@ void Camera::LookAt(const vec3& lookAtPos, const vec3& up /*= vec3(0,1,0)*/)
 
 	vec3 yaxis = normalize(cross(zaxis, xaxis));
 
-	mat4  rotation;
+	mat4 rotation;
 	rotation[0] = vec4(xaxis.x, xaxis.y, xaxis.z, 0);
 	rotation[1] = vec4(yaxis.x, yaxis.y, yaxis.z, 0);
 	rotation[2] = vec4(zaxis.x, zaxis.y, zaxis.z, 0);

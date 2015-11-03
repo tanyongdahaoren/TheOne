@@ -28,7 +28,7 @@ MeshManager::~MeshManager()
 
 }
 
-Mesh* MeshManager::LoadMeshFromFile(const string& fileName, bool tangent)
+Mesh* MeshManager::LoadMeshFromFile(const string& fileName, bool skelon, bool tangent)
 {
 	Mesh* mesh = GetMesh(fileName);
 	if (mesh)
@@ -43,7 +43,7 @@ Mesh* MeshManager::LoadMeshFromFile(const string& fileName, bool tangent)
 	}
 	
 	mesh = new Mesh;
-	if (mesh->InitFromFile(fileName, flag))
+	if (mesh->InitFromFile(fileName, skelon, flag))
 	{
 		AddMeshToCache(fileName, mesh);
 		return mesh;

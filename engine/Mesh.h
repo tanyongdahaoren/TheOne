@@ -13,7 +13,9 @@ using namespace std;
 
 #include "Texture2D.h"
 #include "Vector.h"
+
 #define INVALID_MATERIAL 0xFFFFFFFF
+#define NUM_BONES_PER_VEREX 4
 
 struct MeshVertexAttrib
 {
@@ -57,14 +59,21 @@ class Mesh : public Ref
 		unsigned int BaseIndex;
 		unsigned int MaterialIndex;
 	};
+
+	struct BoneInfo
+	{
+		mat4 BoneOffset;
+		mat4 FinalTransformation;
+	};
 public:
 	Mesh();
 	~Mesh();
-	bool InitFromFile(const string& fileName, unsigned int flag);
+	bool InitFromFile(const string& fileName, bool skelon, unsigned int flag);
 	void GenBuffers();
 	void GenTextures();
 	void UseBuffers();
 	bool HaveAttribute(int attrib);
+	void BoneTransform(float timeInSeconds);
 protected:
 	void InitMaterials(const aiScene* pScene, const std::string& Filename);
 	void BindBufferDatas();
@@ -73,31 +82,50 @@ protected:
 	float* GetVertex(int attrib, int vertexIdx);
 	void SetVertex(int attrib, int vertexIdx, float* pValue);
 	void FillVertexAttributeWithFlag();
+	void LoadBone(const aiMesh* paiMesh, uint idx);
+	void ReadNodeHeirarchy(float AnimationTime, const aiNode* pNode, const mat4& ParentTransform);
+	const aiNodeAnim* FindNodeAnim(const aiAnimation* pAnimation, const string nodeName);
+	uint FindPosition(float animationTime, const aiNodeAnim* pNodeAnim);
+	uint FindRotation(float animationTime, const aiNodeAnim* pNodeAnim);
+	uint FindScaling(float animationTime, const aiNodeAnim* pNodeAnim);
+	void CalcInterpolatedScaling(aiVector3D& Out, float AnimationTime, const aiNodeAnim* pNodeAnim);
+	void CalcInterpolatedRotation(aiQuaternion& Out, float AnimationTime, const aiNodeAnim* pNodeAnim);
+	void CalcInterpolatedPosition(aiVector3D& Out, float AnimationTime, const aiNodeAnim* pNodeAnim);
 public:
-	unsigned int attribFlag;
+	Assimp::Importer _importer;
+	const aiScene* _scene;
 
-	int sizePerVertex;
-	int stridePerVertex;
+	unsigned int _attribFlag;
+
+	int _sizePerVertex;
+	int _stridePerVertex;
 
 	vector<MeshEntry> _entries;
 
 	//key是attribute
-	map<int, MeshVertexAttrib> attribs;
+	map<int, MeshVertexAttrib> _attribs;
 
 	//每个属性是一个vector key同样是attribute
-	map<int, vector<float> > vertexDatas;
+	map<int, vector<float> > _vertexDatas;
 
 	//顶点buffer
-	vector<GLuint> indices;
+	vector<GLuint> _indices;
 
+	//for buffers
 	GLuint _ebo;
 	GLuint _vao;
 	map<int, GLuint> _vbos;
-
 	bool _bufferDirty;
 
+	//for textures
 	vector<string> _textureNames;
 	Vector<Texture2D*> _textures;
+
+	bool _skelon;
+	uint _boneNum;
+	map<string, uint> _boneMapping; // maps a bone name to its index
+	vector<BoneInfo> _bonesInfo;
+	mat4 _globalInverseTransform;
 };
 
 

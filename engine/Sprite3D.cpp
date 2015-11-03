@@ -2,6 +2,7 @@
 #include "ShaderValue.h"
 #include "ShaderManager.h"
 #include "Camera.h"
+#include "ShaderBaseLight.h"
 
 Sprite3D::Sprite3D()
 	: _mesh(NULL)
@@ -32,7 +33,14 @@ bool Sprite3D::InitWithMesh(Mesh* mesh)
 	}
 	else
 	{
-		SetShader(shader_base_light_3D);
+		if (_mesh->_skelon)
+		{
+			SetShader(shader_base_light_skelon_3D);
+		}
+		else
+		{
+			SetShader(shader_base_light_3D);
+		}
 	}	
 
 #if DEBUG_SPRITE3D
@@ -80,9 +88,22 @@ void Sprite3D::Render(Camera* camera)
 	const mat4& projectTransform = camera->GetProjectTransform();
 	const mat4& viewTransform = camera->GetViewTransform();
 	glm::mat4 MVP = projectTransform * viewTransform * _toWorldTransform;
-	_program->SetUniformLocationWithMatrix4fv(UNIFORM_M, &_toWorldTransform[0][0]);
-	_program->SetUniformLocationWithMatrix4fv(UNIFORM_V, &viewTransform[0][0]);
-	_program->SetUniformLocationWithMatrix4fv(UNIFORM_MVP, &MVP[0][0]);
+	_program->SetUniformLocationWithMatrix4(UNIFORM_M, _toWorldTransform);
+	_program->SetUniformLocationWithMatrix4(UNIFORM_V, viewTransform);
+	_program->SetUniformLocationWithMatrix4(UNIFORM_MVP, MVP);
+
+	if (_mesh->_skelon)
+	{
+		vector<mat4> boneTransforms;
+		boneTransforms.resize(_mesh->_boneNum);
+		for (int i = 0; i < _mesh->_boneNum; i++)
+		{
+			boneTransforms[i] = _mesh->_bonesInfo[i].FinalTransformation;
+		}
+
+		ShaderBaseLightSkelon* skelonShader = dynamic_cast<ShaderBaseLightSkelon*>(_program);
+		skelonShader->SetBonesTransform(boneTransforms);
+	}
 
 	_program->CustomEffect();
 	
@@ -103,8 +124,8 @@ void Sprite3D::Render(Camera* camera)
 #if DEBUG_SPRITE3D
 	_dp->Clear();
 	_dl->Clear();
-	vector<float>& allPos = _mesh->vertexDatas[eShaderVertAttribute_pos];
-	vector<float>& allNormal = _mesh->vertexDatas[eShaderVertAttribute_normal];
+	vector<float>& allPos = _mesh->_vertexDatas[eShaderVertAttribute_pos];
+	vector<float>& allNormal = _mesh->_vertexDatas[eShaderVertAttribute_normal];
 	for (int i = 0; i < allPos.size(); i += 3)
 	{
 		vec3 normal = vec3(allNormal[i], allNormal[i + 1], allNormal[i + 2]);
