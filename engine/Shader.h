@@ -7,6 +7,14 @@
 using namespace std;
 #include "MathH.h"
 
+GLint extern GLGetUniformLocation(GLuint programID, const char* pUniformName);
+
+class ShaderModule
+{
+protected:
+	virtual void InitUniformsLocation(){}
+};
+
 class Mesh;
 class Shader
 {
@@ -26,9 +34,10 @@ public:
 
 protected:
 	virtual void InitUniformsLocation();
-	GLint GetUniformLocation(const char* pUniformName);
 protected:
 	GLuint _programID;
 
 	map<string, GLuint> _uniformsLocation;
+
+	map<string, ShaderModule*> _mudules;
 };

@@ -10,17 +10,17 @@ void ShaderBaseLight::InitUniformsLocation()
 	Shader::InitUniformsLocation();
 
 	//direction light
-	_dirLightUniformLocation.color = GetUniformLocation("u_direction_light.base.color");
+	_dirLightUniformLocation.color = GLGetUniformLocation(_programID, "u_direction_light.base.color");
 
-	_dirLightUniformLocation.ambientIntensity = GetUniformLocation("u_direction_light.base.ambientIntensity");
+	_dirLightUniformLocation.ambientIntensity = GLGetUniformLocation(_programID, "u_direction_light.base.ambientIntensity");
 
-	_dirLightUniformLocation.diffuseIntensity = GetUniformLocation("u_direction_light.base.diffuseIntensity");
+	_dirLightUniformLocation.diffuseIntensity = GLGetUniformLocation(_programID, "u_direction_light.base.diffuseIntensity");
 
-	_dirLightUniformLocation.direction = GetUniformLocation("u_direction_light.direction");
+	_dirLightUniformLocation.direction = GLGetUniformLocation(_programID, "u_direction_light.direction");
 
 	
 	//point lights
-	_pointLightsNumLocation = GetUniformLocation("u_point_light_num");
+	_pointLightsNumLocation = GLGetUniformLocation(_programID, "u_point_light_num");
 
 	for (unsigned int i = 0; i < kMaxPointLightNum; i++)
 	{
@@ -28,30 +28,30 @@ void ShaderBaseLight::InitUniformsLocation()
 		memset(Name, 0, sizeof(Name));
 
 		SNPRINTF(Name, sizeof(Name), "u_point_lights[%d].base.color", i);
-		_pointLightsLocation[i].color = GetUniformLocation(Name);
+		_pointLightsLocation[i].color = GLGetUniformLocation(_programID, Name);
 
 		SNPRINTF(Name, sizeof(Name), "u_point_lights[%d].base.ambientIntensity", i);
-		_pointLightsLocation[i].ambientIntensity = GetUniformLocation(Name);
+		_pointLightsLocation[i].ambientIntensity = GLGetUniformLocation(_programID, Name);
 
 		SNPRINTF(Name, sizeof(Name), "u_point_lights[%d].base.diffuseIntensity", i);
-		_pointLightsLocation[i].diffuseIntensity = GetUniformLocation(Name);
+		_pointLightsLocation[i].diffuseIntensity = GLGetUniformLocation(_programID, Name);
 
 		SNPRINTF(Name, sizeof(Name), "u_point_lights[%d].world_pos", i);
-		_pointLightsLocation[i].worldPos = GetUniformLocation(Name);
+		_pointLightsLocation[i].worldPos = GLGetUniformLocation(_programID, Name);
 
 		SNPRINTF(Name, sizeof(Name), "u_point_lights[%d].constant", i);
-		_pointLightsLocation[i].constant = GetUniformLocation(Name);
+		_pointLightsLocation[i].constant = GLGetUniformLocation(_programID, Name);
 
 		SNPRINTF(Name, sizeof(Name), "u_point_lights[%d].linear", i);
-		_pointLightsLocation[i].linear = GetUniformLocation(Name);
+		_pointLightsLocation[i].linear = GLGetUniformLocation(_programID, Name);
 
 		SNPRINTF(Name, sizeof(Name), "u_point_lights[%d].exp", i);
-		_pointLightsLocation[i].exp = GetUniformLocation(Name);
+		_pointLightsLocation[i].exp = GLGetUniformLocation(_programID, Name);
 	}
 
 
 	//spot lights
-	_spotLightsNumLocation = GetUniformLocation("u_spot_light_num");
+	_spotLightsNumLocation = GLGetUniformLocation(_programID, "u_spot_light_num");
 
 	for (unsigned int i = 0; i < kMaxSpotLightNum; i++)
 	{
@@ -59,55 +59,55 @@ void ShaderBaseLight::InitUniformsLocation()
 		memset(Name, 0, sizeof(Name));
 
 		SNPRINTF(Name, sizeof(Name), "u_spot_light[%d].base.base.color", i);
-		_spotLightsLocation[i].color = GetUniformLocation(Name);
+		_spotLightsLocation[i].color = GLGetUniformLocation(_programID, Name);
 
 		SNPRINTF(Name, sizeof(Name), "u_spot_light[%d].base.base.ambientIntensity", i);
-		_spotLightsLocation[i].ambientIntensity = GetUniformLocation(Name);
+		_spotLightsLocation[i].ambientIntensity = GLGetUniformLocation(_programID, Name);
 
 		SNPRINTF(Name, sizeof(Name), "u_spot_light[%d].base.base.diffuseIntensity", i);
-		_spotLightsLocation[i].diffuseIntensity = GetUniformLocation(Name);
+		_spotLightsLocation[i].diffuseIntensity = GLGetUniformLocation(_programID, Name);
 
 		SNPRINTF(Name, sizeof(Name), "u_spot_light[%d].base.world_pos", i);
-		_spotLightsLocation[i].worldPos = GetUniformLocation(Name);
+		_spotLightsLocation[i].worldPos = GLGetUniformLocation(_programID, Name);
 
 		SNPRINTF(Name, sizeof(Name), "u_spot_light[%d].base.constant", i);
-		_spotLightsLocation[i].constant = GetUniformLocation(Name);
+		_spotLightsLocation[i].constant = GLGetUniformLocation(_programID, Name);
 
 		SNPRINTF(Name, sizeof(Name), "u_spot_light[%d].base.linear", i);
-		_spotLightsLocation[i].linear = GetUniformLocation(Name);
+		_spotLightsLocation[i].linear = GLGetUniformLocation(_programID, Name);
 
 		SNPRINTF(Name, sizeof(Name), "u_spot_light[%d].base.exp", i);
-		_spotLightsLocation[i].exp = GetUniformLocation(Name);
+		_spotLightsLocation[i].exp = GLGetUniformLocation(_programID, Name);
 
 		SNPRINTF(Name, sizeof(Name), "u_spot_light[%d].direction", i);
-		_spotLightsLocation[i].direction = GetUniformLocation(Name);
+		_spotLightsLocation[i].direction = GLGetUniformLocation(_programID, Name);
 
 		SNPRINTF(Name, sizeof(Name), "u_spot_light[%d].cutoff", i);
-		_spotLightsLocation[i].cutoff = GetUniformLocation(Name);
+		_spotLightsLocation[i].cutoff = GLGetUniformLocation(_programID, Name);
 	}
 
 	//others
-	_eyeWorldPosLocation = GetUniformLocation("u_world_eyepos");
+	_eyeWorldPosLocation = GLGetUniformLocation(_programID, "u_world_eyepos");
 
-	_specularIntensityLocation = GetUniformLocation("u_specular_intensity");
+	_specularIntensityLocation = GLGetUniformLocation(_programID, "u_specular_intensity");
 
-	_specularPowerLocation = GetUniformLocation("u_specular_power");
+	_specularPowerLocation = GLGetUniformLocation(_programID, "u_specular_power");
 
 	//shadowmap
-	_openShadowLocation = GetUniformLocation("u_open_shadow");
+	_openShadowLocation = GLGetUniformLocation(_programID, "u_open_shadow");
 
-	_lightMVPLocation = GetUniformLocation("u_light_MVP");
+	_lightMVPLocation = GLGetUniformLocation(_programID, "u_light_MVP");
 
-	_shadowmapSamplerLocation = GetUniformLocation("u_sampler_shadowmap");
+	_shadowmapSamplerLocation = GLGetUniformLocation(_programID, "u_sampler_shadowmap");
 
 	//skelon
-	_openSkelonLocation = GetUniformLocation("u_open_skelon");
+	_openSkelonLocation = GLGetUniformLocation(_programID, "u_open_skelon");
 	for (int i = 0; i < kMaxBoneNum; i++)
 	{
 		char Name[128];
 		memset(Name, 0, sizeof(Name));
 		SNPRINTF(Name, sizeof(Name), "u_bone[%d]", i);
-		_boneLocation[i] = GetUniformLocation(Name);
+		_boneLocation[i] = GLGetUniformLocation(_programID, Name);
 	}
 }
 

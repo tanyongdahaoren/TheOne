@@ -18,8 +18,6 @@ public:
 
 	static string GetNormalVertShader();
 	static string GetNormalFragShader();
-
-	void SetBonesTransform(Mesh* mesh);
 protected:
 	virtual void InitUniformsLocation();
 	virtual void CustomEffect(Mesh* mesh, mat4 toWorldTransform);
