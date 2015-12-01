@@ -15,6 +15,8 @@ protected:
 	virtual void InitUniformsLocation(){}
 };
 
+const int kMaxBoneNum = 100;
+
 class Mesh;
 class Shader
 {
@@ -40,4 +42,19 @@ protected:
 	map<string, GLuint> _uniformsLocation;
 
 	map<string, ShaderModule*> _mudules;
+};
+
+//shadow map
+class ShaderShadowMap : public Shader
+{
+public:
+	static string GetVertShader();
+	static string GetFragShader();
+protected:
+	virtual void InitUniformsLocation();
+	virtual void CustomEffect(Mesh* mesh, mat4 toWorldTransform);
+protected:
+	//for skelon
+	GLuint _openSkelonLocation;
+	GLuint _boneLocation[kMaxBoneNum];
 };

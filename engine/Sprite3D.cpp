@@ -137,5 +137,7 @@ void Sprite3D::RenderShadowMapping(const mat4& lightTransform)
 
 	_shadowShader->SetUniformLocationWithMatrix4(UNIFORM_MVP, MVP);
 
+	_shadowShader->CustomEffect(_mesh, _toWorldTransform);
+
 	_mesh->UseBuffers();
 }

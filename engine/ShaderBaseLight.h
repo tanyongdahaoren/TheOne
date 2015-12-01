@@ -6,7 +6,6 @@ using namespace std;
 
 const int kMaxPointLightNum = 2;
 const int kMaxSpotLightNum = 2;
-const int kMaxBoneNum = 100;
 
 //由于这里的uniform比较多  所以没有实用string为每个uniform变量命名
 class Mesh;

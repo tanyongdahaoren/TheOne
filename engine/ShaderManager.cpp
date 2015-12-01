@@ -175,8 +175,7 @@ void ShaderManager::LoadDefaultShaders()
 
 	LoadShaders(ShaderBaseLight::GetNormalVertShader().c_str(), ShaderBaseLight::GetNormalFragShader().c_str(), shader_base_light_3D_with_normal_map, [](){return new ShaderBaseLight(); });
 
-	//“ı”∞
-	LoadShaders(DepthRTT_vert, DepthRTT_frag, shader_depth_rtt, [](){return new Shader(); });
+	LoadShaders(ShaderShadowMap::GetVertShader().c_str(), ShaderShadowMap::GetFragShader().c_str(), shader_depth_rtt, [](){return new ShaderShadowMap(); });
 }
 
 Shader* ShaderManager::GetShader(string shaderName)

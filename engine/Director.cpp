@@ -285,7 +285,7 @@ int Director::Run()
 	bool is_show_3dsp = false;
 	bool is_show_2dsp = false;
 	bool is_show_skelon = true;
-	bool is_show_shadow = false;
+	bool is_show_shadow = true;
 	Sprite2D* sp2d = NULL;
 
 	//3d sprite/
@@ -344,9 +344,10 @@ int Director::Run()
 		skelonMesh->GenTextures();
 	
 		Sprite3D* sp = new Sprite3D;
+		sp->SetPosition(vec3(2,0,2));
 		sp->InitWithMesh(skelonMesh);
 		par->AddChild(sp);
-		sp->SetScale(vec3(0.1,0.1,0.1));
+		sp->SetScale(vec3(0.05,0.05,0.05));
 		sp->SetRotation(vec3(-90,0,0));
 		sp3d = sp;
 	}
