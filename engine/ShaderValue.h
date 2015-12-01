@@ -11,7 +11,6 @@ static const string shader_position_color = "shader_position_color";
 static const string shader_position_texure_2D = "shader_position_texure_2D";
 static const string shader_position_texure_3D = "shader_position_texure_3D";
 static const string shader_base_light_3D = "shader_base_light_3D";
-static const string shader_base_light_skelon_3D = "shader_base_light_skelon_3D";
 static const string shader_base_light_3D_with_normal_map = "shader_base_light_3D_with_normal_map";
 static const string shader_depth_rtt = "shader_depth_rtt";
 

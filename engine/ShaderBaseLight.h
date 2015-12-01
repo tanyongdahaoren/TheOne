@@ -9,7 +9,7 @@ const int kMaxSpotLightNum = 2;
 const int kMaxBoneNum = 100;
 
 //由于这里的uniform比较多  所以没有实用string为每个uniform变量命名
-
+class Mesh;
 class ShaderBaseLight : public Shader
 {
 public:
@@ -18,9 +18,11 @@ public:
 
 	static string GetNormalVertShader();
 	static string GetNormalFragShader();
+
+	void SetBonesTransform(Mesh* mesh);
 protected:
 	virtual void InitUniformsLocation();
-	virtual void CustomEffect(mat4 toWorldTransform);
+	virtual void CustomEffect(Mesh* mesh, mat4 toWorldTransform);
 protected:
 	//base
 	struct tBaseLightLocation
@@ -62,17 +64,8 @@ protected:
 	GLuint _openShadowLocation;
 	GLuint _lightMVPLocation;
 	GLuint _shadowmapSamplerLocation;
-};
 
-class ShaderBaseLightSkelon :public ShaderBaseLight
-{
-public:
-	static string GetVertShader();
-	static string GetFragShader();
-	void SetBonesTransform(vector<mat4> transforms);
-protected:
-	virtual void InitUniformsLocation();
-	virtual void CustomEffect(mat4 toWorldTransform);
-protected:
+	//for skelon
+	GLuint _openSkelonLocation;
 	GLuint _boneLocation[kMaxBoneNum];
 };

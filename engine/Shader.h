@@ -7,6 +7,7 @@
 using namespace std;
 #include "MathH.h"
 
+class Mesh;
 class Shader
 {
 public:
@@ -21,7 +22,7 @@ public:
 
 	void SetUniformLocationWithMatrix4(string uniform, const mat4& matrix);
 
-	virtual void CustomEffect(mat4 toWorldTransform){}
+	virtual void CustomEffect(Mesh* mesh, mat4 toWorldTransform){}
 
 protected:
 	virtual void InitUniformsLocation();

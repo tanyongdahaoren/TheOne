@@ -4,7 +4,7 @@
 #include "Camera.h"
 #include "ShaderName.h"
 #include "Defines.h"
-
+#include "Mesh.h"
 void ShaderBaseLight::InitUniformsLocation()
 {
 	Shader::InitUniformsLocation();
@@ -99,9 +99,19 @@ void ShaderBaseLight::InitUniformsLocation()
 	_lightMVPLocation = GetUniformLocation("u_light_MVP");
 
 	_shadowmapSamplerLocation = GetUniformLocation("u_sampler_shadowmap");
+
+	//skelon
+	_openSkelonLocation = GetUniformLocation("u_open_skelon");
+	for (int i = 0; i < kMaxBoneNum; i++)
+	{
+		char Name[128];
+		memset(Name, 0, sizeof(Name));
+		SNPRINTF(Name, sizeof(Name), "u_bone[%d]", i);
+		_boneLocation[i] = GetUniformLocation(Name);
+	}
 }
 
-void ShaderBaseLight::CustomEffect(mat4 toWorldTransform)
+void ShaderBaseLight::CustomEffect(Mesh* mesh, mat4 toWorldTransform)
 {
 	float specularPower = BaseLight::GetSpecularPower();
 	float specularIntensity = BaseLight::GetSpecularIntensity();
@@ -197,11 +207,24 @@ void ShaderBaseLight::CustomEffect(mat4 toWorldTransform)
 
 		glUniform1f(loc.cutoff, light->GetCutoff());
 	}
+
+	//for skelon
+	glUniform1i(_openSkelonLocation, mesh->_skelon ? 1 : 0);
+	for (int i = 0; i < mesh->_boneNum; i++)
+	{
+		const mat4& transform = mesh->_bonesInfo[i].FinalTransformation;
+		glUniformMatrix4fv(_boneLocation[i], 1, GL_FALSE, (const GLfloat*)&transform[0][0]);
+	}
 }
 
 std::string ShaderBaseLight::GetVertShader()
-{
-	return string(BaseLight_vert);
+{	
+	GLchar buff[256];
+	SNPRINTF(buff, sizeof(buff) - 1,
+		"\n const int kMaxBoneNum =  %d; \n",
+		kMaxBoneNum);
+	string str = string(buff) + string(BaseLight_vert);
+	return str;
 }
 
 std::string ShaderBaseLight::GetFragShader()
@@ -209,7 +232,7 @@ std::string ShaderBaseLight::GetFragShader()
 	GLchar buff[256];
 	SNPRINTF(buff, sizeof(buff) - 1,
 		"\nconst int kMaxPointLightNum =  %d; \n"
-		"\nconst int kMaxSpotLightNum = %d; \n",
+		"const int kMaxSpotLightNum = %d; \n",
 		kMaxPointLightNum,
 		kMaxSpotLightNum);
 	string str = string(buff) + string(BaseLight_frag);
@@ -231,46 +254,4 @@ std::string ShaderBaseLight::GetNormalFragShader()
 std::string ShaderBaseLight::GetNormalVertShader()
 {
 	return string(BaseLight_NormalMap_vert);
-}
-
-
-void ShaderBaseLightSkelon::InitUniformsLocation()
-{
-	ShaderBaseLight::InitUniformsLocation();
-
-	for (int i = 0; i < kMaxBoneNum; i++)
-	{
-		char Name[128];
-		memset(Name, 0, sizeof(Name));
-		SNPRINTF(Name, sizeof(Name), "u_bone[%d]", i);
-		_boneLocation[i] = GetUniformLocation(Name);
-	}
-}
-
-void ShaderBaseLightSkelon::CustomEffect(mat4 toWorldTransform)
-{
-	ShaderBaseLight::CustomEffect(toWorldTransform);
-}
-
-std::string ShaderBaseLightSkelon::GetVertShader()
-{
-	GLchar buff[256];
-	SNPRINTF(buff, sizeof(buff) - 1,
-		"\nuniform mat4 u_bone[%d]; \n",
-		kMaxBoneNum);
-	string str = string(buff) + string(BaseLightSkelon_vert);
-	return str;
-}
-
-std::string ShaderBaseLightSkelon::GetFragShader()
-{
-	return ShaderBaseLight::GetFragShader();
-}
-
-void ShaderBaseLightSkelon::SetBonesTransform(vector<mat4> transforms)
-{
-	for (uint i = 0; i < transforms.size(); i++)
-	{
-		glUniformMatrix4fv(_boneLocation[i], 1, GL_FALSE, (const GLfloat*)&transforms[i][0][0]);
-	}
 }

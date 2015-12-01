@@ -35,14 +35,8 @@ bool Sprite3D::InitWithMesh(Mesh* mesh)
 	}
 	else
 	{
-		if (_mesh->_skelon)
-		{
-			SetShader(shader_base_light_skelon_3D);
-		}
-		else
-		{
-			SetShader(shader_base_light_3D);
-		}
+
+		SetShader(shader_base_light_3D);
 	}	
 
 #if DEBUG_SPRITE3D
@@ -94,20 +88,7 @@ void Sprite3D::Render(Camera* camera)
 	_program->SetUniformLocationWithMatrix4(UNIFORM_V, viewTransform);
 	_program->SetUniformLocationWithMatrix4(UNIFORM_MVP, MVP);
 
-	if (_mesh->_skelon)
-	{
-		vector<mat4> boneTransforms;
-		boneTransforms.resize(_mesh->_boneNum);
-		for (int i = 0; i < _mesh->_boneNum; i++)
-		{
-			boneTransforms[i] = _mesh->_bonesInfo[i].FinalTransformation;
-		}
-
-		ShaderBaseLightSkelon* skelonShader = dynamic_cast<ShaderBaseLightSkelon*>(_program);
-		skelonShader->SetBonesTransform(boneTransforms);
-	}
-
-	_program->CustomEffect(_toWorldTransform);
+	_program->CustomEffect(_mesh, _toWorldTransform);
 	
 	if (_mesh->HaveAttribute(eShaderVertAttribute_tangent) && _normalTexture)
 	{

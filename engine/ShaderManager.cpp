@@ -55,7 +55,7 @@ bool compileShader(GLuint * shader, GLenum type, const GLchar* source)
 		"uniform mat4 u_MVP;\n"
 		"uniform mat4 u_M;\n"
 		"uniform mat4 u_V;\n"
-		"uniform sampler2D u_texture_color_sampler;\n",
+		"uniform sampler2D u_texture_color_sampler;\n"
 		"uniform sampler2D u_texture_normal_map_sampler;\n",
 		source,
 	};
@@ -172,8 +172,6 @@ void ShaderManager::LoadDefaultShaders()
 	LoadShaders(PositionTexture3D_vert, PositionTexture3D_frag, shader_position_texure_3D, [](){return new Shader();});
 
 	LoadShaders(ShaderBaseLight::GetVertShader().c_str(), ShaderBaseLight::GetFragShader().c_str(), shader_base_light_3D, [](){return new ShaderBaseLight(); });
-
-	LoadShaders(ShaderBaseLightSkelon::GetVertShader().c_str(), ShaderBaseLightSkelon::GetFragShader().c_str(), shader_base_light_skelon_3D, [](){return new ShaderBaseLightSkelon(); });
 
 	LoadShaders(ShaderBaseLight::GetNormalVertShader().c_str(), ShaderBaseLight::GetNormalFragShader().c_str(), shader_base_light_3D_with_normal_map, [](){return new ShaderBaseLight(); });
 
