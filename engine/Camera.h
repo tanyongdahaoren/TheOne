@@ -30,5 +30,4 @@ protected:
 public:
 	mat4 _projectTransform;
 	mat4 _viewTransform;
-	bool _viewDirty;
 };

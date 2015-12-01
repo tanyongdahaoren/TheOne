@@ -248,10 +248,6 @@ void Node::VisitTransform(const mat4& parentToWorldTransform)
 {
 	UpdateWorldTransorm(parentToWorldTransform);
 
-	if (dynamic_cast<Camera*>(this))
-	{
-		Director::GetInstance()->GetCurrentTree()->AddCamera(((Camera*)this));
-	}
 	if (dynamic_cast<SpotLight*>(this))
 	{
 		Director::GetInstance()->GetCurrentTree()->AddSpotLight((SpotLight*)this);
@@ -263,6 +259,10 @@ void Node::VisitTransform(const mat4& parentToWorldTransform)
 	else if (dynamic_cast<DirectionLight*>(this))
 	{
 		Director::GetInstance()->GetCurrentTree()->SetDirectionLight((DirectionLight*)this);
+	}
+	else if (dynamic_cast<Camera*>(this))
+	{
+		Director::GetInstance()->GetCurrentTree()->AddCamera(((Camera*)this));
 	}
 
 	for ( const auto &child: _children )
@@ -278,5 +278,15 @@ void Node::VisitRender(Camera* camera)
 	for (const auto &child : _children)
 	{
 		child->VisitRender(camera);
+	}
+}
+
+void Node::VisitRenderShadowMapping(const mat4& lightTransform)
+{
+	RenderShadowMapping(lightTransform);
+
+	for (const auto &child : _children)
+	{
+		child->VisitRenderShadowMapping(lightTransform);
 	}
 }

@@ -10,7 +10,9 @@ Sprite3D::Sprite3D()
 	, _normalTexture(NULL)
 	, _program(NULL)
 	, _cullBack(true)
+	, _shadowShader(NULL)
 {
+	_shadowShader = ShaderManager::GetInstance()->GetShader(shader_depth_rtt);
 }
 
 Sprite3D::~Sprite3D()
@@ -105,14 +107,14 @@ void Sprite3D::Render(Camera* camera)
 		skelonShader->SetBonesTransform(boneTransforms);
 	}
 
-	_program->CustomEffect();
+	_program->CustomEffect(_toWorldTransform);
 	
 	if (_mesh->HaveAttribute(eShaderVertAttribute_tangent) && _normalTexture)
 	{
 		_program->SetUniformLocationWith1i(UNIFORM_TEXTURE_NORMAL_MAP_SAMPLER, NORMAL_TEXTURE_INDEX);
 		_normalTexture->Bind(NORMAL_TEXTURE);
 	}
-	
+
 	_program->SetUniformLocationWith1i(UNIFORM_TEXTURE_COLOR_SAMPLER, COLOR_TEXTURE_INDEX);
 	if (_texture)
 	{
@@ -135,4 +137,24 @@ void Sprite3D::Render(Camera* camera)
 		_dl->DrawLine(pos, pos + normal, Color3B::RED, Color3B::GREEN);
 	}
 #endif
+}
+
+void Sprite3D::RenderShadowMapping(const mat4& lightTransform)
+{
+	if (_cullBack)
+	{
+		glEnable(GL_CULL_FACE);
+	}
+	else
+	{
+		glDisable(GL_CULL_FACE);
+	}
+
+	_shadowShader->Active();
+
+	glm::mat4 MVP = lightTransform * _toWorldTransform;
+
+	_shadowShader->SetUniformLocationWithMatrix4(UNIFORM_MVP, MVP);
+
+	_mesh->UseBuffers();
 }

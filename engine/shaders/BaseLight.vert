@@ -1,5 +1,10 @@
 const char* BaseLight_vert = STRINGIFY(
 
+//for shadow
+uniform int u_open_shadow;//是否开启阴影 0为没开 1为开
+uniform mat4 u_light_MVP;//将顶点变换到光源为摄像机的位置
+out vec4 o_pos_light_camera;//光源为摄像机下的位置
+
 in vec3 a_model_pos;
 in vec2 a_tex_coord;
 in vec3 a_model_normal;
@@ -14,6 +19,10 @@ void main()
 	o_world_normal = (u_M * vec4(a_model_normal, 0.0)).xyz;
 	o_world_pos = (u_M * vec4(a_model_pos, 1.0)).xyz;
 	o_tex_coord = a_tex_coord;
+	if(u_open_shadow == 1)
+	{
+		o_pos_light_camera = u_light_MVP * vec4(a_model_pos, 1.0);
+	}
 }
 );
 

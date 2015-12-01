@@ -65,6 +65,8 @@ protected:
 	virtual void VisitTransform(const mat4& parentToWorldTransform);
 	virtual void VisitRender(Camera* camera);
 	virtual void Render(Camera* camera){}
+	virtual void VisitRenderShadowMapping(const mat4& lightTransform);
+	virtual void RenderShadowMapping(const mat4& lightTransform){}
 	virtual void UpdateWorldTransorm(const mat4& parentToWorldTransform);
 
 	//-----------------------------

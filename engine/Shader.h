@@ -21,7 +21,7 @@ public:
 
 	void SetUniformLocationWithMatrix4(string uniform, const mat4& matrix);
 
-	virtual void CustomEffect(){}
+	virtual void CustomEffect(mat4 toWorldTransform){}
 
 protected:
 	virtual void InitUniformsLocation();

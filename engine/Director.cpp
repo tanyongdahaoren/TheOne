@@ -239,23 +239,23 @@ int Director::Run()
 	//camera
 	Camera* camera = new Camera;
 	camera->Perspective(60, sWinW / sWinH, 0.1f, 1000.0);
-	//camera->orthographic(sWinW, sWinH, .1, 100);
-	vec3 eye(0, 0, 10);
+	//camera->Orthographic(30, 30 * sWinH / sWinW, .1, 100);
+	vec3 eye(10, 10, 10);
 	vec3 center(0, 0, 0);
 	camera->SetPosition(eye);
 	camera->LookAt(center);
 	//camera->SetMouseSpeed(0.5f);
 	par->AddChild(camera);
 
-	BaseLight::SetSpecularIntensity(1.5);
+	BaseLight::SetSpecularIntensity(1);
 	BaseLight::SetSpecularPower(32);
 
-	{
+	
 		//dir light
 		DirectionLight* dirlight = new DirectionLight;
 		dirlight->SetColor(Color3F::WHITE);
-		dirlight->SetDirection(vec3(0, 0, -1));
-		dirlight->SetAmbientIntensity(0.2);
+		dirlight->SetDirection(vec3(-10, -10, -10));
+		dirlight->SetAmbientIntensity(0.1);
 		dirlight->SetDiffuseIntensity(0.8);
 		par->AddChild(dirlight);
 
@@ -280,11 +280,13 @@ int Director::Run()
 // 		spotLight->SetDirection(vec3(1, 0, 0));
 // 		spotLight->SetPosition(vec3(-20,0,0));
 // 		par->AddChild(spotLight);
-	}
+	
 	
 	bool is_show_3dsp = false;
 	bool is_show_2dsp = false;
 	bool is_show_skelon = true;
+	bool is_show_shadow = false;
+	Sprite2D* sp2d = NULL;
 
 	//3d sprite/
 	if (is_show_3dsp)
@@ -312,6 +314,27 @@ int Director::Run()
 
 		sp3d = sp;
 	}
+
+	if (is_show_shadow)
+	{
+		dirlight->OpenShadow(true);
+
+		Mesh* mesh = MeshManager::GetInstance()->LoadMeshFromFile("room_thickwalls.obj", false, false);
+		mesh->GenBuffers();
+
+		EasyImage* image = new EasyImage;
+		image->InitWithFileName("white.png");
+		Texture2D* texture = new Texture2D;
+		texture->LoadWithImage(image);
+		texture->SetWrapType(eWrapType_reapeat);
+
+		Sprite3D* sp = new Sprite3D;
+		sp->InitWithMesh(mesh);
+		sp->SetTexture(texture);
+		par->AddChild(sp);
+		sp->SetRotation(vec3(0,180,0));
+	}
+
 	Mesh* skelonMesh = NULL;
 	//3d skelon sprite/
 	if (is_show_skelon)
@@ -332,17 +355,18 @@ int Director::Run()
 	if (is_show_2dsp)
 	{
 		EasyImage* image = new EasyImage;
-		image->InitWithFileName("png.png");
+		image->InitWithFileName("white.png");
 		Texture2D* texture = new Texture2D;
 		texture->LoadWithImage(image);
 
-		Sprite2D* sp = new Sprite2D;
-		sp->SetPosition(vec3(0, 3, 0) );
-		sp->InitWithTexture2D(texture);
-		sp->SetAnchorPoint(vec3(0.5, 0.5, 0));
-		sp->SetScale2D(vec2(0.01, 0.01));
-		sp->EnableBillBoard(Sprite2D::eBillBoardType_rotate_y);
-		par->AddChild(sp);
+		sp2d = new Sprite2D;
+		sp2d->InitWithTexture2D(texture);
+		sp2d->SetPosition(vec3(5, 5, 5));
+		sp2d->SetAnchorPoint(vec3(0.5, 0.5, 0));
+		sp2d->SetScale2D(vec2(0.03, 0.03));
+		sp2d->EnableBillBoard(Sprite2D::eBillBoardType_rotate_y);
+		sp2d->SetShader(shader_position_texure_3D);
+		par->AddChild(sp2d);
 	}
  	
 	//line
@@ -365,7 +389,17 @@ int Director::Run()
 		{
 			during -= 1.0 / (double)N;
 
-			skelonMesh->BoneTransform(current);
+			if (skelonMesh)
+			{
+				skelonMesh->BoneTransform(current);
+			}
+
+			static int count = 0;
+			if (count == 1 && sp2d)
+			{
+				//sp2d->SetTexture(dirlight->GetTexture());
+			}
+			count++;
 
 			MainLoop();
 
@@ -388,8 +422,6 @@ void Director::MainLoop()
 {
 	//auto release
 	AutoReleasePool::GetInstance()->Clear();
-
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);

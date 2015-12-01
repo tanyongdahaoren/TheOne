@@ -1,7 +1,6 @@
 #include "Camera.h"
 
 Camera::Camera()
-	:_viewDirty(true)
 {
 
 }
@@ -24,7 +23,6 @@ const mat4& Camera::GetProjectTransform()
 const mat4& Camera::GetViewTransform()
 {
 	UpdateViewTransform();
-	_viewDirty = false;
 	
 	return _viewTransform;
 }

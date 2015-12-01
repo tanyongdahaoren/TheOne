@@ -1,14 +1,17 @@
 #pragma once
 
-#include "Node.h"
+#include "Camera.h"
 #include "Types.h"
 #include "DrawNode.h"
+#include "RenderToTexture.h"
 #define DEBUG_LIGHT 1
 
-class BaseLight : public Node
+class BaseLight : public Camera
 {
+	friend class Tree;
 public:
 	BaseLight();
+	~BaseLight();
 
 	static void SetSpecularPower(float power);
 	static float GetSpecularPower();
@@ -24,21 +27,41 @@ public:
 
 	void SetDiffuseIntensity(float diffuseIntensity);
 	float GetDiffuseIntensity(){ return _diffuseIntensity; }
+
+	void OpenShadow(bool b);
+	bool IsOpenShadow(){ return _openShadow; }
+
+	Texture2D* GetTexture();
+	const mat4& GetVP(){ return _VP; }
+protected:
+	virtual void CaculateVP(){}
+
+	void BindRenderShadow();
+	void UnBindRenderShadow();
 protected:
 	Color3F _color;
 	float _ambientIntensity;
 	float _diffuseIntensity;
 	static float _specularIntensity;
 	static float _specularPower;
+	
+	//for shadow
+	bool _openShadow;
+	RenderToTexture* _shadowRTT;
+	mat4 _VP;
 };
 
 class DirectionLight : public BaseLight
 {
+	friend class Tree;
 public:
 	DirectionLight();
 
 	void SetDirection(vec3 direction);
 	vec3 GetDirection(){ return _direction; }
+
+protected:
+	virtual void CaculateVP();
 protected:
 	vec3 _direction;
 };

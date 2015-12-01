@@ -87,24 +87,31 @@ void ShaderBaseLight::InitUniformsLocation()
 	}
 
 	//others
-	_eyeWorldPos = GetUniformLocation("u_world_eyepos");
+	_eyeWorldPosLocation = GetUniformLocation("u_world_eyepos");
 
-	_specularIntensity = GetUniformLocation("u_specular_intensity");
+	_specularIntensityLocation = GetUniformLocation("u_specular_intensity");
 
-	_specularPower = GetUniformLocation("u_specular_power");
+	_specularPowerLocation = GetUniformLocation("u_specular_power");
+
+	//shadowmap
+	_openShadowLocation = GetUniformLocation("u_open_shadow");
+
+	_lightMVPLocation = GetUniformLocation("u_light_MVP");
+
+	_shadowmapSamplerLocation = GetUniformLocation("u_sampler_shadowmap");
 }
 
-void ShaderBaseLight::CustomEffect()
+void ShaderBaseLight::CustomEffect(mat4 toWorldTransform)
 {
 	float specularPower = BaseLight::GetSpecularPower();
 	float specularIntensity = BaseLight::GetSpecularIntensity();
 
-	glUniform1f(_specularPower, specularPower);
-	glUniform1f(_specularIntensity, specularIntensity);
+	glUniform1f(_specularPowerLocation, specularPower);
+	glUniform1f(_specularIntensityLocation, specularIntensity);
 
 	Camera* camera = Director::GetInstance()->GetCurrentTree()->GetCurrentCamera();
 	vec3 eyePos = camera->GetPositionInWorld();
-	glUniform3f(_eyeWorldPos, eyePos.x, eyePos.y, eyePos.z);
+	glUniform3f(_eyeWorldPosLocation, eyePos.x, eyePos.y, eyePos.z);
 
 	DirectionLight* dirLight = Director::GetInstance()->GetCurrentTree()->_directionLight;
 	if (dirLight)
@@ -118,6 +125,24 @@ void ShaderBaseLight::CustomEffect()
 		vec3 direction = dirLight->GetDirection();
 		direction = glm::normalize(direction);
 		glUniform3f(_dirLightUniformLocation.direction, direction.x, direction.y, direction.z);
+
+		//shadow
+		bool isOpenShadow = dirLight->IsOpenShadow();
+		glUniform1i(_openShadowLocation, isOpenShadow ? 1 : 0);
+		if (isOpenShadow)
+		{
+			glm::mat4 biasMatrix(
+				0.5, 0.0, 0.0, 0.0,
+				0.0, 0.5, 0.0, 0.0,
+				0.0, 0.0, 0.5, 0.0,
+				0.5, 0.5, 0.5, 1.0
+				);
+			mat4 vp = biasMatrix * dirLight->GetVP() * toWorldTransform;
+			glUniformMatrix4fv(_lightMVPLocation, 1, GL_FALSE, &vp[0][0]);
+
+			glUniform1i(_shadowmapSamplerLocation, 20);
+			dirLight->GetTexture()->Bind(GL_TEXTURE20);
+		}
 	}
 
 	vector<PointLight*>& pointLights = Director::GetInstance()->GetCurrentTree()->_pointLights;
@@ -222,9 +247,9 @@ void ShaderBaseLightSkelon::InitUniformsLocation()
 	}
 }
 
-void ShaderBaseLightSkelon::CustomEffect()
+void ShaderBaseLightSkelon::CustomEffect(mat4 toWorldTransform)
 {
-	ShaderBaseLight::CustomEffect();
+	ShaderBaseLight::CustomEffect(toWorldTransform);
 }
 
 std::string ShaderBaseLightSkelon::GetVertShader()

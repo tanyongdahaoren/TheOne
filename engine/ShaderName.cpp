@@ -15,3 +15,6 @@
 
 #include "shaders/BaseLight_NormalMap.vert"
 #include "shaders/BaseLight_NormalMap.frag"
+
+#include "shaders/DepthRTT.vert"
+#include "shaders/DepthRTT.frag"

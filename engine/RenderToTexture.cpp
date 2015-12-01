@@ -38,13 +38,23 @@ void RenderToTexture::InitBuffer(int width, int height, PixelFormat pixelFormat)
 	//4.GL_DEPTH_STENCIL_ATTACHMENT
 	//-------------------------
 
-	if (pixelFormat != PixelFormat::depth)
+	if (pixelFormat == PixelFormat::depth)
 	{
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, _texture->_textureID, 0);
+		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, _texture->_textureID, 0);
+		
+		// No color output in the bound framebuffer, only depth.
+		glDrawBuffer(GL_NONE);
 	}
 	else
 	{
-		glFramebufferTexture(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, _texture->_textureID, 0);
+		glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, _texture->_textureID, 0);
+	}
+
+	GLenum Status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+
+	if (Status != GL_FRAMEBUFFER_COMPLETE)
+	{
+		printf("FB error, status: 0x%x\n", Status);
 	}
 }
 
@@ -57,4 +67,14 @@ void RenderToTexture::EnableDepth()
 	glBindRenderbuffer(GL_RENDERBUFFER, depthrenderbuffer);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 1024, 768);
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthrenderbuffer);
+}
+
+void RenderToTexture::Bind()
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, _fbo);
+}
+
+void RenderToTexture::UnBind()
+{
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }

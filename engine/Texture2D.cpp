@@ -29,6 +29,13 @@ bool Texture2D::Load(PixelFormat pixelFormat, int w, int h, unsigned char * data
 	_width = w;
 	_height = h;
 
+	// clean possible GL error
+	GLenum err = glGetError();
+	if (err != GL_NO_ERROR)
+	{
+		printf("glError: 0x%04X", err);
+	}
+	
 	glGenTextures(1, &_textureID);
 
 	glBindTexture(GL_TEXTURE_2D, _textureID);
@@ -38,11 +45,10 @@ bool Texture2D::Load(PixelFormat pixelFormat, int w, int h, unsigned char * data
  	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
  	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-	// clean possible GL error
-	GLenum err = glGetError();
-	if (err != GL_NO_ERROR)
+	if (pixelFormat == PixelFormat::depth)
 	{
-		printf("glError: 0x%04X", err);
+// 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+// 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
 	}
 
 	glTexImage2D(GL_TEXTURE_2D, 0, info.internalFormat, _width, _height, 0, info.format, info.type, data);
@@ -53,8 +59,6 @@ bool Texture2D::Load(PixelFormat pixelFormat, int w, int h, unsigned char * data
 		printf("glError: 0x%04X", err);
 		return false;
 	}
-
-	glBindTexture(GL_TEXTURE_2D, 0);
 
 	return true;
 }

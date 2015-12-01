@@ -8,6 +8,11 @@ out vec4 color;
 
 vec3 use_normal;
 
+//for shadow
+uniform int u_open_shadow;//是否开启阴影
+uniform sampler2D u_sampler_shadowmap;
+in vec4 o_pos_light_camera;
+
 //基础光照模型基类
 struct BaseLight
 {                                                                                   
@@ -57,7 +62,7 @@ uniform float u_specular_intensity;
 uniform float u_specular_power;
 
 //计算
-vec4 CalculateLightInternal(BaseLight light, vec3 direction)                   
+vec4 CalculateLightInternal(BaseLight light, vec3 direction, float shadowFactor)                   
 {
 	//环境光                                                                                    
     vec4 ambientColor = vec4(light.color * light.ambientIntensity, 1.0f);
@@ -83,7 +88,7 @@ vec4 CalculateLightInternal(BaseLight light, vec3 direction)
         }                                                  
     }                                                                                       
 
-    return (ambientColor + diffuseColor + specularColor);                                   
+    return (ambientColor + shadowFactor * (diffuseColor + specularColor));                                   
 }
 
 //计算点光源
@@ -93,7 +98,7 @@ vec4 CalculatePointLight(PointLight light)
     float distance = length(light2pixel);                                                
     light2pixel = normalize(light2pixel);                                             
                                                                                             
-    vec4 color = CalculateLightInternal(light.base, light2pixel);       
+    vec4 color = CalculateLightInternal(light.base, light2pixel, 1.0);       
     float attenuation =  light.constant +                               
                          light.linear * distance +                      
                          light.exp * distance * distance;               
@@ -118,13 +123,24 @@ vec4 CalculateSpotLight(SpotLight light)
     }                                                                                       
 }
 
+float CalculateShadowFactor()
+{
+	if(u_open_shadow == 0)
+		return 1;
+	float factor = 1.0f;
+	if (texture2D(u_sampler_shadowmap, o_pos_light_camera.xy).x < o_pos_light_camera.z)
+		factor = 0.5;
+	return factor;
+}
+
 void main()
 {
 	use_normal = normalize(o_world_normal);
 
 	vec4 totalLight;
 	
-	vec4 directionLight = CalculateLightInternal(u_direction_light.base, u_direction_light.direction);                                                                   
+	float shadowFactor = CalculateShadowFactor();
+	vec4 directionLight = CalculateLightInternal(u_direction_light.base, u_direction_light.direction, shadowFactor);                                                                   
 	
 	totalLight += directionLight;
 

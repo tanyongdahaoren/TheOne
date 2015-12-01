@@ -1,4 +1,7 @@
 #include "BaseLight.h"
+#include "MathH.h"
+#include "Defines.h"
+
 //-------------------
 //BaseLight
 //-------------------
@@ -6,10 +9,17 @@ float BaseLight::_specularIntensity = 0;
 float BaseLight::_specularPower = 0;
 
 BaseLight::BaseLight()
+	:_shadowRTT(NULL)
 {
 	_color = Color3F::WHITE;
 	_ambientIntensity = 0.0f;
 	_diffuseIntensity = 0.0f;
+	_openShadow = false;
+}
+
+BaseLight::~BaseLight()
+{
+	SAFE_DELETE(_shadowRTT);
 }
 
 void BaseLight::SetColor(Color3F color)
@@ -47,6 +57,40 @@ float BaseLight::GetSpecularIntensity()
 	return _specularIntensity;
 }
 
+void BaseLight::OpenShadow(bool b)
+{
+	if (_openShadow == b)
+	{
+		return;
+	}
+	_openShadow = b;
+
+	if (_openShadow)
+	{
+		_shadowRTT = new RenderToTexture;
+		_shadowRTT->InitBuffer(sWinW, sWinH, PixelFormat::depth);
+	}
+	else
+	{
+		SAFE_DELETE(_shadowRTT);
+	}
+}
+
+void BaseLight::BindRenderShadow()
+{
+	_shadowRTT->Bind();
+}
+
+void BaseLight::UnBindRenderShadow()
+{
+	_shadowRTT->UnBind();
+}
+
+Texture2D* BaseLight::GetTexture()
+{
+	return _shadowRTT->_texture;
+}
+
 //-------------------
 //DirectionLight
 //-------------------
@@ -57,7 +101,17 @@ DirectionLight::DirectionLight()
 
 void DirectionLight::SetDirection(vec3 direction)
 {
+	SetPosition(-direction);
+	LookAt(vec3(0,0,0));
 	_direction = direction;
+}
+
+void DirectionLight::CaculateVP()
+{
+	Orthographic(20, 20, -10, 30);
+	UpdateViewTransform();
+
+	_VP = _projectTransform * _viewTransform;
 }
 
 //-------------------

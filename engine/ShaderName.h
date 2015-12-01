@@ -18,3 +18,7 @@ extern const GLchar * BaseLightSkelon_vert;
 
 extern const GLchar * BaseLight_NormalMap_vert;
 extern const GLchar * BaseLight_NormalMap_frag;
+
+extern const GLchar * DepthRTT_vert;
+extern const GLchar * DepthRTT_frag;
+

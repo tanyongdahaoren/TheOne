@@ -23,6 +23,8 @@ public:
 	void SetNormalTexture(Texture2D* texture2D);
 protected:
 	virtual void Render(Camera* camera);
+
+	virtual void RenderShadowMapping(const mat4& lightTransform);
 protected:
 	Mesh* _mesh;
 	Texture2D* _texture;
@@ -33,4 +35,6 @@ protected:
 	DrawPoints* _dp;
 	DrawLines* _dl;
 #endif
+
+	Shader* _shadowShader;
 };

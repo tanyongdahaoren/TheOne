@@ -205,7 +205,7 @@ void Mesh::UseBuffers()
 		
 		if (MaterialIndex < _textures.size() && _textures[MaterialIndex])
 		{
-			_textures[MaterialIndex]->Bind(GL_TEXTURE0);
+			_textures[MaterialIndex]->Bind(COLOR_TEXTURE);
 		}
 
 		glDrawElementsBaseVertex(GL_TRIANGLES, _entries[i].NumIndices, GL_UNSIGNED_INT, (void*)(sizeof(uint) * _entries[i].BaseIndex), _entries[i].BaseVertex);

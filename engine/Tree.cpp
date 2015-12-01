@@ -30,9 +30,27 @@ void Tree::Travel()
 	_spotLights.clear();
 	_cameras.clear();
 
+	//transform all nodes on tree
 	mat4 identity;
 	VisitTransform(identity);
 
+	//shadow pass
+	if (_directionLight && _directionLight->IsOpenShadow())
+	{
+		_directionLight->BindRenderShadow();
+
+		glClear(GL_DEPTH_BUFFER_BIT);
+
+		_directionLight->CaculateVP();
+
+		VisitRenderShadowMapping(_directionLight->GetVP());
+
+		_directionLight->UnBindRenderShadow();
+	}
+
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	//render to screen
 	for ( const auto &camera: _cameras )
 	{
 		sCurrentCamera = camera;

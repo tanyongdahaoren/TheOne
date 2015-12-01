@@ -10,6 +10,8 @@ public:
 	~RenderToTexture();
 	void InitBuffer(int width, int height, PixelFormat pixelFormat);
 	void EnableDepth();
+	void Bind();
+	void UnBind();
 public:
 	GLuint _fbo;
 	GLuint _depthRenderBuffer;

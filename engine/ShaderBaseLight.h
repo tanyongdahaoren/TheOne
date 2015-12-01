@@ -20,7 +20,7 @@ public:
 	static string GetNormalFragShader();
 protected:
 	virtual void InitUniformsLocation();
-	virtual void CustomEffect();
+	virtual void CustomEffect(mat4 toWorldTransform);
 protected:
 	//base
 	struct tBaseLightLocation
@@ -54,9 +54,14 @@ protected:
 		GLuint cutoff;
 	} _spotLightsLocation[kMaxSpotLightNum];
 
-	GLuint _eyeWorldPos;
-	GLuint _specularIntensity;
-	GLuint _specularPower;
+	GLuint _eyeWorldPosLocation;
+	GLuint _specularIntensityLocation;
+	GLuint _specularPowerLocation;
+
+	//for shadow
+	GLuint _openShadowLocation;
+	GLuint _lightMVPLocation;
+	GLuint _shadowmapSamplerLocation;
 };
 
 class ShaderBaseLightSkelon :public ShaderBaseLight
@@ -67,7 +72,7 @@ public:
 	void SetBonesTransform(vector<mat4> transforms);
 protected:
 	virtual void InitUniformsLocation();
-	virtual void CustomEffect();
+	virtual void CustomEffect(mat4 toWorldTransform);
 protected:
 	GLuint _boneLocation[kMaxBoneNum];
 };
