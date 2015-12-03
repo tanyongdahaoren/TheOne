@@ -10,7 +10,7 @@ in vec3 a_model_pos;
 
 void main()
 {
-	if(u_open_skelon)
+	if(u_open_skelon == 1)
 	{
 		int idx0 = int(a_blend_index[0]);
 		int idx1 = int(a_blend_index[1]);
