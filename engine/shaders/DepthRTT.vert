@@ -2,12 +2,6 @@ const char* DepthRTT_vert = STRINGIFY(
 
 in vec3 a_model_pos;
 
-//for skelon
-//uniform int u_open_skelon;//是否开启骨骼 0为没开 1为开
-//uniform mat4 u_bone[kMaxBoneNum];
-//in vec4 a_blend_index;
-//in vec4 a_blend_weight;
-
 void main()
 {
 	if(u_open_skelon == 1)
