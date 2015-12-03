@@ -9,7 +9,7 @@ using namespace std;
 //all shader name
 static const string shader_position_color = "shader_position_color";
 static const string shader_position_texture = "shader_position_texture";
-static const string shader_base_light = "shader_base_light_3D";
+static const string shader_base_light = "shader_base_light";
 static const string shader_depth_rtt = "shader_depth_rtt";
 
 //attribute
