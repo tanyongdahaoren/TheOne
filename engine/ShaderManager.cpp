@@ -77,6 +77,7 @@ bool compileShader(GLuint * shader, GLenum type, const GLchar* source)
 		GLchar InfoLog[1024];
 		glGetShaderInfoLog(*shader, 1024, NULL, InfoLog);
 		fprintf(stderr, "Error compiling shader : '%s'\n", InfoLog);
+		printf("ERROR: Failed to compile shader:\n%s", InfoLog);
 
 		free(src);
 
@@ -131,8 +132,8 @@ Shader* ShaderManager::LoadShader(string shaderName)
 	}
 	vertStr += shaderInfo._vert;
 	fragStr += shaderInfo._frag;
-	printf("%s vertStr:%s\n", shaderName.c_str(), vertStr.c_str());
-	printf("%s fragStr:%s\n", shaderName.c_str(), vertStr.c_str());
+	//printf("%s vertStr:%s\n", shaderName.c_str(), vertStr.c_str());
+	//printf("%s fragStr:%s\n", shaderName.c_str(), vertStr.c_str());
 
 	GLuint vertShader = 0, fragShader = 0;
 

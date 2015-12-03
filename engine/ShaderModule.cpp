@@ -289,6 +289,7 @@ void ShadowMapShaderModule::Use(Mesh* mesh, mat4 toWorldTransform)
 
 
 
+
 std::string SkeletonShaderModule::VertexStr()
 {
 	char buff[256];
