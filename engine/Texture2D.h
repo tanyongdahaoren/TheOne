@@ -10,7 +10,8 @@
 #define NORMAL_TEXTURE_INDEX       1
 #define DEPTH_TEXTURE              GL_TEXTURE2
 #define DEPTH_TEXTURE_INDEX        2
-
+#define SHADOW_MAP_TEXTURE_DIRECTION_LIGHT				GL_TEXTURE10
+#define SHADOW_MAP_TEXTURE_DIRECTION_LIGHT_INDEX        10
 enum eFilterType
 {
 	eFilterType_nearest = GL_NEAREST,

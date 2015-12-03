@@ -1,4 +1,4 @@
-﻿const char* PositionTexture3D_frag = STRINGIFY(
+﻿const char* PositionTexture_frag = STRINGIFY(
 
 in vec2 o_tex_coord;
 

@@ -5,17 +5,11 @@
 extern const GLchar * PositionColor_vert;
 extern const GLchar * PositionColor_frag;
 
-extern const GLchar * PositionTexture2D_vert;
-extern const GLchar * PositionTexture2D_frag;
-
-extern const GLchar * PositionTexture3D_vert;
-extern const GLchar * PositionTexture3D_frag;
+extern const GLchar * PositionTexture_vert;
+extern const GLchar * PositionTexture_frag;
 
 extern const GLchar * BaseLight_vert;
 extern const GLchar * BaseLight_frag;
-
-extern const GLchar * BaseLight_NormalMap_vert;
-extern const GLchar * BaseLight_NormalMap_frag;
 
 extern const GLchar * DepthRTT_vert;
 extern const GLchar * DepthRTT_frag;

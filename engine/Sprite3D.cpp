@@ -2,7 +2,6 @@
 #include "ShaderValue.h"
 #include "ShaderManager.h"
 #include "Camera.h"
-#include "ShaderBaseLight.h"
 
 Sprite3D::Sprite3D()
 	: _mesh(NULL)
@@ -28,16 +27,7 @@ bool Sprite3D::InitWithMesh(Mesh* mesh)
 	_mesh = mesh;
 	_mesh->Retain();
 
-	bool haveTangent = _mesh->HaveAttribute(eShaderVertAttribute_tangent);
-	if (haveTangent)
-	{
-		SetShader(shader_base_light_3D_with_normal_map);
-	}
-	else
-	{
-
-		SetShader(shader_base_light_3D);
-	}	
+	SetShader(shader_base_light);
 
 #if DEBUG_SPRITE3D
 	_dp = new DrawPoints;
@@ -88,7 +78,7 @@ void Sprite3D::Render(Camera* camera)
 	_program->SetUniformLocationWithMatrix4(UNIFORM_V, viewTransform);
 	_program->SetUniformLocationWithMatrix4(UNIFORM_MVP, MVP);
 
-	_program->CustomEffect(_mesh, _toWorldTransform);
+	_program->Use(_mesh, _toWorldTransform);
 	
 	if (_mesh->HaveAttribute(eShaderVertAttribute_tangent) && _normalTexture)
 	{
@@ -137,7 +127,7 @@ void Sprite3D::RenderShadowMapping(const mat4& lightTransform)
 
 	_shadowShader->SetUniformLocationWithMatrix4(UNIFORM_MVP, MVP);
 
-	_shadowShader->CustomEffect(_mesh, _toWorldTransform);
+	_shadowShader->Use(_mesh, _toWorldTransform);
 
 	_mesh->UseBuffers();
 }

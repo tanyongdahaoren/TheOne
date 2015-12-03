@@ -28,6 +28,7 @@ Mesh::Mesh()
 	, _sizePerVertex(0)
 	, _stridePerVertex(0)
 	, _scene(NULL)
+	, _boneNum(0)
 {
 
 }

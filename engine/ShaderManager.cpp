@@ -13,7 +13,6 @@ using namespace std;
 
 #include "ShaderManager.h"
 #include "ShaderName.h"
-#include "ShaderBaseLight.h"
 
 static ShaderManager* s_instance = nullptr;
 ShaderManager* ShaderManager::GetInstance()
@@ -110,24 +109,39 @@ void bindPredefinedVertexAttribs(GLuint program)
 	}
 }
 
-Shader* ShaderManager::LoadShaders(const GLchar* vShaderByteArray, const GLchar* fShaderByteArray, string shaderName, std::function<Shader*()> newProgramFunc)
+Shader* ShaderManager::LoadShader(string shaderName)
 {
-	printf("Load shader begin:%s\n", shaderName.c_str());
-
 	Shader* p = GetShader(shaderName);
 	if (p)
 	{
 		return p;
 	}
-	
+
+	Vector<ShaderModule*> modules;
+
+	const ShaderInfo& shaderInfo = ShaderInfoMapTable.at(shaderName);
+	string vertStr;
+	string fragStr;
+	for (auto& moduleName : shaderInfo._modules)
+	{
+		ShaderModule* module = ShaderModuleMapTable.at(moduleName)();
+		vertStr += module->VertexStr();
+		fragStr += module->FragStr();
+		modules.push_back(module);
+	}
+	vertStr += shaderInfo._vert;
+	fragStr += shaderInfo._frag;
+	printf("%s vertStr:%s\n", shaderName.c_str(), vertStr.c_str());
+	printf("%s fragStr:%s\n", shaderName.c_str(), vertStr.c_str());
+
 	GLuint vertShader = 0, fragShader = 0;
 
-	if (!compileShader(&vertShader, GL_VERTEX_SHADER, vShaderByteArray))
+	if (!compileShader(&vertShader, GL_VERTEX_SHADER, vertStr.c_str()))
 	{
 		printf("ERROR: Failed to compile vertex shader\n");
 	}
 
-	if (!compileShader(&fragShader, GL_FRAGMENT_SHADER, fShaderByteArray))
+	if (!compileShader(&fragShader, GL_FRAGMENT_SHADER, fragStr.c_str()))
 	{
 		printf("ERROR: Failed to compile frag shader\n");
 	}
@@ -154,8 +168,8 @@ Shader* ShaderManager::LoadShaders(const GLchar* vShaderByteArray, const GLchar*
 		glDeleteShader(fragShader);
 
 		//insert to _shaders
-		p = newProgramFunc();
-		p->InitWithProgramId(program);
+		p = new Shader;
+		p->Init(program, modules);
 		_shaders.insert(make_pair(shaderName, p));
 
 		printf("Load shader success:%s\n", shaderName.c_str());
@@ -165,17 +179,13 @@ Shader* ShaderManager::LoadShaders(const GLchar* vShaderByteArray, const GLchar*
 
 void ShaderManager::LoadDefaultShaders()
 {
-	LoadShaders(PositionColor_vert, PositionColor_frag, shader_position_color, [](){return new Shader();});
+	LoadShader(shader_position_color);
 
-	LoadShaders(PositionTexture2D_vert, PositionTexture2D_frag, shader_position_texure_2D, [](){return new Shader();});
+	LoadShader(shader_position_texture);
 
-	LoadShaders(PositionTexture3D_vert, PositionTexture3D_frag, shader_position_texure_3D, [](){return new Shader();});
+	LoadShader(shader_depth_rtt);
 
-	LoadShaders(ShaderBaseLight::GetVertShader().c_str(), ShaderBaseLight::GetFragShader().c_str(), shader_base_light_3D, [](){return new ShaderBaseLight(); });
-
-	LoadShaders(ShaderBaseLight::GetNormalVertShader().c_str(), ShaderBaseLight::GetNormalFragShader().c_str(), shader_base_light_3D_with_normal_map, [](){return new ShaderBaseLight(); });
-
-	LoadShaders(ShaderShadowMap::GetVertShader().c_str(), ShaderShadowMap::GetFragShader().c_str(), shader_depth_rtt, [](){return new ShaderShadowMap(); });
+	LoadShader(shader_base_light);
 }
 
 Shader* ShaderManager::GetShader(string shaderName)

@@ -3,15 +3,11 @@
 in vec2 o_tex_coord;
 in vec3 o_world_normal;
 in vec3 o_world_pos;
+in vec3 o_world_tangent;
 
 out vec4 color;
 
 vec3 use_normal;
-
-//for shadow
-uniform int u_open_shadow;//是否开启阴影
-uniform sampler2D u_sampler_shadowmap;
-in vec4 o_pos_light_camera;
 
 //基础光照模型基类
 struct BaseLight
@@ -133,13 +129,41 @@ float CalculateShadowFactor()
 	return factor;
 }
 
+vec3 CalculateBumpedNormal()
+{
+	vec3 normal = normalize(o_world_normal);
+	
+	if(u_open_normal_map == 0)
+	{
+		return normal;
+	}
+
+	vec3 tangent = normalize(o_world_tangent);
+	//求得与法线垂直的切线
+	tangent = normalize(tangent - dot(tangent, normal) * normal);
+	//通过叉乘求得副切线
+	vec3 bitangent = cross(tangent, normal);
+	//通过3个互相正交的向量 得到TBN变换
+	mat3 TBN = mat3(tangent, bitangent, normal);
+
+	//从法线纹理得到法线 该法线位于三角形局部空间（切线空间 tangent_space）
+	vec3 tangent_bumped_normal = texture(u_texture_normal_map_sampler, o_tex_coord).xyz;
+	//由于tangent_normal范围是0~1，进行简单的映射至-1~1
+	tangent_bumped_normal = 2.0 * tangent_bumped_normal - vec3(1.0, 1.0, 1.0);
+
+	//将法线经由TBN矩阵变换至世界坐标
+	vec3 world_bumped_normal = normalize(TBN * tangent_bumped_normal);
+	return world_bumped_normal;
+}
+
 void main()
 {
-	use_normal = normalize(o_world_normal);
+	use_normal = CalculateBumpedNormal();
 
 	vec4 totalLight;
 	
 	float shadowFactor = CalculateShadowFactor();
+
 	vec4 directionLight = CalculateLightInternal(u_direction_light.base, u_direction_light.direction, shadowFactor);                                                                   
 	
 	totalLight += directionLight;

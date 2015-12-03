@@ -284,7 +284,7 @@ int Director::Run()
 	
 	bool is_show_3dsp = false;
 	bool is_show_2dsp = false;
-	bool is_show_skelon = true;
+	bool is_show_skelon = false;
 	bool is_show_shadow = true;
 	Sprite2D* sp2d = NULL;
 
@@ -317,7 +317,7 @@ int Director::Run()
 
 	if (is_show_shadow)
 	{
-		dirlight->OpenShadow(true);
+		//dirlight->OpenShadow(true);
 
 		Mesh* mesh = MeshManager::GetInstance()->LoadMeshFromFile("room_thickwalls.obj", false, false);
 		mesh->GenBuffers();
@@ -366,7 +366,7 @@ int Director::Run()
 		sp2d->SetAnchorPoint(vec3(0.5, 0.5, 0));
 		sp2d->SetScale2D(vec2(0.03, 0.03));
 		sp2d->EnableBillBoard(Sprite2D::eBillBoardType_rotate_y);
-		sp2d->SetShader(shader_position_texure_3D);
+		sp2d->SetShader(shader_position_texture);
 		par->AddChild(sp2d);
 	}
  	

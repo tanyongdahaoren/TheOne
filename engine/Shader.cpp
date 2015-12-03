@@ -25,9 +25,10 @@ Shader::~Shader()
 {
 }
 
-void Shader::InitWithProgramId(GLuint programID)
+void Shader::Init(GLuint programID, Vector<ShaderModule*> modules)
 {
 	_programID = programID;
+	_mudules = modules;
 
 	Active();
 
@@ -50,6 +51,11 @@ void Shader::InitUniformsLocation()
 	_uniformsLocation[UNIFORM_TEXTURE_COLOR_SAMPLER] = GLGetUniformLocation(_programID, UNIFORM_TEXTURE_COLOR_SAMPLER.c_str());
 
 	_uniformsLocation[UNIFORM_TEXTURE_NORMAL_MAP_SAMPLER] = GLGetUniformLocation(_programID, UNIFORM_TEXTURE_NORMAL_MAP_SAMPLER.c_str());
+
+	for (auto module : _mudules)
+	{
+		module->InitUniformsLocation(_programID);
+	}
 }
 
 void Shader::SetUniformLocationWith1i(string uniform, GLint i1)
@@ -60,6 +66,14 @@ void Shader::SetUniformLocationWith1i(string uniform, GLint i1)
 void Shader::SetUniformLocationWithMatrix4(string uniform, const mat4& matrix)
 {
 	glUniformMatrix4fv(_uniformsLocation[uniform], 1, GL_FALSE, &matrix[0][0]);
+}
+
+void Shader::Use(Mesh* mesh, mat4 toWorldTransform)
+{
+	for (auto module : _mudules)
+	{
+		module->Use(mesh, toWorldTransform);
+	}
 }
 
 
@@ -98,7 +112,7 @@ void ShaderShadowMap::InitUniformsLocation()
 	}
 }
 
-void ShaderShadowMap::CustomEffect(Mesh* mesh, mat4 toWorldTransform)
+void ShaderShadowMap::Use(Mesh* mesh, mat4 toWorldTransform)
 {
 	//for skelon
 	glUniform1i(_openSkelonLocation, mesh->_skelon ? 1 : 0);

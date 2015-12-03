@@ -311,7 +311,7 @@ public:
     {
         auto last = _data.back();
         _data.pop_back();
-        last->release();
+		last->Release();
     }
     
     /** Remove a certain object in Vector.
@@ -328,7 +328,7 @@ public:
                 if ((*iter) == object)
                 {
                     iter = _data.erase(iter);
-                    object->release();
+					object->Release();
                 }
                 else
                 {
@@ -368,7 +368,7 @@ public:
     {
         for (auto iter = first; iter != last; ++iter)
         {
-            (*iter)->release();
+			(*iter)->Release();
         }
         
         return _data.erase(first, last);
@@ -381,7 +381,7 @@ public:
     iterator erase(int index)
     {
         auto it = std::next( begin(), index );
-        (*it)->release();
+		(*it)->Release();
         return _data.erase(it);
     }
 
@@ -416,7 +416,7 @@ public:
     /** Replace value at index with given object. */
     void replace(int index, T object)
     {
-        _data[index]->release();
+        _data[index]->Release();
         _data[index] = object;
         object->retain();
     }
@@ -439,7 +439,7 @@ protected:
     void addRefForAllObjects()
     {
         for(const auto &obj : _data) {
-            obj->retain();
+            obj->Retain();
         }
     }
     

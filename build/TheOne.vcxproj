@@ -103,8 +103,8 @@
     <ClInclude Include="..\engine\MeshManager.h" />
     <ClInclude Include="..\engine\Node.h" />
     <ClInclude Include="..\engine\Ref.h" />
-    <ClInclude Include="..\engine\ShaderBaseLight.h" />
     <ClInclude Include="..\engine\ShaderManager.h" />
+    <ClInclude Include="..\engine\ShaderModule.h" />
     <ClInclude Include="..\engine\ShaderName.h" />
     <ClInclude Include="..\engine\Shader.h" />
     <ClInclude Include="..\engine\ShaderValue.h" />
@@ -130,8 +130,8 @@
     <ClCompile Include="..\engine\MeshManager.cpp" />
     <ClCompile Include="..\engine\Node.cpp" />
     <ClCompile Include="..\engine\Ref.cpp" />
-    <ClCompile Include="..\engine\ShaderBaseLight.cpp" />
     <ClCompile Include="..\engine\ShaderManager.cpp" />
+    <ClCompile Include="..\engine\ShaderModule.cpp" />
     <ClCompile Include="..\engine\ShaderName.cpp" />
     <ClCompile Include="..\engine\Shader.cpp" />
     <ClCompile Include="..\engine\Sprite2D.cpp" />
@@ -144,16 +144,12 @@
   <ItemGroup>
     <None Include="..\engine\shaders\BaseLight.frag" />
     <None Include="..\engine\shaders\BaseLight.vert" />
-    <None Include="..\engine\shaders\BaseLight_NormalMap.frag" />
-    <None Include="..\engine\shaders\BaseLight_NormalMap.vert" />
     <None Include="..\engine\shaders\DepthRTT.frag" />
     <None Include="..\engine\shaders\DepthRTT.vert" />
     <None Include="..\engine\shaders\PositionColor.frag" />
     <None Include="..\engine\shaders\PositionColor.vert" />
-    <None Include="..\engine\shaders\PositionTexture2D.frag" />
-    <None Include="..\engine\shaders\PositionTexture2D.vert" />
-    <None Include="..\engine\shaders\PositionTexture3D.frag" />
-    <None Include="..\engine\shaders\PositionTexture3D.vert" />
+    <None Include="..\engine\shaders\PositionTexture.frag" />
+    <None Include="..\engine\shaders\PositionTexture.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

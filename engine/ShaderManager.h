@@ -13,8 +13,8 @@ public:
 	static ShaderManager* GetInstance();
 
 	static void DestroyInstance();
-		
-	Shader* LoadShaders(const GLchar * vertShader, const GLchar * fragShader, string shaderName, std::function<Shader*()> newProgramFunc);
+
+	Shader* LoadShader(string shaderName);
 
 	Shader* GetShader(string shaderName);
 private:

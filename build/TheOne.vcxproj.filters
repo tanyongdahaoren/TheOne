@@ -82,9 +82,6 @@
     <ClInclude Include="..\engine\ShaderValue.h">
       <Filter>engine</Filter>
     </ClInclude>
-    <ClInclude Include="..\engine\ShaderBaseLight.h">
-      <Filter>engine</Filter>
-    </ClInclude>
     <ClInclude Include="..\engine\Shader.h">
       <Filter>engine</Filter>
     </ClInclude>
@@ -95,6 +92,9 @@
       <Filter>engine</Filter>
     </ClInclude>
     <ClInclude Include="..\engine\RenderToTexture.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\engine\ShaderModule.h">
       <Filter>engine</Filter>
     </ClInclude>
   </ItemGroup>
@@ -156,9 +156,6 @@
     <ClCompile Include="..\engine\Mesh.cpp">
       <Filter>engine</Filter>
     </ClCompile>
-    <ClCompile Include="..\engine\ShaderBaseLight.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
     <ClCompile Include="..\engine\Shader.cpp">
       <Filter>engine</Filter>
     </ClCompile>
@@ -171,20 +168,11 @@
     <ClCompile Include="..\engine\RenderToTexture.cpp">
       <Filter>engine</Filter>
     </ClCompile>
+    <ClCompile Include="..\engine\ShaderModule.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\engine\shaders\PositionTexture2D.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\engine\shaders\PositionTexture2D.vert">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\engine\shaders\PositionTexture3D.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\engine\shaders\PositionTexture3D.vert">
-      <Filter>shaders</Filter>
-    </None>
     <None Include="..\engine\shaders\PositionColor.frag">
       <Filter>shaders</Filter>
     </None>
@@ -197,16 +185,16 @@
     <None Include="..\engine\shaders\BaseLight.frag">
       <Filter>shaders</Filter>
     </None>
-    <None Include="..\engine\shaders\BaseLight_NormalMap.frag">
-      <Filter>shaders</Filter>
-    </None>
-    <None Include="..\engine\shaders\BaseLight_NormalMap.vert">
-      <Filter>shaders</Filter>
-    </None>
     <None Include="..\engine\shaders\DepthRTT.vert">
       <Filter>shaders</Filter>
     </None>
     <None Include="..\engine\shaders\DepthRTT.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\engine\shaders\PositionTexture.vert">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="..\engine\shaders\PositionTexture.frag">
       <Filter>shaders</Filter>
     </None>
   </ItemGroup>
