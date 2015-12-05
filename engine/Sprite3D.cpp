@@ -58,8 +58,10 @@ void Sprite3D::SetNormalTexture(Texture2D* texture2D)
 	_normalTexture = texture2D;
 }
 
-void Sprite3D::Render(Camera* camera)
+void Sprite3D::Render(const mat4& cameraProjTransform, const mat4& cameraViewTransform)
 {
+	_program->Active();
+
 	if (_cullBack)
 	{
 		glEnable(GL_CULL_FACE);
@@ -69,21 +71,15 @@ void Sprite3D::Render(Camera* camera)
 		glDisable(GL_CULL_FACE);
 	}
 
-	_program->Active();
+	unsigned int textureFlag = 0;
+	textureFlag |= COLOR_TEXTURE_INDEX;
 
-	const mat4& projectTransform = camera->GetProjectTransform();
-	const mat4& viewTransform = camera->GetViewTransform();
-	glm::mat4 MVP = projectTransform * viewTransform * _toWorldTransform;
-	_program->SetUniformLocationWithMatrix4(UNIFORM_M, _toWorldTransform);
-	_program->SetUniformLocationWithMatrix4(UNIFORM_V, viewTransform);
-	_program->SetUniformLocationWithMatrix4(UNIFORM_MVP, MVP);
-
-	_program->Use(_mesh, _toWorldTransform);
-	
 	if (_mesh->HaveAttribute(eShaderVertAttribute_tangent) && _normalTexture)
 	{
-		_program->SetUniformLocationWith1i(UNIFORM_TEXTURE_NORMAL_MAP_SAMPLER, NORMAL_TEXTURE_INDEX);
+		textureFlag |= NORMAL_TEXTURE_INDEX;
+		
 		_normalTexture->Bind(NORMAL_TEXTURE);
+		_program->SetUniformLocationWith1i(UNIFORM_TEXTURE_NORMAL_MAP_SAMPLER, NORMAL_TEXTURE_INDEX);
 	}
 
 	_program->SetUniformLocationWith1i(UNIFORM_TEXTURE_COLOR_SAMPLER, COLOR_TEXTURE_INDEX);
@@ -91,6 +87,7 @@ void Sprite3D::Render(Camera* camera)
 	{
 		_texture->Bind(COLOR_TEXTURE);
 	}
+	_program->Use(textureFlag, _mesh, _toWorldTransform, cameraViewTransform, cameraProjTransform);
 
 	_mesh->UseBuffers();
 
@@ -110,7 +107,7 @@ void Sprite3D::Render(Camera* camera)
 #endif
 }
 
-void Sprite3D::RenderShadowMapping(const mat4& lightTransform)
+void Sprite3D::RenderShadowMapping(const mat4& lightProjTransform, const mat4& lightViewTransform)
 {
 	if (_cullBack)
 	{
@@ -123,11 +120,7 @@ void Sprite3D::RenderShadowMapping(const mat4& lightTransform)
 
 	_shadowShader->Active();
 
-	glm::mat4 MVP = lightTransform * _toWorldTransform;
-
-	_shadowShader->SetUniformLocationWithMatrix4(UNIFORM_MVP, MVP);
-
-	_shadowShader->Use(_mesh, _toWorldTransform);
+	_shadowShader->Use(0, _mesh, _toWorldTransform, lightViewTransform, lightProjTransform);
 
 	_mesh->UseBuffers();
 }

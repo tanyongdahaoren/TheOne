@@ -22,9 +22,9 @@ public:
 
 	void SetNormalTexture(Texture2D* texture2D);
 protected:
-	virtual void Render(Camera* camera);
+	virtual void Render(const mat4& cameraProjTransform, const mat4& cameraViewTransform);
 
-	virtual void RenderShadowMapping(const mat4& lightTransform);
+	virtual void RenderShadowMapping(const mat4& lightProjTransform, const mat4& lightViewTransform);
 protected:
 	Mesh* _mesh;
 	Texture2D* _texture;

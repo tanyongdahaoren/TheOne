@@ -217,6 +217,29 @@ void Mesh::UseBuffers()
 	glBindVertexArray(0);
 }
 
+void Mesh::BeginRender()
+{
+	glBindVertexArray(_vao);
+
+	if (_bufferDirty)
+	{
+		BindBufferDatas();
+	}
+
+}
+
+
+void Mesh::Render()
+{
+
+}
+
+
+void Mesh::EndRender()
+{
+	glBindVertexArray(0);
+}
+
 bool Mesh::HaveAttribute(int attrib)
 {
 	auto it = _attribs.find(attrib);

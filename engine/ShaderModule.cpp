@@ -143,7 +143,7 @@ void BaseLightShaderModule::InitUniformsLocation(GLuint programID)
 	_openNormalMapLocation = GLGetUniformLocation(programID, "u_open_shadow");
 }
 
-void BaseLightShaderModule::Use(Mesh* mesh, mat4 toWorldTransform)
+void BaseLightShaderModule::Use(Mesh* mesh, mat4 toWorldTransform, mat4 viewTransform, mat4 projTransform)
 {
 	float specularPower = BaseLight::GetSpecularPower();
 	float specularIntensity = BaseLight::GetSpecularIntensity();
@@ -263,9 +263,12 @@ void ShadowMapShaderModule::InitUniformsLocation(GLuint programID)
 	_shadowmapSamplerLocation = GLGetUniformLocation(programID, "u_sampler_shadowmap");
 }
 
-void ShadowMapShaderModule::Use(Mesh* mesh, mat4 toWorldTransform)
+void ShadowMapShaderModule::Use(Mesh* mesh, mat4 toWorldTransform, mat4 viewTransform, mat4 projTransform)
 {
 	DirectionLight* dirLight = Director::GetInstance()->GetCurrentTree()->_directionLight;
+
+	mat4 dirLightViewTransform = dirLight->GetShadowPassViewTransform();
+	mat4 dirLightProjTransform = dirLight->GetShadowPassProjTransform();
 
 	bool isOpenShadow = dirLight->IsOpenShadow();
 	glUniform1i(_openShadowLocation, isOpenShadow ? 1 : 0);
@@ -277,7 +280,7 @@ void ShadowMapShaderModule::Use(Mesh* mesh, mat4 toWorldTransform)
 			0.0, 0.0, 0.5, 0.0,
 			0.5, 0.5, 0.5, 1.0
 			);
-		mat4 vp = biasMatrix * dirLight->GetVP() * toWorldTransform;
+		mat4 vp = biasMatrix * dirLightProjTransform * dirLightViewTransform * toWorldTransform;
 		glUniformMatrix4fv(_lightMVPLocation, 1, GL_FALSE, &vp[0][0]);
 
 		glUniform1i(_shadowmapSamplerLocation, SHADOW_MAP_TEXTURE_DIRECTION_LIGHT_INDEX);
@@ -321,7 +324,7 @@ void SkeletonShaderModule::InitUniformsLocation(GLuint programID)
 	}
 }
 
-void SkeletonShaderModule::Use(Mesh* mesh, mat4 toWorldTransform)
+void SkeletonShaderModule::Use(Mesh* mesh, mat4 toWorldTransform, mat4 viewTransform, mat4 projTransform)
 {
 	//for skelon
 	glUniform1i(_openSkelonLocation, mesh->_skelon ? 1 : 0);

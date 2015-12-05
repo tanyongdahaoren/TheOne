@@ -74,6 +74,9 @@ public:
 	void UseBuffers();
 	bool HaveAttribute(int attrib);
 	void BoneTransform(float timeInSeconds);
+	void BeginRender();
+	void Render();
+	void EndRender();
 protected:
 	void InitMaterials(const aiScene* pScene, const std::string& Filename);
 	void BindBufferDatas();

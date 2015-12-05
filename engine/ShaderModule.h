@@ -31,7 +31,7 @@ public:
 
 	virtual void InitUniformsLocation(GLuint programID){}
 
-	virtual void Use(Mesh* mesh, mat4 toWorldTransform){}
+	virtual void Use(Mesh* mesh, mat4 toWorldTransform, mat4 viewTransform, mat4 projTransform){}
 };
 
 const int kMaxPointLightNum = 2;
@@ -45,7 +45,7 @@ public:
 
 	virtual void InitUniformsLocation(GLuint programID);
 
-	virtual void Use(Mesh* mesh, mat4 toWorldTransform);
+	virtual void Use(Mesh* mesh, mat4 toWorldTransform, mat4 viewTransform, mat4 projTransform);
 protected:
 	//base
 	struct tBaseLightLocation
@@ -95,7 +95,7 @@ public:
 
 	virtual void InitUniformsLocation(GLuint programID);
 
-	virtual void Use(Mesh* mesh, mat4 toWorldTransform);
+	virtual void Use(Mesh* mesh, mat4 toWorldTransform, mat4 viewTransform, mat4 projTransform);
 protected:
 	GLuint _openShadowLocation;
 	GLuint _lightMVPLocation;
@@ -112,7 +112,7 @@ public:
 	
 	virtual void InitUniformsLocation(GLuint programID);
 
-	virtual void Use(Mesh* mesh, mat4 toWorldTransform);
+	virtual void Use(Mesh* mesh, mat4 toWorldTransform, mat4 viewTransform, mat4 projTransform);
 protected:
 	GLuint _openSkelonLocation;
 	GLuint _boneLocation[kMaxBoneNum];

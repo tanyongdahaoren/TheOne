@@ -6,43 +6,6 @@
 //---------------
 //DrawNode
 //---------------
-void DrawNode::InitBuffers()
-{
-	EnsureCapacity(32);
-
-	_dirty = true;
-
-	_program = ShaderManager::GetInstance()->GetShader(shader_position_color);
-
-	glGenVertexArrays(1, &_vao);
-	glBindVertexArray(_vao);
-
-	glGenBuffers(1, &_vbo);
-	glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(V3F_C3B)*_vertBufferCount, _buffer, GL_STREAM_DRAW);
-
-	glEnableVertexAttribArray(eShaderVertAttribute_pos);
-	glEnableVertexAttribArray(eShaderVertAttribute_color);
-
-	glVertexAttribPointer(eShaderVertAttribute_pos, 3, GL_FLOAT, GL_FALSE, sizeof(V3F_C3B), (GLvoid *)offsetof(V3F_C3B, vertex));
-	glVertexAttribPointer(eShaderVertAttribute_color, 3, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(V3F_C3B), (GLvoid *)offsetof(V3F_C3B, color));
-
-	glDisableVertexAttribArray(eShaderVertAttribute_pos);
-	glDisableVertexAttribArray(eShaderVertAttribute_color);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-}
-
-void DrawNode::EnsureCapacity(int count)
-{
-	if (_vertCount + count > _vertBufferCount)
-	{
-		_vertBufferCount += max(_vertBufferCount, count);
-		_buffer = (V3F_C3B*)realloc(_buffer, _vertBufferCount*sizeof(V3F_C3B));
-	}
-}
-
 DrawNode::DrawNode()
 	: _vbo(0)
 	, _vao(0)
@@ -61,34 +24,62 @@ DrawNode::~DrawNode()
 	_vao = _vbo = 0;
 }
 
-void DrawNode::Render(Camera* camera)
+void DrawNode::InitBuffers()
+{
+	EnsureCapacity(32);
+
+	_dirty = true;
+
+	_program = ShaderManager::GetInstance()->GetShader(shader_position_color);
+
+	glGenVertexArrays(1, &_vao);
+	glBindVertexArray(_vao);
+
+	glGenBuffers(1, &_vbo);
+	glBindBuffer(GL_ARRAY_BUFFER, _vbo);
+	BindBufferDatas();
+	glBindVertexArray(0);
+}
+
+void DrawNode::BindBufferDatas()
+{
+	glBindBuffer(GL_ARRAY_BUFFER, _vbo);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(V3F_C3B)*_vertBufferCount, _buffer, GL_STREAM_DRAW);
+
+	glEnableVertexAttribArray(eShaderVertAttribute_pos);
+	glVertexAttribPointer(eShaderVertAttribute_pos, 3, GL_FLOAT, GL_FALSE, sizeof(V3F_C3B), (GLvoid *)offsetof(V3F_C3B, vertex));
+	
+	glEnableVertexAttribArray(eShaderVertAttribute_color);
+	glVertexAttribPointer(eShaderVertAttribute_color, 3, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(V3F_C3B), (GLvoid *)offsetof(V3F_C3B, color));
+
+	_dirty = false;
+}
+
+void DrawNode::EnsureCapacity(int count)
+{
+	if (_vertCount + count > _vertBufferCount)
+	{
+		_vertBufferCount += max(_vertBufferCount, count);
+		_buffer = (V3F_C3B*)realloc(_buffer, _vertBufferCount*sizeof(V3F_C3B));
+	}
+}
+
+void DrawNode::Render(const mat4& cameraProjTransform, const mat4& cameraViewTransform)
 {
 	// Use our shader
 	_program->Active();
 
-	const mat4& projectTransform = camera->GetProjectTransform();
-	const mat4& viewTransform = camera->GetViewTransform();
-	glm::mat4 MVP = projectTransform * viewTransform * _toWorldTransform;
+	glm::mat4 MVP = cameraProjTransform * cameraViewTransform * _toWorldTransform;
 	_program->SetUniformLocationWithMatrix4(UNIFORM_MVP, MVP);
-
+	glBindVertexArray(_vao);
+	
 	if (_dirty)
 	{
-		glBindBuffer(GL_ARRAY_BUFFER, _vbo);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(V3F_C3B)*_vertBufferCount, _buffer, GL_STREAM_DRAW);
-		_dirty = false;
+		BindBufferDatas();
 	}
-
-	glBindVertexArray(_vao);
-
-	glEnableVertexAttribArray(eShaderVertAttribute_pos);
-	glEnableVertexAttribArray(eShaderVertAttribute_color);
 
 	glDrawArrays(_mode, 0, _vertCount);
 
-	glDisableVertexAttribArray(eShaderVertAttribute_pos);
-	glDisableVertexAttribArray(eShaderVertAttribute_color);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
 }
 
@@ -128,11 +119,11 @@ void DrawLines::DrawLine(vec3 from, vec3 to, Color3B c1, Color3B c2)
 	AddVert(to, c2);
 }
 
-void DrawLines::Render(Camera* camera)
+void DrawLines::Render(const mat4& cameraProjTransform, const mat4& cameraViewTransform)
 {
 	glLineWidth(_lineWidth);
 
-	DrawNode::Render(camera);
+	DrawNode::Render(cameraProjTransform, cameraViewTransform);
 }
 
 void DrawLines::SetLineWidth(int w)
@@ -155,11 +146,11 @@ void DrawPoints::DrawPoint(vec3 pos, Color3B c)
 	AddVert(pos, c);
 }
 
-void DrawPoints::Render(Camera* camera)
+void DrawPoints::Render(const mat4& cameraProjTransform, const mat4& cameraViewTransform)
 {
 	glPointSize(_pointSize);
 
-	DrawNode::Render(camera);
+	DrawNode::Render(cameraProjTransform, cameraViewTransform);
 }
 
 void DrawPoints::SetPointSize(int s)

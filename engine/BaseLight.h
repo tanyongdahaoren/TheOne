@@ -9,6 +9,7 @@
 class BaseLight : public Camera
 {
 	friend class Tree;
+	friend class ShadowMapShaderModule;
 public:
 	BaseLight();
 	~BaseLight();
@@ -32,8 +33,9 @@ public:
 	bool IsOpenShadow(){ return _openShadow; }
 
 	Texture2D* GetTexture();
-	const mat4& GetVP(){ return _VP; }
 protected:
+	const mat4 GetShadowPassViewTransform();
+	const mat4 GetShadowPassProjTransform();
 	virtual void CaculateVP(){}
 
 	void BindRenderShadow();
@@ -48,7 +50,6 @@ protected:
 	//for shadow
 	bool _openShadow;
 	RenderToTexture* _shadowRTT;
-	mat4 _VP;
 };
 
 class DirectionLight : public BaseLight

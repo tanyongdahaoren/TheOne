@@ -250,7 +250,14 @@ int Director::Run()
 	BaseLight::SetSpecularIntensity(1);
 	BaseLight::SetSpecularPower(32);
 
-	
+	//line
+	{
+// 		DrawLines* n = new DrawLines;
+// 		par->AddChild(n);
+// 		n->DrawLine(vec3(0, 0, 0), vec3(500, 0, 0), Color3B::RED, Color3B::RED);
+// 		n->DrawLine(vec3(0, 0, 0), vec3(0, 500, 0), Color3B::GREEN, Color3B::GREEN);
+// 		n->DrawLine(vec3(0, 0, 0), vec3(0, 0, 500), Color3B::BLUE, Color3B::BLUE);
+	}
 		//dir light
 		DirectionLight* dirlight = new DirectionLight;
 		dirlight->SetColor(Color3F::WHITE);
@@ -282,10 +289,10 @@ int Director::Run()
 // 		par->AddChild(spotLight);
 	
 	
-	bool is_show_3dsp = false;
-	bool is_show_2dsp = false;
-	bool is_show_skelon = false;
-	bool is_show_shadow = true;
+		bool is_show_3dsp = false;
+		bool is_show_2dsp = true;
+		bool is_show_skelon = false;
+		bool is_show_shadow = true;
 	Sprite2D* sp2d = NULL;
 
 	//3d sprite/
@@ -317,7 +324,7 @@ int Director::Run()
 
 	if (is_show_shadow)
 	{
-		//dirlight->OpenShadow(true);
+		dirlight->OpenShadow(true);
 
 		Mesh* mesh = MeshManager::GetInstance()->LoadMeshFromFile("room_thickwalls.obj", false, false);
 		mesh->GenBuffers();
@@ -365,19 +372,12 @@ int Director::Run()
 		sp2d->SetPosition(vec3(5, 5, 5));
 		sp2d->SetAnchorPoint(vec3(0.5, 0.5, 0));
 		sp2d->SetScale2D(vec2(0.03, 0.03));
-		sp2d->EnableBillBoard(Sprite2D::eBillBoardType_rotate_y);
+		//sp2d->EnableBillBoard(Sprite2D::eBillBoardType_rotate_y);
 		sp2d->SetShader(shader_position_texture);
 		par->AddChild(sp2d);
 	}
  	
-	//line
-	{
-		DrawLines* n = new DrawLines;
-		par->AddChild(n);
-		n->DrawLine(vec3(0, 0, 0), vec3(500, 0, 0), Color3B::RED, Color3B::RED);
-		n->DrawLine(vec3(0, 0, 0), vec3(0, 500, 0), Color3B::GREEN, Color3B::GREEN);
-		n->DrawLine(vec3(0, 0, 0), vec3(0, 0, 500), Color3B::BLUE, Color3B::BLUE);
-	}
+	
 	
 	
 #define N 60

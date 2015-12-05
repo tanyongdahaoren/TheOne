@@ -76,6 +76,18 @@ void BaseLight::OpenShadow(bool b)
 	}
 }
 
+
+const mat4 BaseLight::GetShadowPassViewTransform()
+{
+	return _viewTransform;
+}
+
+
+const mat4 BaseLight::GetShadowPassProjTransform()
+{
+	return _projectTransform;
+}
+
 void BaseLight::BindRenderShadow()
 {
 	_shadowRTT->Bind();
@@ -110,8 +122,6 @@ void DirectionLight::CaculateVP()
 {
 	Orthographic(20, 20, -10, 30);
 	UpdateViewTransform();
-
-	_VP = _projectTransform * _viewTransform;
 }
 
 //-------------------

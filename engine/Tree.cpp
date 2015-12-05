@@ -43,7 +43,7 @@ void Tree::Travel()
 
 		_directionLight->CaculateVP();
 
-		VisitRenderShadowMapping(_directionLight->GetVP());
+		VisitRenderShadowMapping(_directionLight->GetShadowPassProjTransform(), _directionLight->GetShadowPassViewTransform());
 
 		_directionLight->UnBindRenderShadow();
 	}
@@ -55,7 +55,9 @@ void Tree::Travel()
 	{
 		sCurrentCamera = camera;
 
-		VisitRender(camera);
+		const mat4& cameraProjTransform = camera->GetProjectTransform();
+		const mat4& cameraViewTransform = camera->GetViewTransform();
+		VisitRender(cameraProjTransform, cameraViewTransform);
 	}
 }
 

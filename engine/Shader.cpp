@@ -68,11 +68,25 @@ void Shader::SetUniformLocationWithMatrix4(string uniform, const mat4& matrix)
 	glUniformMatrix4fv(_uniformsLocation[uniform], 1, GL_FALSE, &matrix[0][0]);
 }
 
-void Shader::Use(Mesh* mesh, mat4 toWorldTransform)
+void Shader::Use(unsigned int textureFlag, Mesh* mesh, mat4 toWorldTransform, mat4 viewTransform, mat4 projTransform)
 {
+	if (textureFlag & COLOR_TEXTURE_INDEX)
+	{
+		//SetUniformLocationWith1i(UNIFORM_TEXTURE_COLOR_SAMPLER, COLOR_TEXTURE_INDEX);
+	}
+	if (textureFlag & NORMAL_TEXTURE_INDEX)
+	{
+		//SetUniformLocationWith1i(UNIFORM_TEXTURE_NORMAL_MAP_SAMPLER, NORMAL_TEXTURE_INDEX);
+	}
+	
+	glm::mat4 MVP = projTransform * viewTransform * toWorldTransform;
+	SetUniformLocationWithMatrix4(UNIFORM_M,   toWorldTransform);
+	SetUniformLocationWithMatrix4(UNIFORM_V,   viewTransform);
+	SetUniformLocationWithMatrix4(UNIFORM_MVP, MVP);
+
 	for (auto module : _mudules)
 	{
-		module->Use(mesh, toWorldTransform);
+		module->Use(mesh, toWorldTransform, viewTransform, projTransform);
 	}
 }
 

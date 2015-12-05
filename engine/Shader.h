@@ -25,7 +25,7 @@ public:
 
 	void SetUniformLocationWithMatrix4(string uniform, const mat4& matrix);
 
-	virtual void Use(Mesh* mesh, mat4 toWorldTransform);
+	virtual void Use(unsigned int textureFlag, Mesh* mesh, mat4 toWorldTransform, mat4 viewTransform, mat4 projTransform);
 	
 protected:
 	virtual void InitUniformsLocation();
