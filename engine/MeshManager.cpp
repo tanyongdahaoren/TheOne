@@ -36,7 +36,7 @@ Mesh* MeshManager::LoadMeshFromFile(const string& fileName, bool skelon, bool ta
 		return mesh;
 	}
 
-	unsigned int flag = aiProcess_Triangulate| aiProcess_GenNormals	| aiProcess_FlipUVs;
+	unsigned int flag = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs;
 	if (tangent)
 	{
 		flag |= aiProcess_CalcTangentSpace;

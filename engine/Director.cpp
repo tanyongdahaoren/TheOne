@@ -252,11 +252,11 @@ int Director::Run()
 
 	//line
 	{
-// 		DrawLines* n = new DrawLines;
-// 		par->AddChild(n);
-// 		n->DrawLine(vec3(0, 0, 0), vec3(500, 0, 0), Color3B::RED, Color3B::RED);
-// 		n->DrawLine(vec3(0, 0, 0), vec3(0, 500, 0), Color3B::GREEN, Color3B::GREEN);
-// 		n->DrawLine(vec3(0, 0, 0), vec3(0, 0, 500), Color3B::BLUE, Color3B::BLUE);
+		DrawLines* n = new DrawLines;
+		par->AddChild(n);
+		n->DrawLine(vec3(0, 0, 0), vec3(500, 0, 0), Color3B::RED, Color3B::RED);
+		n->DrawLine(vec3(0, 0, 0), vec3(0, 500, 0), Color3B::GREEN, Color3B::GREEN);
+		n->DrawLine(vec3(0, 0, 0), vec3(0, 0, 500), Color3B::BLUE, Color3B::BLUE);
 	}
 		//dir light
 		DirectionLight* dirlight = new DirectionLight;
@@ -289,9 +289,9 @@ int Director::Run()
 // 		par->AddChild(spotLight);
 	
 	
-		bool is_show_3dsp = false;
+		bool is_show_3dsp = true;
 		bool is_show_2dsp = true;
-		bool is_show_skelon = false;
+		bool is_show_skelon = true;
 		bool is_show_shadow = true;
 	Sprite2D* sp2d = NULL;
 
@@ -363,16 +363,16 @@ int Director::Run()
 	if (is_show_2dsp)
 	{
 		EasyImage* image = new EasyImage;
-		image->InitWithFileName("white.png");
+		image->InitWithFileName("number.png");
 		Texture2D* texture = new Texture2D;
 		texture->LoadWithImage(image);
 
 		sp2d = new Sprite2D;
 		sp2d->InitWithTexture2D(texture);
-		sp2d->SetPosition(vec3(5, 5, 5));
+		sp2d->SetPosition(vec3(-3, 1, 2));
 		sp2d->SetAnchorPoint(vec3(0.5, 0.5, 0));
 		sp2d->SetScale2D(vec2(0.03, 0.03));
-		//sp2d->EnableBillBoard(Sprite2D::eBillBoardType_rotate_y);
+		sp2d->EnableBillBoard(Sprite2D::eBillBoardType_rotate_y);
 		sp2d->SetShader(shader_position_texture);
 		par->AddChild(sp2d);
 	}
@@ -390,17 +390,13 @@ int Director::Run()
 		{
 			during -= 1.0 / (double)N;
 
+			static float r = 0;
+			r+=0.1f;
+			
 			if (skelonMesh)
 			{
-				skelonMesh->BoneTransform(current);
+				skelonMesh->BoneTransform(r);
 			}
-
-			static int count = 0;
-			if (count == 1 && sp2d)
-			{
-				//sp2d->SetTexture(dirlight->GetTexture());
-			}
-			count++;
 
 			MainLoop();
 
