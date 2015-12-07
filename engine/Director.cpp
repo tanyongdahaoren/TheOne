@@ -258,13 +258,14 @@ int Director::Run()
 		n->DrawLine(vec3(0, 0, 0), vec3(0, 500, 0), Color3B::GREEN, Color3B::GREEN);
 		n->DrawLine(vec3(0, 0, 0), vec3(0, 0, 500), Color3B::BLUE, Color3B::BLUE);
 	}
-		//dir light
-		DirectionLight* dirlight = new DirectionLight;
-		dirlight->SetColor(Color3F::WHITE);
-		dirlight->SetDirection(vec3(-10, -10, -10));
-		dirlight->SetAmbientIntensity(0.1);
-		dirlight->SetDiffuseIntensity(0.8);
-		par->AddChild(dirlight);
+
+	//dir light
+	DirectionLight* dirlight = new DirectionLight;
+	dirlight->SetColor(Color3F::WHITE);
+	dirlight->SetDirection(vec3(-10, -10, -10));
+	dirlight->SetAmbientIntensity(0.1);
+	dirlight->SetDiffuseIntensity(0.8);
+	par->AddChild(dirlight);
 
 // 		PointLight* pointLight1 = new PointLight;
 // 		pointLight1->SetColor(Color3F::WHITE);
@@ -289,18 +290,15 @@ int Director::Run()
 // 		par->AddChild(spotLight);
 	
 	
-		bool is_show_3dsp = true;
-		bool is_show_2dsp = true;
-		bool is_show_skelon = true;
-		bool is_show_shadow = true;
+	bool is_show_3dsp = true;
+	bool is_show_2dsp = true;
+	bool is_show_skelon = true;
+	bool is_show_shadow = true;
 	Sprite2D* sp2d = NULL;
 
 	//3d sprite/
 	if (is_show_3dsp)
  	{
-		Mesh* mesh = MeshManager::GetInstance()->LoadMeshFromFile("box.obj", false, true);
-		mesh->GenBuffers();
-
 		EasyImage* image = new EasyImage;
 		image->InitWithFileName("bricks.jpg");
 		Texture2D* texture = new Texture2D;
@@ -313,11 +311,15 @@ int Director::Run()
 		normal_texture->LoadWithImage(normal_image);
 		normal_texture->SetWrapType(eWrapType_reapeat);
 
+		Mesh* mesh = MeshManager::GetInstance()->LoadMeshFromFile("box.obj", false, true);
+		mesh->GenBuffers();
+		mesh->SetNormalTexture(normal_texture);
+		mesh->SetTexture(texture);
+
 		Sprite3D* sp = new Sprite3D;
 		sp->InitWithMesh(mesh);
-		sp->SetTexture(texture);
-		sp->SetNormalTexture(normal_texture);
 		par->AddChild(sp);
+		sp->SetPosition(vec3(4,3,0));
 
 		sp3d = sp;
 	}
@@ -326,18 +328,18 @@ int Director::Run()
 	{
 		dirlight->OpenShadow(true);
 
-		Mesh* mesh = MeshManager::GetInstance()->LoadMeshFromFile("room_thickwalls.obj", false, false);
-		mesh->GenBuffers();
-
 		EasyImage* image = new EasyImage;
 		image->InitWithFileName("white.png");
 		Texture2D* texture = new Texture2D;
 		texture->LoadWithImage(image);
 		texture->SetWrapType(eWrapType_reapeat);
 
+		Mesh* mesh = MeshManager::GetInstance()->LoadMeshFromFile("room_thickwalls.obj", false, false);
+		mesh->GenBuffers();
+		mesh->SetTexture(texture);
+		
 		Sprite3D* sp = new Sprite3D;
 		sp->InitWithMesh(mesh);
-		sp->SetTexture(texture);
 		par->AddChild(sp);
 		sp->SetRotation(vec3(0,180,0));
 	}

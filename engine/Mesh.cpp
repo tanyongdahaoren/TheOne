@@ -29,12 +29,16 @@ Mesh::Mesh()
 	, _stridePerVertex(0)
 	, _scene(NULL)
 	, _boneNum(0)
+	, _normalTexture(NULL)
+	, _colorTexture(NULL)
 {
 
 }
 
 Mesh::~Mesh()
 {
+	SAFE_RELEASE(_normalTexture);
+	SAFE_RELEASE(_colorTexture);
 	if (_ebo != INVALID_OGL_VALUE)
 		glDeleteBuffers(1, &_ebo);
 	if (_vao != INVALID_OGL_VALUE)
@@ -193,6 +197,11 @@ void Mesh::BindBufferDatas()
 
 void Mesh::UseBuffers()
 {
+	if (HaveNormalMap())
+	{
+		_normalTexture->Bind(NORMAL_TEXTURE);
+	}
+	
 	glBindVertexArray(_vao);
 
 	if (_bufferDirty)
@@ -204,9 +213,20 @@ void Mesh::UseBuffers()
 	{
 		const uint MaterialIndex = _entries[i].MaterialIndex;
 		
-		if (MaterialIndex < _textures.size() && _textures[MaterialIndex])
+		if (_colorTexture)
 		{
-			_textures[MaterialIndex]->Bind(COLOR_TEXTURE);
+			_colorTexture->Bind(COLOR_TEXTURE);
+		}
+		else
+		{
+			if (MaterialIndex < _textures.size() && _textures[MaterialIndex])
+			{
+				_textures[MaterialIndex]->Bind(COLOR_TEXTURE);
+			}
+			else
+			{
+				//have not set texture, engine will create one
+			}
 		}
 
 		glDrawElementsBaseVertex(GL_TRIANGLES, _entries[i].NumIndices, GL_UNSIGNED_INT, (void*)(sizeof(uint) * _entries[i].BaseIndex), _entries[i].BaseVertex);
@@ -643,4 +663,28 @@ uint Mesh::FindScaling(float animationTime, const aiNodeAnim* pNodeAnim)
 	assert(0);
 
 	return 0;
+}
+
+void Mesh::SetNormalTexture(Texture2D* texture2D)
+{
+	SAFE_RELEASE(_normalTexture);
+	texture2D->Retain();
+	_normalTexture = texture2D;
+}
+
+bool Mesh::HaveNormalMap()
+{
+	return HaveAttribute(eShaderVertAttribute_tangent) && _normalTexture;
+}
+
+void Mesh::SetTexture(Texture2D* texture2D)
+{
+	SAFE_RELEASE(_colorTexture);
+	texture2D->Retain();
+	_colorTexture = texture2D;
+}
+
+Texture2D* Mesh::GetTexture()
+{
+	return _colorTexture;
 }

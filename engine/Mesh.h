@@ -74,6 +74,10 @@ public:
 	void UseBuffers();
 	bool HaveAttribute(int attrib);
 	void BoneTransform(float timeInSeconds);
+	void SetNormalTexture(Texture2D* texture2D);
+	bool HaveNormalMap();
+	void SetTexture(Texture2D* texture2D);
+	Texture2D* GetTexture();
 protected:
 	void InitMaterials(const aiScene* pScene, const std::string& Filename);
 	void BindBufferDatas();
@@ -120,6 +124,8 @@ public:
 	//for textures
 	vector<string> _textureNames;
 	Vector<Texture2D*> _textures;
+	Texture2D* _normalTexture;
+	Texture2D* _colorTexture;
 
 	bool _skelon;
 	uint _boneNum;

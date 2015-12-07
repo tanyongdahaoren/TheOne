@@ -5,8 +5,6 @@
 
 Sprite3D::Sprite3D()
 	: _mesh(NULL)
-	, _texture(NULL)
-	, _normalTexture(NULL)
 	, _program(NULL)
 	, _cullBack(true)
 	, _shadowShader(NULL)
@@ -16,8 +14,6 @@ Sprite3D::Sprite3D()
 
 Sprite3D::~Sprite3D()
 {
-	SAFE_RELEASE(_texture);
-	SAFE_RELEASE(_normalTexture);
 	SAFE_RELEASE(_mesh);
 }
 
@@ -44,24 +40,8 @@ void Sprite3D::SetShader(string shaderName)
 	_program = ShaderManager::GetInstance()->GetShader(shaderName);
 }
 
-void Sprite3D::SetTexture(Texture2D* texture2D)
-{
-	SAFE_RELEASE(_texture);
-	texture2D->Retain();
-	_texture = texture2D;
-}
-
-void Sprite3D::SetNormalTexture(Texture2D* texture2D)
-{
-	SAFE_RELEASE(_normalTexture);
-	texture2D->Retain();
-	_normalTexture = texture2D;
-}
-
 void Sprite3D::Render(const mat4& cameraProjTransform, const mat4& cameraViewTransform)
 {
-	_program->Active();
-
 	if (_cullBack)
 	{
 		glEnable(GL_CULL_FACE);
@@ -70,23 +50,16 @@ void Sprite3D::Render(const mat4& cameraProjTransform, const mat4& cameraViewTra
 	{
 		glDisable(GL_CULL_FACE);
 	}
+	
+	_program->Active();
 
 	unsigned int textureFlag = 0;
 	textureFlag |= COLOR_TEXTURE_INDEX;
-
-	if (_mesh->HaveAttribute(eShaderVertAttribute_tangent) && _normalTexture)
+	if (_mesh->HaveNormalMap())
 	{
 		textureFlag |= NORMAL_TEXTURE_INDEX;
-		
-		_normalTexture->Bind(NORMAL_TEXTURE);
-		_program->SetUniformLocationWith1i(UNIFORM_TEXTURE_NORMAL_MAP_SAMPLER, NORMAL_TEXTURE_INDEX);
 	}
 
-	_program->SetUniformLocationWith1i(UNIFORM_TEXTURE_COLOR_SAMPLER, COLOR_TEXTURE_INDEX);
-	if (_texture)
-	{
-		_texture->Bind(COLOR_TEXTURE);
-	}
 	_program->Use(textureFlag, _mesh, _toWorldTransform, cameraViewTransform, cameraProjTransform);
 
 	_mesh->UseBuffers();

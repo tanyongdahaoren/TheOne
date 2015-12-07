@@ -72,11 +72,11 @@ void Shader::Use(unsigned int textureFlag, Mesh* mesh, mat4 toWorldTransform, ma
 {
 	if (textureFlag & COLOR_TEXTURE_INDEX)
 	{
-		//SetUniformLocationWith1i(UNIFORM_TEXTURE_COLOR_SAMPLER, COLOR_TEXTURE_INDEX);
+		SetUniformLocationWith1i(UNIFORM_TEXTURE_COLOR_SAMPLER, COLOR_TEXTURE_INDEX);
 	}
 	if (textureFlag & NORMAL_TEXTURE_INDEX)
 	{
-		//SetUniformLocationWith1i(UNIFORM_TEXTURE_NORMAL_MAP_SAMPLER, NORMAL_TEXTURE_INDEX);
+		SetUniformLocationWith1i(UNIFORM_TEXTURE_NORMAL_MAP_SAMPLER, NORMAL_TEXTURE_INDEX);
 	}
 	
 	glm::mat4 MVP = projTransform * viewTransform * toWorldTransform;

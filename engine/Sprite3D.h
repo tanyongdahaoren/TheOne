@@ -17,18 +17,13 @@ public:
 	bool InitWithMesh(Mesh* mesh);
 
 	void SetShader(string shaderName);
-
-	void SetTexture(Texture2D* texture2D);
-
-	void SetNormalTexture(Texture2D* texture2D);
 protected:
 	virtual void Render(const mat4& cameraProjTransform, const mat4& cameraViewTransform);
 
 	virtual void RenderShadowMapping(const mat4& lightProjTransform, const mat4& lightViewTransform);
 protected:
 	Mesh* _mesh;
-	Texture2D* _texture;
-	Texture2D* _normalTexture;
+
 	Shader* _program;
 	bool _cullBack;
 #if DEBUG_SPRITE3D

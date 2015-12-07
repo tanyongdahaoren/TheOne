@@ -14,11 +14,10 @@ Sprite2D::Sprite2D()
 
 void Sprite2D::InitWithTexture2D(Texture2D* texture2d, Rect uv /*= Rect(0,0,1.0f,1.0f)*/)
 {
-	SetTexture(texture2d);
-
 	_cullBack = false;
 
 	Mesh* mesh = new Mesh;
+	mesh->SetTexture(texture2d);
 
 	mesh->_entries.resize(1);
 	mesh->_entries[0].MaterialIndex = 0;
@@ -73,13 +72,13 @@ void Sprite2D::InitWithTexture2D(Texture2D* texture2d, Rect uv /*= Rect(0,0,1.0f
 void Sprite2D::SetScaleX(float x)
 {
 	_modelScale.x = x;
-	Node::SetScaleX(x * _texture->_width);
+	Node::SetScaleX(x * _mesh->GetTexture()->_width);
 }
 
 void Sprite2D::SetScaleY(float y)
 {
 	_modelScale.y = y;
-	Node::SetScaleY(y * _texture->_height);
+	Node::SetScaleY(y * _mesh->GetTexture()->_height);
 }
 
 void Sprite2D::SetScale2D(vec2 scale)
