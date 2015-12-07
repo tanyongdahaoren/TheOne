@@ -57,6 +57,7 @@ typedef std::map<PixelFormat, PixelFormatInfo> PixelFormatInfoMap;
 class Texture2D : public Ref
 {
 public:
+	bool LoadTexture2D(string image);
 	bool LoadWithImage(EasyImage* image);
 	bool Load(PixelFormat pixelFormat, int w, int h, unsigned char * data);
 	void Bind(GLenum TextureUnit);
@@ -64,8 +65,8 @@ public:
 	void SetWrapType(eWrapType type);
 public:
 	GLuint _textureID;
-	unsigned short _width;
-	unsigned short _height;
+	int _width;
+	int _height;
 
 	static const PixelFormatInfoMap _pixelFormatInfoTables;
 };

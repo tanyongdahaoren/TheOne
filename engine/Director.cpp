@@ -298,7 +298,18 @@ int Director::Run()
 
 	//3d sprite/
 	if (is_show_3dsp)
- 	{
+	{
+// 		GLint n, i;
+// 		glGetIntegerv(GL_NUM_EXTENSIONS, &n);
+// 		for (i = 0; i < n; i++)
+// 		{
+// 			const char* st = (const char*)glGetStringi(GL_EXTENSIONS, i);
+// 			if (strcmp(st, "GL_EXT_texture_compression_s3tc")==0)
+// 			{
+// 				int a = 0;
+// 			}
+// 		}
+
 		EasyImage* image = new EasyImage;
 		image->InitWithFileName("bricks.jpg");
 		Texture2D* texture = new Texture2D;
@@ -326,12 +337,14 @@ int Director::Run()
 
 	if (is_show_shadow)
 	{
-		dirlight->OpenShadow(true);
+		dirlight->OpenShadow(false);
 
-		EasyImage* image = new EasyImage;
-		image->InitWithFileName("white.png");
 		Texture2D* texture = new Texture2D;
-		texture->LoadWithImage(image);
+		texture->LoadTexture2D("shadowmap.DDS");
+// 		EasyImage* image = new EasyImage;
+// 		image->InitWithFileName("white.png");
+// 		Texture2D* texture = new Texture2D;
+// 		texture->LoadWithImage(image);
 		texture->SetWrapType(eWrapType_reapeat);
 
 		Mesh* mesh = MeshManager::GetInstance()->LoadMeshFromFile("room_thickwalls.obj", false, false);

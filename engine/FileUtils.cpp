@@ -1,5 +1,6 @@
 #include "FileUtils.h"
 #include "Defines.h"
+#include <algorithm>
 
 std::string FileUtils::TCHAR2String(TCHAR* str)
 {
@@ -49,9 +50,25 @@ FileUtils::FileUtils()
 	CheckPath();
 }
 
-std::string FileUtils::FullPathForFilename(const std::string &filename)
+string FileUtils::FullPathForFilename(const string &filename)
 {
 	return _resourcePath + '/' + filename;
+}
+
+string FileUtils::GetExtensionName(const char* fileName)
+{
+	char buff[64];
+	strcpy(buff, fileName);
+	char* pos = strrchr(buff, '.');
+	if (pos)
+	{
+		string str(pos + 1);
+		//1.ת��ΪСд
+		//http://blog.csdn.net/infoworld/article/details/29872869
+		std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+		return str;
+	}
+	return "";
 }
 
 std::string FileUtils::ConvertPathFormatToUnixStyle(const std::string& path)

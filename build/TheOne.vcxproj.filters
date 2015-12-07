@@ -11,6 +11,9 @@
     <Filter Include="shaders">
       <UniqueIdentifier>{3b792cba-89a8-4e7b-90df-d2adf09ff728}</UniqueIdentifier>
     </Filter>
+    <Filter Include="engine\soil">
+      <UniqueIdentifier>{ffcc75b7-f2b7-430c-8842-dd54b7d5b497}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\engine\AutoReleasePool.h">
@@ -97,6 +100,27 @@
     <ClInclude Include="..\engine\ShaderModule.h">
       <Filter>engine</Filter>
     </ClInclude>
+    <ClInclude Include="..\engine\soil\image_DXT.h">
+      <Filter>engine\soil</Filter>
+    </ClInclude>
+    <ClInclude Include="..\engine\soil\image_helper.h">
+      <Filter>engine\soil</Filter>
+    </ClInclude>
+    <ClInclude Include="..\engine\soil\SOIL.h">
+      <Filter>engine\soil</Filter>
+    </ClInclude>
+    <ClInclude Include="..\engine\soil\stb_image_aug.h">
+      <Filter>engine\soil</Filter>
+    </ClInclude>
+    <ClInclude Include="..\engine\soil\stbi_DDS_aug.h">
+      <Filter>engine\soil</Filter>
+    </ClInclude>
+    <ClInclude Include="..\engine\soil\stbi_DDS_aug_c.h">
+      <Filter>engine\soil</Filter>
+    </ClInclude>
+    <ClInclude Include="..\engine\GLUtils.h">
+      <Filter>engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\engine\AutoReleasePool.cpp">
@@ -169,6 +193,21 @@
       <Filter>engine</Filter>
     </ClCompile>
     <ClCompile Include="..\engine\ShaderModule.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\soil\image_helper.c">
+      <Filter>engine\soil</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\soil\SOIL.c">
+      <Filter>engine\soil</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\soil\stb_image_aug.c">
+      <Filter>engine\soil</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\soil\image_DXT.c">
+      <Filter>engine\soil</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\GLUtils.cpp">
       <Filter>engine</Filter>
     </ClCompile>
   </ItemGroup>

@@ -17,16 +17,18 @@ public:
 
 	static void DestroyInstance();
 
-	bool IsAbsolutePath(const std::string& strPath) const;
+	bool IsAbsolutePath(const string& strPath) const;
 	
 	// D:\aaa\bbb\ccc\ddd\abc.txt --> D:/aaa/bbb/ccc/ddd/abc.txt
-	std::string ConvertPathFormatToUnixStyle(const std::string& path);
+	string ConvertPathFormatToUnixStyle(const string& path);
 
-	std::string TCHAR2String(TCHAR* str);
+	string TCHAR2String(TCHAR* str);
 	
-	Data GetDataFromFile(const std::string& filename, bool forString);
+	Data GetDataFromFile(const string& filename, bool forString);
 	
-	std::string FullPathForFilename(const std::string &filename);
+	std::string FullPathForFilename(const string &filename);
+
+	static string GetExtensionName(const char* fileName);
 protected:
 	void CheckPath();
 public:

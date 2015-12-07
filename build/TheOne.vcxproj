@@ -52,7 +52,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\external\glm;..\external\glfw\include;..\external\ImageMagick\include;..\external\ImageMagick\include\Magick++\lib;..\external\assimp\include;..\external\jpeg\include;..\engine;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\external\glm;..\external\glfw\include;..\external\ImageMagick\include;..\external\ImageMagick\include\Magick++\lib;..\external\assimp\include;..\external\jpeg\include;..\engine;..\engine\soil;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
@@ -95,6 +95,7 @@
     <ClInclude Include="..\engine\DrawNode.h" />
     <ClInclude Include="..\engine\EasyImage.h" />
     <ClInclude Include="..\engine\FileUtils.h" />
+    <ClInclude Include="..\engine\GLUtils.h" />
     <ClInclude Include="..\engine\RenderToTexture.h" />
     <ClInclude Include="..\engine\GLHeader.h" />
     <ClInclude Include="..\engine\List.h" />
@@ -108,6 +109,12 @@
     <ClInclude Include="..\engine\ShaderName.h" />
     <ClInclude Include="..\engine\Shader.h" />
     <ClInclude Include="..\engine\ShaderValue.h" />
+    <ClInclude Include="..\engine\soil\image_DXT.h" />
+    <ClInclude Include="..\engine\soil\image_helper.h" />
+    <ClInclude Include="..\engine\soil\SOIL.h" />
+    <ClInclude Include="..\engine\soil\stbi_DDS_aug.h" />
+    <ClInclude Include="..\engine\soil\stbi_DDS_aug_c.h" />
+    <ClInclude Include="..\engine\soil\stb_image_aug.h" />
     <ClInclude Include="..\engine\Sprite2D.h" />
     <ClInclude Include="..\engine\Sprite3D.h" />
     <ClInclude Include="..\engine\Texture2D.h" />
@@ -124,6 +131,7 @@
     <ClCompile Include="..\engine\DrawNode.cpp" />
     <ClCompile Include="..\engine\EasyImage.cpp" />
     <ClCompile Include="..\engine\FileUtils.cpp" />
+    <ClCompile Include="..\engine\GLUtils.cpp" />
     <ClCompile Include="..\engine\RenderToTexture.cpp" />
     <ClCompile Include="..\engine\glew.c" />
     <ClCompile Include="..\engine\Mesh.cpp" />
@@ -134,6 +142,10 @@
     <ClCompile Include="..\engine\ShaderModule.cpp" />
     <ClCompile Include="..\engine\ShaderName.cpp" />
     <ClCompile Include="..\engine\Shader.cpp" />
+    <ClCompile Include="..\engine\soil\image_DXT.c" />
+    <ClCompile Include="..\engine\soil\image_helper.c" />
+    <ClCompile Include="..\engine\soil\SOIL.c" />
+    <ClCompile Include="..\engine\soil\stb_image_aug.c" />
     <ClCompile Include="..\engine\Sprite2D.cpp" />
     <ClCompile Include="..\engine\Sprite3D.cpp" />
     <ClCompile Include="..\engine\Texture2D.cpp" />

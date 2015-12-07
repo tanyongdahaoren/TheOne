@@ -1,6 +1,8 @@
 #include "Texture2D.h"
 #include "EasyImage.h"
 #include "Defines.h"
+#include "SOIL.h"
+#include "FileUtils.h"
 
 typedef PixelFormatInfoMap::value_type PixelFormatInfoMapValue;
 static const PixelFormatInfoMapValue TexturePixelFormatInfoTablesValue[] =
@@ -13,6 +15,36 @@ static const PixelFormatInfoMapValue TexturePixelFormatInfoTablesValue[] =
 
 const PixelFormatInfoMap Texture2D::_pixelFormatInfoTables(TexturePixelFormatInfoTablesValue,
 	TexturePixelFormatInfoTablesValue + ARRAY_SIZE(TexturePixelFormatInfoTablesValue));
+
+bool Texture2D::LoadTexture2D(string image)
+{
+	GLuint tex_id = 0;
+	string extensionName = FileUtils::GetExtensionName(image.c_str());
+
+	uint flag = 0;
+
+	if (extensionName == "dds")
+	{
+		flag = SOIL_FLAG_DDS_LOAD_DIRECT;
+	}
+	else
+	{
+		flag = SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT;
+	}
+
+	GLuint tex_2d = SOIL_load_OGL_texture(image.c_str(), SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, flag
+		,&_width
+		,&_height);
+	if (0 == tex_2d)
+	{
+		return false;
+	}
+	else
+	{
+		_textureID = tex_2d;
+	}
+	return true;
+}
 
 bool Texture2D::LoadWithImage(EasyImage* easyImage)
 {
