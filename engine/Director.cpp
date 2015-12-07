@@ -223,6 +223,7 @@ int Director::Run()
 	double last, current, during = 0.0;
 	last = glfwGetTime();
 
+
 	//init eninge
 	ShaderManager::GetInstance();
 	FileUtils::GetInstance();
