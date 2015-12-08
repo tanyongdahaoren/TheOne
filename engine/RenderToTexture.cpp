@@ -28,7 +28,7 @@ void RenderToTexture::InitBuffer(int width, int height, PixelFormat pixelFormat)
 
 	_texture = new Texture2D;
 	_texture->Retain();
-	_texture->Load(pixelFormat, width, height, 0);
+	_texture->LoadDepthTexture(width, height);
 
 	//-------------------------
 	//ATTACHMENT type :

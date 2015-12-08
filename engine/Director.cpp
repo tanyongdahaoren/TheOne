@@ -26,7 +26,6 @@ GLFWwindow* window;
 #include "DrawNode.h"
 #include "Sprite2D.h"
 #include "Sprite3D.h"
-#include "EasyImage.h"
 #include "Texture2D.h"
 #include "MeshManager.h"
 
@@ -210,7 +209,6 @@ int Director::Run()
 	
 	// Ensure we can capture the escape key being pressed below
 	glfwSetInputMode(window, GLFW_STICKY_KEYS, GL_TRUE);
-
 	glfwSetCursorPos(window, sWinW/2, sWinH/2);
 	glfwSetCursorPosCallback(window, cursor_position_callback);
 	glfwSetMouseButtonCallback(window, mouse_button_callback);
@@ -300,27 +298,12 @@ int Director::Run()
 	//3d sprite/
 	if (is_show_3dsp)
 	{
-// 		GLint n, i;
-// 		glGetIntegerv(GL_NUM_EXTENSIONS, &n);
-// 		for (i = 0; i < n; i++)
-// 		{
-// 			const char* st = (const char*)glGetStringi(GL_EXTENSIONS, i);
-// 			if (strcmp(st, "GL_EXT_texture_compression_s3tc")==0)
-// 			{
-// 				int a = 0;
-// 			}
-// 		}
-
-		EasyImage* image = new EasyImage;
-		image->InitWithFileName("bricks.jpg");
 		Texture2D* texture = new Texture2D;
-		texture->LoadWithImage(image);
+		texture->LoadTextureFromImage("bricks.jpg");
 		texture->SetWrapType(eWrapType_reapeat);
 
-		EasyImage* normal_image = new EasyImage;
-		normal_image->InitWithFileName("bricks_normal_map.jpg");
 		Texture2D* normal_texture = new Texture2D;
-		normal_texture->LoadWithImage(normal_image);
+		normal_texture->LoadTextureFromImage("bricks_normal_map.jpg");
 		normal_texture->SetWrapType(eWrapType_reapeat);
 
 		Mesh* mesh = MeshManager::GetInstance()->LoadMeshFromFile("box.obj", false, true);
@@ -338,14 +321,10 @@ int Director::Run()
 
 	if (is_show_shadow)
 	{
-		dirlight->OpenShadow(false);
+		dirlight->OpenShadow(true);
 
 		Texture2D* texture = new Texture2D;
-		texture->LoadTexture2D("shadowmap.DDS");
-// 		EasyImage* image = new EasyImage;
-// 		image->InitWithFileName("white.png");
-// 		Texture2D* texture = new Texture2D;
-// 		texture->LoadWithImage(image);
+		texture->LoadTextureFromImage("shadowmap.DDS");
 		texture->SetWrapType(eWrapType_reapeat);
 
 		Mesh* mesh = MeshManager::GetInstance()->LoadMeshFromFile("room_thickwalls.obj", false, false);
@@ -378,16 +357,14 @@ int Director::Run()
 	//2d sprite
 	if (is_show_2dsp)
 	{
-		EasyImage* image = new EasyImage;
-		image->InitWithFileName("number.png");
 		Texture2D* texture = new Texture2D;
-		texture->LoadWithImage(image);
+		texture->LoadTextureFromImage("img_cheryl.jpg");
 
 		sp2d = new Sprite2D;
 		sp2d->InitWithTexture2D(texture);
 		sp2d->SetPosition(vec3(-3, 1, 2));
 		sp2d->SetAnchorPoint(vec3(0.5, 0.5, 0));
-		sp2d->SetScale2D(vec2(0.03, 0.03));
+		sp2d->SetScale2D(vec2(0.01, 0.01));
 		sp2d->EnableBillBoard(Sprite2D::eBillBoardType_rotate_y);
 		sp2d->SetShader(shader_position_texture);
 		par->AddChild(sp2d);

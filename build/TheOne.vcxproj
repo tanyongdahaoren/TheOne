@@ -52,14 +52,14 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\external\glm;..\external\glfw\include;..\external\ImageMagick\include;..\external\ImageMagick\include\Magick++\lib;..\external\assimp\include;..\external\jpeg\include;..\engine;..\engine\soil;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\external\glm;..\external\glfw\include;..\external\assimp\include;..\engine;..\engine\soil;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;glu32.lib;opengl32.lib;glfw3.lib;libjpeg.lib;CORE_DB_Magick++_.lib;assimpd.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\external\glfw\prebuilt;..\external\jpeg\prebuilt;..\external\ImageMagick\prebuilt;..\external\assimp\prebuilt</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib;glu32.lib;opengl32.lib;glfw3.lib;assimpd.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\external\glfw\prebuilt;..\external\assimp\prebuilt</AdditionalLibraryDirectories>
       <IgnoreSpecificDefaultLibraries>
       </IgnoreSpecificDefaultLibraries>
     </Link>
@@ -93,7 +93,6 @@
     <ClInclude Include="..\engine\Defines.h" />
     <ClInclude Include="..\engine\Director.h" />
     <ClInclude Include="..\engine\DrawNode.h" />
-    <ClInclude Include="..\engine\EasyImage.h" />
     <ClInclude Include="..\engine\FileUtils.h" />
     <ClInclude Include="..\engine\GLUtils.h" />
     <ClInclude Include="..\engine\RenderToTexture.h" />
@@ -129,7 +128,6 @@
     <ClCompile Include="..\engine\Data.cpp" />
     <ClCompile Include="..\engine\Director.cpp" />
     <ClCompile Include="..\engine\DrawNode.cpp" />
-    <ClCompile Include="..\engine\EasyImage.cpp" />
     <ClCompile Include="..\engine\FileUtils.cpp" />
     <ClCompile Include="..\engine\GLUtils.cpp" />
     <ClCompile Include="..\engine\RenderToTexture.cpp" />

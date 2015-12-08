@@ -70,9 +70,6 @@
     <ClInclude Include="..\engine\GLHeader.h">
       <Filter>engine</Filter>
     </ClInclude>
-    <ClInclude Include="..\engine\EasyImage.h">
-      <Filter>engine</Filter>
-    </ClInclude>
     <ClInclude Include="..\engine\Sprite2D.h">
       <Filter>engine</Filter>
     </ClInclude>
@@ -166,9 +163,6 @@
       <Filter>engine</Filter>
     </ClCompile>
     <ClCompile Include="..\engine\glew.c">
-      <Filter>engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\EasyImage.cpp">
       <Filter>engine</Filter>
     </ClCompile>
     <ClCompile Include="..\engine\Sprite2D.cpp">

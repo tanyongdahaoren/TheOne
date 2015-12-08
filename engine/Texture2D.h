@@ -1,8 +1,10 @@
 #pragma once
 
-#include "EasyImage.h"
 #include "GLHeader.h"
 #include "Types.h"
+#include <map>
+#include "Ref.h"
+using namespace std;
 
 #define COLOR_TEXTURE              GL_TEXTURE0
 #define COLOR_TEXTURE_INDEX        0
@@ -10,6 +12,7 @@
 #define NORMAL_TEXTURE_INDEX       1
 #define SHADOW_MAP_TEXTURE_DIRECTION_LIGHT				GL_TEXTURE10
 #define SHADOW_MAP_TEXTURE_DIRECTION_LIGHT_INDEX        10
+
 enum eFilterType
 {
 	eFilterType_nearest = GL_NEAREST,
@@ -57,9 +60,8 @@ typedef std::map<PixelFormat, PixelFormatInfo> PixelFormatInfoMap;
 class Texture2D : public Ref
 {
 public:
-	bool LoadTexture2D(string image);
-	bool LoadWithImage(EasyImage* image);
-	bool Load(PixelFormat pixelFormat, int w, int h, unsigned char * data);
+	bool LoadTextureFromImage(string image);
+	bool LoadDepthTexture(int w, int h);
 	void Bind(GLenum TextureUnit);
 	void SetFilterType(eFilterType type);
 	void SetWrapType(eWrapType type);

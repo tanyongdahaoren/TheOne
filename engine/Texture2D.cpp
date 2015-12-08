@@ -1,5 +1,4 @@
 #include "Texture2D.h"
-#include "EasyImage.h"
 #include "Defines.h"
 #include "SOIL.h"
 #include "FileUtils.h"
@@ -16,7 +15,7 @@ static const PixelFormatInfoMapValue TexturePixelFormatInfoTablesValue[] =
 const PixelFormatInfoMap Texture2D::_pixelFormatInfoTables(TexturePixelFormatInfoTablesValue,
 	TexturePixelFormatInfoTablesValue + ARRAY_SIZE(TexturePixelFormatInfoTablesValue));
 
-bool Texture2D::LoadTexture2D(string image)
+bool Texture2D::LoadTextureFromImage(string image)
 {
 	GLuint tex_id = 0;
 	string extensionName = FileUtils::GetExtensionName(image.c_str());
@@ -29,7 +28,7 @@ bool Texture2D::LoadTexture2D(string image)
 	}
 	else
 	{
-		flag = SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT;
+		flag = SOIL_FLAG_MIPMAPS | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT;
 	}
 
 	GLuint tex_2d = SOIL_load_OGL_texture(image.c_str(), SOIL_LOAD_AUTO, SOIL_CREATE_NEW_ID, flag
@@ -46,44 +45,26 @@ bool Texture2D::LoadTexture2D(string image)
 	return true;
 }
 
-bool Texture2D::LoadWithImage(EasyImage* easyImage)
+bool Texture2D::LoadDepthTexture(int w, int h)
 {
-	const Magick::Image image = easyImage->GetImage();
-	const Magick::Blob& blob = easyImage->GetBlob();
-
-	return Load(PixelFormat::RGBA8888, image.columns(), image.rows(), (unsigned char*)blob.data());
-}
-
-bool Texture2D::Load(PixelFormat pixelFormat, int w, int h, unsigned char * data)
-{
-	const PixelFormatInfo& info = _pixelFormatInfoTables.at(pixelFormat);
-
 	_width = w;
 	_height = h;
-
-	// clean possible GL error
 	GLenum err = glGetError();
 	if (err != GL_NO_ERROR)
 	{
 		printf("glError: 0x%04X", err);
 	}
-	
+
 	glGenTextures(1, &_textureID);
 
 	glBindTexture(GL_TEXTURE_2D, _textureID);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
- 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
- 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-	if (pixelFormat == PixelFormat::depth)
-	{
-// 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
-// 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
-	}
-
-	glTexImage2D(GL_TEXTURE_2D, 0, info.internalFormat, _width, _height, 0, info.format, info.type, data);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT, _width, _height, 0, GL_DEPTH_COMPONENT, GL_FLOAT, 0);
 
 	err = glGetError();
 	if (err != GL_NO_ERROR)

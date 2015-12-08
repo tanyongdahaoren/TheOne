@@ -43,7 +43,7 @@ void Sprite2D::InitWithTexture2D(Texture2D* texture2d, Rect uv /*= Rect(0,0,1.0f
 	mesh->_indices.push_back(2);
 	mesh->_indices.push_back(3);
 
-	vec2 uvs[4] = { uv.origin, vec2(uv.getMaxX(), uv.getMinY()), vec2(uv.getMaxX(), uv.getMaxY()), vec2(uv.getMinX(), uv.getMaxY()) };
+	vec2 uvs[4] = { vec2(uv.getMinX(), uv.getMaxY()), vec2(uv.getMaxX(), uv.getMaxY()), vec2(uv.getMaxX(), uv.getMinY()), vec2(uv.getMinX(), uv.getMinY()) };
 	for (int i = 0; i < 4; i++)
 	{
 		mesh->_vertexDatas[eShaderVertAttribute_texcood].push_back(uvs[i].x);

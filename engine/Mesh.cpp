@@ -440,10 +440,8 @@ void Mesh::GenTextures()
 {
 	for (int i = 0; i < _textureNames.size(); i++)
 	{
-		EasyImage* image = new EasyImage;
-		image->InitWithFileName(_textureNames[i]);
 		Texture2D* texture = new Texture2D;
-		texture->LoadWithImage(image);
+		texture->LoadTextureFromImage(_textureNames[i]);
 		_textures.push_back(texture);
 	}
 }
