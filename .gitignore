@@ -7,5 +7,7 @@ build/Debug/TheOne.ilk
 build/Debug/TheOne.pdb
 build/Debug/vc120.pdb
 build/Debug/*.obj
+build/Debug/TheOne.exp
+build/Debug/TheOne.lib
 *.log
 *.idb

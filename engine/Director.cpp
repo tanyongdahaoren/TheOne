@@ -107,6 +107,7 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 	}
 	camera->SetPosition(pos);
 }
+
 static const char* get_button_name(int button)
 {
 	switch (button)
@@ -301,7 +302,7 @@ int Director::Run()
 			Node* curTest = Director::GetInstance()->_trees[0]->GetChildren().front();
 			TestBase* c = dynamic_cast<TestBase*>(curTest);
 			c->Step();
-
+			
 			MainLoop();
 
 			// Swap buffers
