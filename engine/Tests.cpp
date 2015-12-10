@@ -441,7 +441,7 @@ TestSkeleton::TestSkeleton()
 	AddChild(camera);
 
 	_skelonMesh = MeshManager::GetInstance()->LoadMeshFromFile("boblampclean.md5mesh",
-		MeshAttribStep_pos | MeshAttribStep_texcood | MeshAttribStep_bone);
+		MeshAttribStep_pos | MeshAttribStep_texcood | MeshAttribStep_gen_normal_smooth | MeshAttribStep_bone);
 	_skelonMesh->GenTextures();
 
 	Sprite3D* sp = new Sprite3D;
