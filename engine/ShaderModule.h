@@ -124,7 +124,7 @@ typedef ShaderInfoMap::value_type ShaderInfoMapValue;
 static const ShaderInfoMapValue ShaderInfoMapTableValue[] =
 {
 	ShaderInfoMapValue(shader_position_color,   ShaderInfo(PositionColor_vert, PositionColor_frag, string(""))),
-	ShaderInfoMapValue(shader_position_texture, ShaderInfo(PositionTexture_vert, PositionTexture_frag, string(""))),
+	ShaderInfoMapValue(shader_position_texture, ShaderInfo(PositionTexture_vert, PositionTexture_frag, module_skeleton, string(""))),
 	ShaderInfoMapValue(shader_depth_rtt,        ShaderInfo(DepthRTT_vert, DepthRTT_frag, module_skeleton, string(""))),
 	ShaderInfoMapValue(shader_base_light,       ShaderInfo(BaseLight_vert, BaseLight_frag, module_base_light, module_shadow_map, module_skeleton, string("")))
 };

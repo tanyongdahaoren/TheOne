@@ -57,18 +57,40 @@ struct PixelFormatInfo
 
 typedef std::map<PixelFormat, PixelFormatInfo> PixelFormatInfoMap;
 
-class Texture2D : public Ref
+class Texture : public Ref
+{
+public:
+	virtual void Bind(GLenum textureUnit) = 0;
+public:
+	GLuint _textureID;
+};
+
+class Texture2D : public Texture
 {
 public:
 	bool LoadTextureFromImage(string image);
 	bool LoadDepthTexture(int w, int h);
-	void Bind(GLenum TextureUnit);
 	void SetFilterType(eFilterType type);
 	void SetWrapType(eWrapType type);
+	virtual void Bind(GLenum TextureUnit);
 public:
 	GLuint _textureID;
 	int _width;
 	int _height;
 
 	static const PixelFormatInfoMap _pixelFormatInfoTables;
+};
+
+class TextureCubeMap : public Texture
+{
+public:
+	bool LoadTextureFromImages( const string& PosXFilename,
+								const string& NegXFilename,
+								const string& PosYFilename,
+								const string& NegYFilename,
+								const string& PosZFilename,
+								const string& NegZFilename);
+	virtual void Bind(GLenum TextureUnit);
+public:
+	GLuint _textureID;
 };

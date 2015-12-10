@@ -155,9 +155,9 @@ SpotLight::SpotLight()
 
 void SpotLight::SetDirection(vec3 direction)
 {
-	_direction = direction;
+	_direction = normalize(direction);
 	_dl->Clear();
-	_dl->DrawLine(vec3(0,0,0), direction, Color3B::YELLOW, Color3B::GREEN);
+	_dl->DrawLine(vec3(0, 0, 0), _direction, Color3B::YELLOW, Color3B::GREEN);
 }
 
 void SpotLight::SetCutoff(float val)

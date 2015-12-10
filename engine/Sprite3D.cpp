@@ -14,14 +14,11 @@ Sprite3D::Sprite3D()
 
 Sprite3D::~Sprite3D()
 {
-	SAFE_RELEASE(_mesh);
 }
 
 bool Sprite3D::InitWithMesh(Mesh* mesh)
 {
-	SAFE_RELEASE(_mesh);
 	_mesh = mesh;
-	_mesh->Retain();
 
 	SetShader(shader_base_light);
 

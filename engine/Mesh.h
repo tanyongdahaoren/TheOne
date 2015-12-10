@@ -11,7 +11,7 @@ using namespace std;
 #include "Types.h"
 #include "Ref.h"
 
-#include "Texture2D.h"
+#include "Texture.h"
 #include "Vector.h"
 
 #define INVALID_MATERIAL 0xFFFFFFFF
@@ -39,10 +39,22 @@ struct MeshVertexAttrib
 	int offset;
 };
 
+enum MeshAttribStep
+{
+	MeshAttribStep_pos = 1,
+	MeshAttribStep_texcood = 1<<1,
+	MeshAttribStep_gen_normal = 1<<2,
+	MeshAttribStep_gen_normal_smooth = 1<<3,
+	MeshAttribStep_bone = 1<<4,
+	MeshAttribStep_tangent = 1<<5,
+};
+
+
 class Mesh : public Ref
 {
 	friend class Sprite2D;
 	friend class Sprite3D;
+	friend class SkyBox;
 	friend class MeshManager;
 
 	struct MeshEntry 
@@ -68,7 +80,7 @@ class Mesh : public Ref
 public:
 	Mesh();
 	~Mesh();
-	bool InitFromFile(const string& fileName, bool skelon, unsigned int flag);
+	bool InitFromFile(const string& fileName, uint flag);
 	void GenBuffers();
 	void GenTextures();
 	void UseBuffers();
@@ -76,8 +88,9 @@ public:
 	void BoneTransform(float timeInSeconds);
 	void SetNormalTexture(Texture2D* texture2D);
 	bool HaveNormalMap();
-	void SetTexture(Texture2D* texture2D);
-	Texture2D* GetTexture();
+	bool HaveBone();
+	void SetColorTexture(Texture* texture);
+	Texture* GetColorTexture();
 protected:
 	void InitMaterials(const aiScene* pScene, const std::string& Filename);
 	void BindBufferDatas();
@@ -125,9 +138,8 @@ public:
 	vector<string> _textureNames;
 	Vector<Texture2D*> _textures;
 	Texture2D* _normalTexture;
-	Texture2D* _colorTexture;
+	Texture*   _colorTexture;
 
-	bool _skelon;
 	uint _boneNum;
 	map<string, uint> _boneMapping; // maps a bone name to its index
 	vector<BoneInfo> _bonesInfo;

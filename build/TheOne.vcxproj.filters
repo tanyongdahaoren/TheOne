@@ -64,9 +64,6 @@
     <ClInclude Include="..\engine\ShaderManager.h">
       <Filter>engine</Filter>
     </ClInclude>
-    <ClInclude Include="..\engine\Texture2D.h">
-      <Filter>engine</Filter>
-    </ClInclude>
     <ClInclude Include="..\engine\GLHeader.h">
       <Filter>engine</Filter>
     </ClInclude>
@@ -118,6 +115,15 @@
     <ClInclude Include="..\engine\GLUtils.h">
       <Filter>engine</Filter>
     </ClInclude>
+    <ClInclude Include="..\engine\Texture.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\engine\SkyBox.h">
+      <Filter>engine</Filter>
+    </ClInclude>
+    <ClInclude Include="..\engine\Tests.h">
+      <Filter>engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\engine\AutoReleasePool.cpp">
@@ -157,9 +163,6 @@
       <Filter>engine</Filter>
     </ClCompile>
     <ClCompile Include="..\engine\ShaderManager.cpp">
-      <Filter>engine</Filter>
-    </ClCompile>
-    <ClCompile Include="..\engine\Texture2D.cpp">
       <Filter>engine</Filter>
     </ClCompile>
     <ClCompile Include="..\engine\glew.c">
@@ -202,6 +205,15 @@
       <Filter>engine\soil</Filter>
     </ClCompile>
     <ClCompile Include="..\engine\GLUtils.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\Texture.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\SkyBox.cpp">
+      <Filter>engine</Filter>
+    </ClCompile>
+    <ClCompile Include="..\engine\Tests.cpp">
       <Filter>engine</Filter>
     </ClCompile>
   </ItemGroup>

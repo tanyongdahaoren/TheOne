@@ -12,12 +12,19 @@ Sprite2D::Sprite2D()
 
 }
 
+
+Sprite2D::~Sprite2D()
+{
+	SAFE_RELEASE(_mesh);
+}
+
 void Sprite2D::InitWithTexture2D(Texture2D* texture2d, Rect uv /*= Rect(0,0,1.0f,1.0f)*/)
 {
 	_cullBack = false;
 
 	Mesh* mesh = new Mesh;
-	mesh->SetTexture(texture2d);
+	mesh->Retain();
+	mesh->SetColorTexture(texture2d);
 
 	mesh->_entries.resize(1);
 	mesh->_entries[0].MaterialIndex = 0;
@@ -25,8 +32,7 @@ void Sprite2D::InitWithTexture2D(Texture2D* texture2d, Rect uv /*= Rect(0,0,1.0f
 	mesh->_entries[0].BaseVertex = 0;
 	mesh->_entries[0].BaseIndex = 0;
 
-	mesh->_attribFlag = aiProcess_Triangulate | aiProcess_GenNormals | aiProcess_FlipUVs;
-	mesh->_skelon = false;
+	mesh->_attribFlag = MeshAttribStep_pos | MeshAttribStep_texcood | MeshAttribStep_gen_normal;
 	mesh->FillVertexAttributeWithFlag();
 
 	//------------
@@ -72,13 +78,13 @@ void Sprite2D::InitWithTexture2D(Texture2D* texture2d, Rect uv /*= Rect(0,0,1.0f
 void Sprite2D::SetScaleX(float x)
 {
 	_modelScale.x = x;
-	Node::SetScaleX(x * _mesh->GetTexture()->_width);
+	Node::SetScaleX(x * GetTextureWidth());
 }
 
 void Sprite2D::SetScaleY(float y)
 {
 	_modelScale.y = y;
-	Node::SetScaleY(y * _mesh->GetTexture()->_height);
+	Node::SetScaleY(y * GetTextureHeight());
 }
 
 void Sprite2D::SetScale2D(vec2 scale)
@@ -90,6 +96,20 @@ void Sprite2D::SetScale2D(vec2 scale)
 glm::vec2 Sprite2D::GetScale2D()
 {
 	return _modelScale;
+}
+
+
+int Sprite2D::GetTextureWidth()
+{
+	Texture2D* t = dynamic_cast<Texture2D*>(_mesh->GetColorTexture());
+	return t->_width;
+}
+
+
+int Sprite2D::GetTextureHeight()
+{
+	Texture2D* t = dynamic_cast<Texture2D*>(_mesh->GetColorTexture());
+	return t->_height;
 }
 
 void Sprite2D::SetScale(vec3 scale)
@@ -137,7 +157,7 @@ void Sprite2D::UpdateWorldTransorm(const mat4& parentToWorldTransform)
 	else if (_billBoardType == eBillBoardType_rotate_y)
 	{
 		newY = vec4(0, 1, 0, 0);
-		vec3 z = cross(vec3(camX), vec3(newY)); z = normalize(z);
+		vec3 z = cross(vec3(camX), vec3(newY)); z = -normalize(z);
 		newZ = vec4(z.x, z.y, z.z, 0);
 		vec3 x = cross(vec3(newZ), vec3(newY)); x = normalize(x);
 		newX = vec4(x.x, x.y, x.z, 0);

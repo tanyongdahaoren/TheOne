@@ -26,8 +26,10 @@ GLFWwindow* window;
 #include "DrawNode.h"
 #include "Sprite2D.h"
 #include "Sprite3D.h"
-#include "Texture2D.h"
+#include "Texture.h"
+#include "SkyBox.h"
 #include "MeshManager.h"
+#include "Tests.h"
 
 static bool sDragMouse = false;
 static vec2 sPreCursorPos = vec2(sWinW/2, sWinH/2);
@@ -46,17 +48,38 @@ static void cursor_position_callback(GLFWwindow* window, double x, double y)
 	sPreCursorPos = vec2(x, y);
 }
 
+Tests TheOneTest;
+int test_id = 0;
+void reset_test();
+extern float sCameraMoveSpeed;
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	if (action != GLFW_REPEAT && action != GLFW_PRESS)
 		return;
+	if (key == GLFW_KEY_LEFT)
+	{
+
+		test_id--;
+		reset_test();
+		return;
+	}
+	else if (key == GLFW_KEY_RIGHT)
+	{
+		test_id++;
+		reset_test();
+		return;
+	}
+	
 	Camera* camera = Director::GetInstance()->GetCurrentTree()->GetCurrentCamera();
+	if (!camera)
+	{
+		return;
+	}
 	mat4 m = camera->GetToWorldTransform();
 	vec3 forward = vec3(-m[2][0], -m[2][1], -m[2][2]);
 	vec3 right = vec3(m[0][0], m[0][1], m[0][2]);
 	vec3 pos = camera->GetPosition();
 
-	static float sCameraMoveSpeed = 1.5;
 	switch (key)
 	{
 	case GLFW_KEY_W:
@@ -232,32 +255,23 @@ int Director::Run()
 	Tree* tree = new Tree;
 	_trees.push_back(tree);
 
+	//reset_test();
+
 	Node* par = new Node;
 	tree->AddChild(par);
 	
-	//camera
-	Camera* camera = new Camera;
-	camera->Perspective(60, sWinW / sWinH, 0.1f, 1000.0);
-	//camera->Orthographic(30, 30 * sWinH / sWinW, .1, 100);
-	vec3 eye(10, 10, 10);
-	vec3 center(0, 0, 0);
-	camera->SetPosition(eye);
-	camera->LookAt(center);
-	//camera->SetMouseSpeed(0.5f);
-	par->AddChild(camera);
-
+	
 	BaseLight::SetSpecularIntensity(1);
 	BaseLight::SetSpecularPower(32);
 
 	//line
 	{
-		DrawLines* n = new DrawLines;
-		par->AddChild(n);
-		n->DrawLine(vec3(0, 0, 0), vec3(500, 0, 0), Color3B::RED, Color3B::RED);
-		n->DrawLine(vec3(0, 0, 0), vec3(0, 500, 0), Color3B::GREEN, Color3B::GREEN);
-		n->DrawLine(vec3(0, 0, 0), vec3(0, 0, 500), Color3B::BLUE, Color3B::BLUE);
+		// 	n->DrawLine(vec3(0, 0, 0), vec3(500, 0, 0), Color3B::RED, Color3B::RED);
+		// 	n->DrawLine(vec3(0, 0, 0), vec3(0, 500, 0), Color3B::GREEN, Color3B::GREEN);
+		// 	n->DrawLine(vec3(0, 0, 0), vec3(0, 0, 500), Color3B::BLUE, Color3B::BLUE);
 	}
 
+	/*
 	//dir light
 	DirectionLight* dirlight = new DirectionLight;
 	dirlight->SetColor(Color3F::WHITE);
@@ -293,6 +307,7 @@ int Director::Run()
 	bool is_show_2dsp = true;
 	bool is_show_skelon = true;
 	bool is_show_shadow = true;
+	bool is_show_skybox = false;
 	Sprite2D* sp2d = NULL;
 
 	//3d sprite/
@@ -306,10 +321,11 @@ int Director::Run()
 		normal_texture->LoadTextureFromImage("bricks_normal_map.jpg");
 		normal_texture->SetWrapType(eWrapType_reapeat);
 
-		Mesh* mesh = MeshManager::GetInstance()->LoadMeshFromFile("box.obj", false, true);
+		Mesh* mesh = MeshManager::GetInstance()->LoadMeshFromFile("box.obj",
+			MeshAttribStep_pos | MeshAttribStep_texcood | MeshAttribStep_gen_normal | MeshAttribStep_tangent);
 		mesh->GenBuffers();
 		mesh->SetNormalTexture(normal_texture);
-		mesh->SetTexture(texture);
+		mesh->SetColorTexture(texture);
 
 		Sprite3D* sp = new Sprite3D;
 		sp->InitWithMesh(mesh);
@@ -327,9 +343,10 @@ int Director::Run()
 		texture->LoadTextureFromImage("shadowmap.DDS");
 		texture->SetWrapType(eWrapType_reapeat);
 
-		Mesh* mesh = MeshManager::GetInstance()->LoadMeshFromFile("room_thickwalls.obj", false, false);
+		Mesh* mesh = MeshManager::GetInstance()->LoadMeshFromFile("room_thickwalls.obj", 
+			MeshAttribStep_pos | MeshAttribStep_texcood | MeshAttribStep_gen_normal_smooth);
 		mesh->GenBuffers();
-		mesh->SetTexture(texture);
+		mesh->SetColorTexture(texture);
 		
 		Sprite3D* sp = new Sprite3D;
 		sp->InitWithMesh(mesh);
@@ -341,7 +358,8 @@ int Director::Run()
 	//3d skelon sprite/
 	if (is_show_skelon)
 	{
-		skelonMesh = MeshManager::GetInstance()->LoadMeshFromFile("boblampclean.md5mesh", true, false);
+		skelonMesh = MeshManager::GetInstance()->LoadMeshFromFile("boblampclean.md5mesh", 
+			MeshAttribStep_pos | MeshAttribStep_texcood | MeshAttribStep_gen_normal_smooth | MeshAttribStep_bone);
 		skelonMesh->GenBuffers();
 		skelonMesh->GenTextures();
 	
@@ -369,9 +387,20 @@ int Director::Run()
 		sp2d->SetShader(shader_position_texture);
 		par->AddChild(sp2d);
 	}
- 	
+
+ 	if (is_show_skybox)
+ 	{
+		TextureCubeMap* t = new TextureCubeMap;
+		t->LoadTextureFromImages(
+			"skybox/left.jpg",  "skybox/right.jpg",
+			"skybox/top.jpg",   "skybox/bottom.jpg",
+			"skybox/front.jpg", "skybox/back.jpg");
+		SkyBox* box = new SkyBox;
+		box->InitWithTextureCubeMap(t);
+ 	}
+	*/
 	
-	
+	reset_test();
 	
 #define N 60
 	do{
@@ -383,13 +412,9 @@ int Director::Run()
 		{
 			during -= 1.0 / (double)N;
 
-			static float r = 0;
-			r+=0.1f;
-			
-			if (skelonMesh)
-			{
-				skelonMesh->BoneTransform(r);
-			}
+			Node* curTest = Director::GetInstance()->_trees[0]->GetChildren().front();
+			TestBase* c = dynamic_cast<TestBase*>(curTest);
+			c->Step();
 
 			MainLoop();
 
@@ -437,4 +462,20 @@ void Director::End()
 Tree* Director::GetCurrentTree()
 {
 	return sCurrentTree;
+}
+
+void reset_test()
+{
+	if (test_id < 0)
+	{
+		test_id = TheOneTest._tests.size() - 1;
+	}
+	if (test_id > TheOneTest._tests.size() - 1)
+	{
+		test_id = 0;
+	}
+
+	Director::GetInstance()->_trees[0]->RemoveAllChildren();
+	Node* par = TheOneTest._tests[test_id].testCreate();
+	Director::GetInstance()->_trees[0]->AddChild(par);
 }

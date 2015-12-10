@@ -59,6 +59,12 @@ Node* Node::GetParent()
 	return _parent;
 }
 
+
+const List<Node*>& Node::GetChildren()
+{
+	return _children;
+}
+
 void Node::Stop()
 {
 	for( const auto &child: _children)

@@ -93,6 +93,7 @@
     <ClInclude Include="..\engine\Defines.h" />
     <ClInclude Include="..\engine\Director.h" />
     <ClInclude Include="..\engine\DrawNode.h" />
+    <ClInclude Include="..\engine\Tests.h" />
     <ClInclude Include="..\engine\FileUtils.h" />
     <ClInclude Include="..\engine\GLUtils.h" />
     <ClInclude Include="..\engine\RenderToTexture.h" />
@@ -108,6 +109,7 @@
     <ClInclude Include="..\engine\ShaderName.h" />
     <ClInclude Include="..\engine\Shader.h" />
     <ClInclude Include="..\engine\ShaderValue.h" />
+    <ClInclude Include="..\engine\SkyBox.h" />
     <ClInclude Include="..\engine\soil\image_DXT.h" />
     <ClInclude Include="..\engine\soil\image_helper.h" />
     <ClInclude Include="..\engine\soil\SOIL.h" />
@@ -116,7 +118,7 @@
     <ClInclude Include="..\engine\soil\stb_image_aug.h" />
     <ClInclude Include="..\engine\Sprite2D.h" />
     <ClInclude Include="..\engine\Sprite3D.h" />
-    <ClInclude Include="..\engine\Texture2D.h" />
+    <ClInclude Include="..\engine\Texture.h" />
     <ClInclude Include="..\engine\Tree.h" />
     <ClInclude Include="..\engine\Types.h" />
     <ClInclude Include="..\engine\Vector.h" />
@@ -140,13 +142,15 @@
     <ClCompile Include="..\engine\ShaderModule.cpp" />
     <ClCompile Include="..\engine\ShaderName.cpp" />
     <ClCompile Include="..\engine\Shader.cpp" />
+    <ClCompile Include="..\engine\SkyBox.cpp" />
     <ClCompile Include="..\engine\soil\image_DXT.c" />
     <ClCompile Include="..\engine\soil\image_helper.c" />
     <ClCompile Include="..\engine\soil\SOIL.c" />
     <ClCompile Include="..\engine\soil\stb_image_aug.c" />
     <ClCompile Include="..\engine\Sprite2D.cpp" />
     <ClCompile Include="..\engine\Sprite3D.cpp" />
-    <ClCompile Include="..\engine\Texture2D.cpp" />
+    <ClCompile Include="..\engine\Tests.cpp" />
+    <ClCompile Include="..\engine\Texture.cpp" />
     <ClCompile Include="..\engine\Tree.cpp" />
     <ClCompile Include="..\engine\Types.cpp" />
     <ClCompile Include="main.cpp" />

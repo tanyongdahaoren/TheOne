@@ -129,7 +129,7 @@ void ShaderShadowMap::InitUniformsLocation()
 void ShaderShadowMap::Use(Mesh* mesh, mat4 toWorldTransform)
 {
 	//for skelon
-	glUniform1i(_openSkelonLocation, mesh->_skelon ? 1 : 0);
+	glUniform1i(_openSkelonLocation, mesh->HaveBone() ? 1 : 0);
 	for (int i = 0; i < mesh->_boneNum; i++)
 	{
 		const mat4& transform = mesh->_bonesInfo[i].FinalTransformation;

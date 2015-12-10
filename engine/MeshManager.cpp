@@ -28,7 +28,7 @@ MeshManager::~MeshManager()
 
 }
 
-Mesh* MeshManager::LoadMeshFromFile(const string& fileName, bool skelon, bool tangent)
+Mesh* MeshManager::LoadMeshFromFile(const string& fileName, uint flag)
 {
 	Mesh* mesh = GetMesh(fileName);
 	if (mesh)
@@ -36,15 +36,11 @@ Mesh* MeshManager::LoadMeshFromFile(const string& fileName, bool skelon, bool ta
 		return mesh;
 	}
 
-	unsigned int flag = aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_FlipUVs;
-	if (tangent)
-	{
-		flag |= aiProcess_CalcTangentSpace;
-	}
-	
 	mesh = new Mesh;
-	if (mesh->InitFromFile(fileName, skelon, flag))
+	mesh->Retain();
+	if (mesh->InitFromFile(fileName, flag))
 	{
+		mesh->GenBuffers();
 		AddMeshToCache(fileName, mesh);
 		return mesh;
 	}

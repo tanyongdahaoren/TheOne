@@ -22,6 +22,7 @@ public:
 	void RemoveAllChildren();
 	void RemoveFromParent();
 	Node* GetParent();
+	const List<Node*>& GetChildren();
 
 	//-----------------------------
 	//action

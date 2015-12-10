@@ -1,4 +1,4 @@
-#include "Texture2D.h"
+#include "Texture.h"
 #include "Defines.h"
 #include "SOIL.h"
 #include "FileUtils.h"
@@ -96,4 +96,37 @@ void Texture2D::SetWrapType(eWrapType type)
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, type);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, type);
+}
+
+
+
+
+
+bool TextureCubeMap::LoadTextureFromImages(const string& PosXFilename, const string& NegXFilename, const string& PosYFilename, const string& NegYFilename, const string& PosZFilename, const string& NegZFilename)
+{
+	GLuint tex_cube = SOIL_load_OGL_cubemap(
+		PosXFilename.c_str(),
+		NegXFilename.c_str(),
+		PosYFilename.c_str(),
+		NegYFilename.c_str(),
+		PosZFilename.c_str(),
+		NegZFilename.c_str(),
+		SOIL_LOAD_RGB,
+		SOIL_CREATE_NEW_ID,
+		SOIL_FLAG_MIPMAPS);
+	if (0 == tex_cube)
+	{
+		return false;
+	}
+	else
+	{
+		_textureID = tex_cube;
+	}
+	return true;
+}
+
+void TextureCubeMap::Bind(GLenum TextureUnit)
+{
+	glActiveTexture(TextureUnit);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, _textureID);
 }

@@ -49,13 +49,24 @@ Mesh::~Mesh()
 	}
 }
 
-bool Mesh::InitFromFile(const string& fileName, bool skelon, unsigned int flag)
+bool Mesh::InitFromFile(const string& fileName, uint flag)
 {
-	this->_skelon = skelon;
 	this->_boneNum = 0;
 	this->_attribFlag = flag;
 
-	_scene = _importer.ReadFile(fileName.c_str(), flag);
+	uint loadMeshFlag = 0;
+	if (flag & MeshAttribStep_pos)
+		loadMeshFlag |= aiProcess_Triangulate;
+	if (flag & MeshAttribStep_texcood)
+		loadMeshFlag |= aiProcess_FlipUVs;
+	if (flag & MeshAttribStep_gen_normal)
+		loadMeshFlag |= aiProcess_GenNormals;
+	if (flag & MeshAttribStep_gen_normal_smooth)
+		loadMeshFlag |= aiProcess_GenSmoothNormals;
+	if (flag & MeshAttribStep_tangent)
+		loadMeshFlag |= aiProcess_CalcTangentSpace;
+	
+	_scene = _importer.ReadFile(fileName.c_str(), loadMeshFlag);
 
 	if (!_scene)
 	{
@@ -119,18 +130,24 @@ bool Mesh::InitFromFile(const string& fileName, bool skelon, unsigned int flag)
 			this->_vertexDatas[eShaderVertAttribute_pos].push_back(pPos->z);
 
 			//纹理坐标
-			const aiVector3D* pTexCoord = paiMesh->HasTextureCoords(0) ? &(paiMesh->mTextureCoords[0][ii]) : &Zero3D;
-			this->_vertexDatas[eShaderVertAttribute_texcood].push_back(pTexCoord->x);
-			this->_vertexDatas[eShaderVertAttribute_texcood].push_back(pTexCoord->y);
-
+			if (flag & MeshAttribStep_texcood)
+			{
+				const aiVector3D* pTexCoord = paiMesh->HasTextureCoords(0) ? &(paiMesh->mTextureCoords[0][ii]) : &Zero3D;
+				this->_vertexDatas[eShaderVertAttribute_texcood].push_back(pTexCoord->x);
+				this->_vertexDatas[eShaderVertAttribute_texcood].push_back(pTexCoord->y);
+			}
+			
 			//法线
-			const aiVector3D* pNormal = &paiMesh->mNormals[ii];
-			this->_vertexDatas[eShaderVertAttribute_normal].push_back(pNormal->x);
-			this->_vertexDatas[eShaderVertAttribute_normal].push_back(pNormal->y);
-			this->_vertexDatas[eShaderVertAttribute_normal].push_back(pNormal->z);
+			if (flag & MeshAttribStep_gen_normal || flag & MeshAttribStep_gen_normal_smooth)
+			{
+				const aiVector3D* pNormal = &paiMesh->mNormals[ii];
+				this->_vertexDatas[eShaderVertAttribute_normal].push_back(pNormal->x);
+				this->_vertexDatas[eShaderVertAttribute_normal].push_back(pNormal->y);
+				this->_vertexDatas[eShaderVertAttribute_normal].push_back(pNormal->z);
+			}
 
 			//切线
-			if (flag & aiProcess_CalcTangentSpace)
+			if (flag & MeshAttribStep_tangent)
 			{
 				const aiVector3D* pTangent = &(paiMesh->mTangents[ii]);
 				this->_vertexDatas[eShaderVertAttribute_tangent].push_back(pTangent->x);
@@ -139,7 +156,7 @@ bool Mesh::InitFromFile(const string& fileName, bool skelon, unsigned int flag)
 			}
 		}
 
-		if (_skelon)
+		if (HaveBone())
 		{
 			LoadBone(paiMesh, i);
 		}
@@ -367,22 +384,28 @@ void Mesh::FillVertexAttributeWithFlag()
 	_sizePerVertex += 3;
 	_vertexDatas.insert(make_pair(eShaderVertAttribute_pos, tempV));
 
-	_attribs.insert(make_pair(eShaderVertAttribute_texcood, MeshVertexAttrib(2, eShaderVertAttribute_texcood, _sizePerVertex)));
-	_sizePerVertex += 2;
-	_vertexDatas.insert(make_pair(eShaderVertAttribute_texcood, tempV));
+	if (_attribFlag & MeshAttribStep_texcood)
+	{
+		_attribs.insert(make_pair(eShaderVertAttribute_texcood, MeshVertexAttrib(2, eShaderVertAttribute_texcood, _sizePerVertex)));
+		_sizePerVertex += 2;
+		_vertexDatas.insert(make_pair(eShaderVertAttribute_texcood, tempV));
+	}
+	
+	if (_attribFlag & MeshAttribStep_gen_normal || _attribFlag & MeshAttribStep_gen_normal_smooth)
+	{
+		_attribs.insert(make_pair(eShaderVertAttribute_normal, MeshVertexAttrib(3, eShaderVertAttribute_normal, _sizePerVertex)));
+		_sizePerVertex += 3;
+		_vertexDatas.insert(make_pair(eShaderVertAttribute_normal, tempV));
+	}
 
-	_attribs.insert(make_pair(eShaderVertAttribute_normal, MeshVertexAttrib(3, eShaderVertAttribute_normal, _sizePerVertex)));
-	_sizePerVertex += 3;
-	_vertexDatas.insert(make_pair(eShaderVertAttribute_normal, tempV));
-
-	if (_attribFlag & aiProcess_CalcTangentSpace)
+	if (_attribFlag & MeshAttribStep_tangent)
 	{
 		_attribs.insert(make_pair(eShaderVertAttribute_tangent, MeshVertexAttrib(3, eShaderVertAttribute_tangent, _sizePerVertex)));
 		_sizePerVertex += 3;
 		_vertexDatas.insert(make_pair(eShaderVertAttribute_tangent, tempV));
 	}
 
-	if (_skelon)
+	if (_attribFlag & MeshAttribStep_bone)
 	{
 		_attribs.insert(make_pair(eShaderVertAttribute_blend_index, MeshVertexAttrib(4, eShaderVertAttribute_blend_index, _sizePerVertex)));
 		_sizePerVertex += 4;
@@ -666,23 +689,31 @@ uint Mesh::FindScaling(float animationTime, const aiNodeAnim* pNodeAnim)
 void Mesh::SetNormalTexture(Texture2D* texture2D)
 {
 	SAFE_RELEASE(_normalTexture);
-	texture2D->Retain();
+	if (texture2D)
+	{
+		texture2D->Retain();
+	}
 	_normalTexture = texture2D;
 }
 
 bool Mesh::HaveNormalMap()
 {
-	return HaveAttribute(eShaderVertAttribute_tangent) && _normalTexture;
+	return (_attribFlag & MeshAttribStep_tangent) && _normalTexture;
 }
 
-void Mesh::SetTexture(Texture2D* texture2D)
+bool Mesh::HaveBone()
+{
+	return (_attribFlag & MeshAttribStep_bone);
+}
+
+void Mesh::SetColorTexture(Texture* texture)
 {
 	SAFE_RELEASE(_colorTexture);
-	texture2D->Retain();
-	_colorTexture = texture2D;
+	texture->Retain();
+	_colorTexture = texture;
 }
 
-Texture2D* Mesh::GetTexture()
+Texture* Mesh::GetColorTexture()
 {
 	return _colorTexture;
 }

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "GLHeader.h"
-#include "Texture2D.h"
+#include "Texture.h"
 
 class RenderToTexture
 {

@@ -140,7 +140,7 @@ void BaseLightShaderModule::InitUniformsLocation(GLuint programID)
 
 	_specularPowerLocation = GLGetUniformLocation(programID, "u_specular_power");
 
-	_openNormalMapLocation = GLGetUniformLocation(programID, "u_open_shadow");
+	_openNormalMapLocation = GLGetUniformLocation(programID, "u_open_normal_map");
 }
 
 void BaseLightShaderModule::Use(Mesh* mesh, mat4 toWorldTransform, mat4 viewTransform, mat4 projTransform)
@@ -222,10 +222,7 @@ void BaseLightShaderModule::Use(Mesh* mesh, mat4 toWorldTransform, mat4 viewTran
 		glUniform1f(loc.cutoff, light->GetCutoff());
 	}
 
-	bool normalMap = false;
-	if (mesh->HaveAttribute(eShaderVertAttribute_tangent))
-		normalMap = true;
-	glUniform1i(_openNormalMapLocation, normalMap ? 1 : 0);
+	glUniform1i(_openNormalMapLocation, mesh->HaveNormalMap() ? 1 : 0);
 }
 
 
@@ -266,25 +263,31 @@ void ShadowMapShaderModule::InitUniformsLocation(GLuint programID)
 void ShadowMapShaderModule::Use(Mesh* mesh, mat4 toWorldTransform, mat4 viewTransform, mat4 projTransform)
 {
 	DirectionLight* dirLight = Director::GetInstance()->GetCurrentTree()->_directionLight;
-
-	mat4 dirLightViewTransform = dirLight->GetShadowPassViewTransform();
-	mat4 dirLightProjTransform = dirLight->GetShadowPassProjTransform();
-
-	bool isOpenShadow = dirLight->IsOpenShadow();
-	glUniform1i(_openShadowLocation, isOpenShadow ? 1 : 0);
-	if (isOpenShadow)
+	if (!dirLight || !dirLight->IsOpenShadow())
 	{
-		glm::mat4 biasMatrix(
-			0.5, 0.0, 0.0, 0.0,
-			0.0, 0.5, 0.0, 0.0,
-			0.0, 0.0, 0.5, 0.0,
-			0.5, 0.5, 0.5, 1.0
-			);
-		mat4 vp = biasMatrix * dirLightProjTransform * dirLightViewTransform * toWorldTransform;
-		glUniformMatrix4fv(_lightMVPLocation, 1, GL_FALSE, &vp[0][0]);
+		glUniform1i(_openShadowLocation, 0);
+	}
+	else
+	{
+		mat4 dirLightViewTransform = dirLight->GetShadowPassViewTransform();
+		mat4 dirLightProjTransform = dirLight->GetShadowPassProjTransform();
 
-		glUniform1i(_shadowmapSamplerLocation, SHADOW_MAP_TEXTURE_DIRECTION_LIGHT_INDEX);
-		dirLight->GetTexture()->Bind(SHADOW_MAP_TEXTURE_DIRECTION_LIGHT);
+		bool isOpenShadow = dirLight->IsOpenShadow();
+		glUniform1i(_openShadowLocation, 1);
+		if (isOpenShadow)
+		{
+			glm::mat4 biasMatrix(
+				0.5, 0.0, 0.0, 0.0,
+				0.0, 0.5, 0.0, 0.0,
+				0.0, 0.0, 0.5, 0.0,
+				0.5, 0.5, 0.5, 1.0
+				);
+			mat4 vp = biasMatrix * dirLightProjTransform * dirLightViewTransform * toWorldTransform;
+			glUniformMatrix4fv(_lightMVPLocation, 1, GL_FALSE, &vp[0][0]);
+
+			glUniform1i(_shadowmapSamplerLocation, SHADOW_MAP_TEXTURE_DIRECTION_LIGHT_INDEX);
+			dirLight->GetTexture()->Bind(SHADOW_MAP_TEXTURE_DIRECTION_LIGHT);
+		}
 	}
 }
 
@@ -327,7 +330,7 @@ void SkeletonShaderModule::InitUniformsLocation(GLuint programID)
 void SkeletonShaderModule::Use(Mesh* mesh, mat4 toWorldTransform, mat4 viewTransform, mat4 projTransform)
 {
 	//for skelon
-	glUniform1i(_openSkelonLocation, mesh->_skelon ? 1 : 0);
+	glUniform1i(_openSkelonLocation, mesh->HaveBone() ? 1 : 0);
 	for (int i = 0; i < mesh->_boneNum; i++)
 	{
 		const mat4& transform = mesh->_bonesInfo[i].FinalTransformation;

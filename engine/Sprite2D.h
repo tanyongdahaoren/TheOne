@@ -13,6 +13,7 @@ public:
 	};
 public:
 	Sprite2D();
+	~Sprite2D();
 
 	void InitWithTexture2D(Texture2D* texture2d, Rect uv = Rect(0,0,1.0f,1.0f));
 
@@ -25,6 +26,8 @@ public:
 	virtual void SetScaleY(float y);
 	void SetScale2D(vec2 scale);
 	vec2 GetScale2D();
+	int  GetTextureWidth();
+	int  GetTextureHeight();
 protected:
 	//------------------
 	//Not used in Sprite2D

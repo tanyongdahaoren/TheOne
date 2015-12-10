@@ -2,7 +2,7 @@
 
 #include "Node.h"
 #include "MeshManager.h"
-#include "Texture2D.h"
+#include "Texture.h"
 #include "Shader.h"
 
 #define DEBUG_SPRITE3D 0
