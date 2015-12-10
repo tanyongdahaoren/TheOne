@@ -1,6 +1,7 @@
 #include "AutoReleasePool.h"
 #include "Defines.h"
 
+
 static AutoReleasePool* s_instance = nullptr;
 AutoReleasePool* AutoReleasePool::GetInstance()
 {
