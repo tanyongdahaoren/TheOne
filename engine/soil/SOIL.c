@@ -1110,6 +1110,7 @@ unsigned int
 	/*	how large of a texture can this OpenGL implementation handle?	*/
 	/*	texture_check_size_enum will be GL_MAX_TEXTURE_SIZE or SOIL_MAX_CUBE_MAP_TEXTURE_SIZE	*/
 	glGetIntegerv( texture_check_size_enum, &max_supported_size );
+	max_supported_size = 2048;
 	/*	do I need to make it a power of 2?	*/
 	if(
 		(flags & SOIL_FLAG_POWER_OF_TWO) ||	/*	user asked for it	*/

@@ -2,9 +2,9 @@
 
 #include "MathH.h"
 
-const float sWinW = 1024.0;
+const float sWinW = 1440;
 
-const float sWinH = 768.0;
+const float sWinH = 900;
 
 #define SAFE_DELETE(p)           do { delete (p); (p) = nullptr; } while(0)
 #define SAFE_DELETE_ARRAY(p)     do { if(p) { delete[] (p); (p) = nullptr; } } while(0)

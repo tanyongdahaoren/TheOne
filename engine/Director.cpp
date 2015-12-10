@@ -41,24 +41,25 @@ static void cursor_position_callback(GLFWwindow* window, double x, double y)
 	{
 		vec2 delta = sPreCursorPos - vec2(x, y);
 		delta = delta * 0.1f;
-		vec3 rotation = Director::GetInstance()->GetCurrentTree()->GetCurrentCamera()->GetRotation();
-		Director::GetInstance()->GetCurrentTree()->GetCurrentCamera()->SetRotation(rotation + vec3(delta.y, delta.x, 0));
+		vec3 rotation = Director::GetInstance()->_trees[0]->GetCurrentCamera()->GetRotation();
+		Director::GetInstance()->_trees[0]->GetCurrentCamera()->SetRotation(rotation + vec3(delta.y, delta.x, 0));
 	}
 	
 	sPreCursorPos = vec2(x, y);
 }
-
+Vector<Texture2D*> _txs;
 Tests TheOneTest;
 int test_id = 0;
 void reset_test();
 extern float sCameraMoveSpeed;
+Sprite2D* sp_test_name = NULL;
+
 static void key_callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
 	if (action != GLFW_REPEAT && action != GLFW_PRESS)
 		return;
 	if (key == GLFW_KEY_LEFT)
 	{
-
 		test_id--;
 		reset_test();
 		return;
@@ -70,11 +71,12 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 		return;
 	}
 	
-	Camera* camera = Director::GetInstance()->GetCurrentTree()->GetCurrentCamera();
+	Camera* camera = Director::GetInstance()->_trees[0]->GetCurrentCamera();
 	if (!camera)
 	{
 		return;
 	}
+
 	mat4 m = camera->GetToWorldTransform();
 	vec3 forward = vec3(-m[2][0], -m[2][1], -m[2][2]);
 	vec3 right = vec3(m[0][0], m[0][1], m[0][2]);
@@ -197,8 +199,6 @@ Director::~Director()
 	FileUtils::DestroyInstance();
 }
 
-Sprite3D* sp3d = NULL;
-
 int Director::Run()
 {
 	// Initialise GLFW
@@ -238,7 +238,7 @@ int Director::Run()
 	glfwSetKeyCallback(window, key_callback);
 
 	// Dark blue background
-	glClearColor(0.0f, 0, .3, 0.0f);
+	glClearColor(0.0f, 0, 0, 0.0f);
 	
 	//main loop
 	double last, current, during = 0.0;
@@ -255,153 +255,40 @@ int Director::Run()
 	Tree* tree = new Tree;
 	_trees.push_back(tree);
 
-	//reset_test();
-
-	Node* par = new Node;
-	tree->AddChild(par);
-	
-	
 	BaseLight::SetSpecularIntensity(1);
 	BaseLight::SetSpecularPower(32);
 
-	//line
 	{
-		// 	n->DrawLine(vec3(0, 0, 0), vec3(500, 0, 0), Color3B::RED, Color3B::RED);
-		// 	n->DrawLine(vec3(0, 0, 0), vec3(0, 500, 0), Color3B::GREEN, Color3B::GREEN);
-		// 	n->DrawLine(vec3(0, 0, 0), vec3(0, 0, 500), Color3B::BLUE, Color3B::BLUE);
+		Tree* tree2 = new Tree;
+		_trees.push_back(tree2);
+
+		Camera* camera = new Camera;
+		camera->Orthographic(sWinW, sWinH, -1, 1);
+		vec3 eye(0, 0, 0.5);
+		vec3 center(0, 0, 0);
+		camera->SetPosition(eye);
+		camera->LookAt(center);
+		tree2->AddChild(camera);
+
+		char buff[32];
+		for (int i = 0; i < TheOneTest._tests.size(); i++)
+		{
+			sprintf(buff, "testnames/%d.png", i);
+			Texture2D* t = new Texture2D;
+			_txs.push_back(t);
+			t->LoadTextureFromImage(buff);
+		}
+
+		sp_test_name = new Sprite2D;
+		sp_test_name->InitWithTexture2D(_txs[0]);
+		sp_test_name->SetShader(shader_position_texture);
+		sp_test_name->SetPositionY(-sWinH/2 + 80);
+		sp_test_name->SetPositionZ(0.1f);
+		tree2->AddChild(sp_test_name);
 	}
 
-	/*
-	//dir light
-	DirectionLight* dirlight = new DirectionLight;
-	dirlight->SetColor(Color3F::WHITE);
-	dirlight->SetDirection(vec3(-10, -10, -10));
-	dirlight->SetAmbientIntensity(0.1);
-	dirlight->SetDiffuseIntensity(0.8);
-	par->AddChild(dirlight);
-
-// 		PointLight* pointLight1 = new PointLight;
-// 		pointLight1->SetColor(Color3F::WHITE);
-// 		pointLight1->SetAmbientIntensity(0);
-// 		pointLight1->SetDiffuseIntensity(.1);
-// 		pointLight1->SetConstant(1.0f);
-// 		pointLight1->SetLinear(0.1f);
-// 		pointLight1->SetExp(0);
-// 		pointLight1->SetPosition(vec3(-5,1,-1));
-// 		par->AddChild(pointLight1);
-
-// 		SpotLight* spotLight = new SpotLight;
-// 		spotLight->SetColor(Color3F::WHITE);
-// 		spotLight->SetAmbientIntensity(0);
-// 		spotLight->SetDiffuseIntensity(0.3);
-// 		spotLight->SetConstant(1.0f);
-// 		spotLight->SetLinear(0.1f);
-// 		spotLight->SetExp(0);
-// 		spotLight->SetCutoff(0.8);
-// 		spotLight->SetDirection(vec3(1, 0, 0));
-// 		spotLight->SetPosition(vec3(-20,0,0));
-// 		par->AddChild(spotLight);
-	
-	
-	bool is_show_3dsp = true;
-	bool is_show_2dsp = true;
-	bool is_show_skelon = true;
-	bool is_show_shadow = true;
-	bool is_show_skybox = false;
-	Sprite2D* sp2d = NULL;
-
-	//3d sprite/
-	if (is_show_3dsp)
-	{
-		Texture2D* texture = new Texture2D;
-		texture->LoadTextureFromImage("bricks.jpg");
-		texture->SetWrapType(eWrapType_reapeat);
-
-		Texture2D* normal_texture = new Texture2D;
-		normal_texture->LoadTextureFromImage("bricks_normal_map.jpg");
-		normal_texture->SetWrapType(eWrapType_reapeat);
-
-		Mesh* mesh = MeshManager::GetInstance()->LoadMeshFromFile("box.obj",
-			MeshAttribStep_pos | MeshAttribStep_texcood | MeshAttribStep_gen_normal | MeshAttribStep_tangent);
-		mesh->GenBuffers();
-		mesh->SetNormalTexture(normal_texture);
-		mesh->SetColorTexture(texture);
-
-		Sprite3D* sp = new Sprite3D;
-		sp->InitWithMesh(mesh);
-		par->AddChild(sp);
-		sp->SetPosition(vec3(4,3,0));
-
-		sp3d = sp;
-	}
-
-	if (is_show_shadow)
-	{
-		dirlight->OpenShadow(true);
-
-		Texture2D* texture = new Texture2D;
-		texture->LoadTextureFromImage("shadowmap.DDS");
-		texture->SetWrapType(eWrapType_reapeat);
-
-		Mesh* mesh = MeshManager::GetInstance()->LoadMeshFromFile("room_thickwalls.obj", 
-			MeshAttribStep_pos | MeshAttribStep_texcood | MeshAttribStep_gen_normal_smooth);
-		mesh->GenBuffers();
-		mesh->SetColorTexture(texture);
-		
-		Sprite3D* sp = new Sprite3D;
-		sp->InitWithMesh(mesh);
-		par->AddChild(sp);
-		sp->SetRotation(vec3(0,180,0));
-	}
-
-	Mesh* skelonMesh = NULL;
-	//3d skelon sprite/
-	if (is_show_skelon)
-	{
-		skelonMesh = MeshManager::GetInstance()->LoadMeshFromFile("boblampclean.md5mesh", 
-			MeshAttribStep_pos | MeshAttribStep_texcood | MeshAttribStep_gen_normal_smooth | MeshAttribStep_bone);
-		skelonMesh->GenBuffers();
-		skelonMesh->GenTextures();
-	
-		Sprite3D* sp = new Sprite3D;
-		sp->SetPosition(vec3(2,0,2));
-		sp->InitWithMesh(skelonMesh);
-		par->AddChild(sp);
-		sp->SetScale(vec3(0.05,0.05,0.05));
-		sp->SetRotation(vec3(-90,0,0));
-		sp3d = sp;
-	}
-
-	//2d sprite
-	if (is_show_2dsp)
-	{
-		Texture2D* texture = new Texture2D;
-		texture->LoadTextureFromImage("img_cheryl.jpg");
-
-		sp2d = new Sprite2D;
-		sp2d->InitWithTexture2D(texture);
-		sp2d->SetPosition(vec3(-3, 1, 2));
-		sp2d->SetAnchorPoint(vec3(0.5, 0.5, 0));
-		sp2d->SetScale2D(vec2(0.01, 0.01));
-		sp2d->EnableBillBoard(Sprite2D::eBillBoardType_rotate_y);
-		sp2d->SetShader(shader_position_texture);
-		par->AddChild(sp2d);
-	}
-
- 	if (is_show_skybox)
- 	{
-		TextureCubeMap* t = new TextureCubeMap;
-		t->LoadTextureFromImages(
-			"skybox/left.jpg",  "skybox/right.jpg",
-			"skybox/top.jpg",   "skybox/bottom.jpg",
-			"skybox/front.jpg", "skybox/back.jpg");
-		SkyBox* box = new SkyBox;
-		box->InitWithTextureCubeMap(t);
- 	}
-	*/
-	
 	reset_test();
-	
+		
 #define N 60
 	do{
 		current = glfwGetTime();
@@ -447,11 +334,11 @@ void Director::MainLoop()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	//travel all nodes
-	for ( const auto &tree: _trees )
+	for (int i = 0; i < _trees.size(); i++)
 	{
-		sCurrentTree = tree;
+		sCurrentTree = _trees[i];
 
-		tree->Travel();
+		sCurrentTree->Travel(i);
 	}
 }
 
@@ -475,7 +362,9 @@ void reset_test()
 		test_id = 0;
 	}
 
+	sp_test_name->SetTexture(_txs[test_id]);
+
 	Director::GetInstance()->_trees[0]->RemoveAllChildren();
-	Node* par = TheOneTest._tests[test_id].testCreate();
+	TestBase* par = TheOneTest._tests[test_id].testCreate();
 	Director::GetInstance()->_trees[0]->AddChild(par);
 }

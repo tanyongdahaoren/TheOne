@@ -3,6 +3,7 @@
 #include "Node.h"
 #include <functional>
 #include <vector>
+#include "Vector.h"
 
 using namespace std;
 
@@ -13,6 +14,7 @@ class DirectionLight;
 class PointLight;
 class SpotLight;
 class Mesh;
+
 extern float sCameraMoveSpeed;
 
 class TestBase : public Node
@@ -136,20 +138,7 @@ struct TestData
 class Tests
 {
 public:
-	Tests()
-	{
-		_tests.push_back(TestData("draw primitive test", [](){return new TestDrawPrimitive(); }));
-		_tests.push_back(TestData("texture support test", [](){return new TestTextureSupport(); }));
-		_tests.push_back(TestData("sprite3D test", [](){return new TestSprite3D(); }));
-		_tests.push_back(TestData("skeleton test", [](){return new TestSkeleton(); }));
-		_tests.push_back(TestData("camera control test", [](){return new TestCameraControl(); }));
-		_tests.push_back(TestData("direction light test", [](){return new TestDirectionLight(); }));
-		_tests.push_back(TestData("point light test", [](){return new TestPointLight(); }));
-		_tests.push_back(TestData("spot light test", [](){return new TestSpotLight(); }));
-		_tests.push_back(TestData("normal map test", [](){return new TestNormalMap(); }));
-		_tests.push_back(TestData("bill board test", [](){return new TestBillBoard(); }));
-		_tests.push_back(TestData("shadow map test", [](){return new TestShadowMap(); }));
-	}
+	Tests();
 
 	vector<TestData> _tests;
 };

@@ -453,7 +453,7 @@ TestSkeleton::TestSkeleton()
 }
 
 void TestSkeleton::Step()
-{4
+{
 	static float r = 0;
 	r += 0.03f;
 	_skelonMesh->BoneTransform(r);
@@ -484,8 +484,8 @@ TestShadowMap::TestShadowMap()
 	_dirlight = new DirectionLight;
 	_dirlight->SetColor(Color3F::WHITE);
 	_dirlight->SetDirection(vec3(_lightX, -10, -10));
-	_dirlight->SetAmbientIntensity(0.3);
-	_dirlight->SetDiffuseIntensity(0.8);
+	_dirlight->SetAmbientIntensity(0.2);
+	_dirlight->SetDiffuseIntensity(0.9);
 	AddChild(_dirlight);
 	_dirlight->OpenShadow(true);
 	
@@ -526,7 +526,7 @@ TestShadowMap::TestShadowMap()
 	
 	{
 		_skelonMesh = MeshManager::GetInstance()->LoadMeshFromFile("boblampclean.md5mesh",
-			MeshAttribStep_pos | MeshAttribStep_texcood | MeshAttribStep_bone);
+			MeshAttribStep_pos | MeshAttribStep_texcood | MeshAttribStep_gen_normal_smooth | MeshAttribStep_bone);
 		_skelonMesh->GenTextures();
 
 		Sprite3D* sp = new Sprite3D;
@@ -563,4 +563,19 @@ void TestShadowMap::Step()
 		}
 	}
 	_dirlight->SetDirection(vec3(_lightX, -10, -10));
+}
+
+Tests::Tests()
+{
+	_tests.push_back(TestData("draw primitive test", [](){return new TestDrawPrimitive(); }));
+	_tests.push_back(TestData("texture support test", [](){return new TestTextureSupport(); }));
+	_tests.push_back(TestData("sprite3D test", [](){return new TestSprite3D(); }));
+	_tests.push_back(TestData("skeleton test", [](){return new TestSkeleton(); }));
+	_tests.push_back(TestData("camera control test", [](){return new TestCameraControl(); }));
+	_tests.push_back(TestData("direction light test", [](){return new TestDirectionLight(); }));
+	_tests.push_back(TestData("point light test", [](){return new TestPointLight(); }));
+	_tests.push_back(TestData("spot light test", [](){return new TestSpotLight(); }));
+	_tests.push_back(TestData("normal map test", [](){return new TestNormalMap(); }));
+	_tests.push_back(TestData("bill board test", [](){return new TestBillBoard(); }));
+	_tests.push_back(TestData("shadow map test", [](){return new TestShadowMap(); }));
 }

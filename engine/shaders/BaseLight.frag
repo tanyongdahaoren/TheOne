@@ -124,7 +124,7 @@ float CalculateShadowFactor()
 	if(u_open_shadow == 0)
 		return 1;
 	float factor = 1.0f;
-	if (texture2D(u_sampler_shadowmap, o_pos_light_camera.xy).x < o_pos_light_camera.z)
+	if (texture2D(u_sampler_shadowmap, o_pos_light_camera.xy).x < o_pos_light_camera.z - 0.005)
 		factor = 0.5;
 	return factor;
 }

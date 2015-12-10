@@ -11,7 +11,7 @@ class Tree : public Node
 public:
 	Tree();
 		
-	void Travel();
+	void Travel(int idx);
 
 	void AddCamera(Camera* camera);
 
@@ -23,6 +23,8 @@ public:
 
 	Camera* GetCurrentCamera();
 public:
+	int _currentCameraIdx;
+
 	vector<Camera*> _cameras;
 
 	DirectionLight* _directionLight;

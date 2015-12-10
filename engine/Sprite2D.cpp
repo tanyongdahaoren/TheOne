@@ -112,6 +112,12 @@ int Sprite2D::GetTextureHeight()
 	return t->_height;
 }
 
+
+void Sprite2D::SetTexture(Texture2D* t)
+{
+	_mesh->SetColorTexture(t);
+}
+
 void Sprite2D::SetScale(vec3 scale)
 {
 	Node::SetScale(scale);

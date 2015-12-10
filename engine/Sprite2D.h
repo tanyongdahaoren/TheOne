@@ -28,6 +28,7 @@ public:
 	vec2 GetScale2D();
 	int  GetTextureWidth();
 	int  GetTextureHeight();
+	void SetTexture(Texture2D* t);
 protected:
 	//------------------
 	//Not used in Sprite2D

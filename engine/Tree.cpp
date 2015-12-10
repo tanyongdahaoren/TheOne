@@ -2,10 +2,9 @@
 #include "Camera.h"
 #include "Defines.h"
 
-static Camera* sCurrentCamera = NULL;
-
 Tree::Tree()
 {
+	_currentCameraIdx = 0;
 	//look at center of screen
 	/*
 	float zEye = sWinH / 1.1566f;
@@ -23,7 +22,7 @@ Tree::Tree()
 	*/
 }
 
-void Tree::Travel()
+void Tree::Travel(int idx)
 {
 	_directionLight = NULL;
 	_pointLights.clear();
@@ -48,15 +47,18 @@ void Tree::Travel()
 		_directionLight->UnBindRenderShadow();
 	}
 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-	//render to screen
-	for ( const auto &camera: _cameras )
+	if (idx == 0)
 	{
-		sCurrentCamera = camera;
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
+	
+	//render to screen
+	for (int i = 0; i < _cameras.size(); i++)
+	{
+		_currentCameraIdx = i;
 
-		const mat4& cameraProjTransform = camera->GetProjectTransform();
-		const mat4& cameraViewTransform = camera->GetViewTransform();
+		const mat4& cameraProjTransform = _cameras[i]->GetProjectTransform();
+		const mat4& cameraViewTransform = _cameras[i]->GetViewTransform();
 		VisitRender(cameraProjTransform, cameraViewTransform);
 	}
 }
@@ -68,5 +70,5 @@ void Tree::AddCamera(Camera* camera)
 
 Camera* Tree::GetCurrentCamera()
 {
-	return sCurrentCamera;
+	return _cameras[_currentCameraIdx];
 }
