@@ -107,7 +107,6 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
 	}
 	camera->SetPosition(pos);
 }
-
 static const char* get_button_name(int button)
 {
 	switch (button)
