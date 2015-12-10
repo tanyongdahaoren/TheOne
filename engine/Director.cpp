@@ -119,11 +119,11 @@ static const char* get_button_name(int button)
 	case GLFW_MOUSE_BUTTON_MIDDLE:
 		return "middle";
 	default:
-	{
-		static char name[16];
-		sprintf(name, "%i", button);
-		return name;
-	}
+		{
+			static char name[16];
+			sprintf(name, "%i", button);
+			return name;
+		}
 	}
 }
 
