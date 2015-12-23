@@ -14,6 +14,7 @@ class DirectionLight;
 class PointLight;
 class SpotLight;
 class Mesh;
+class SkyBox;
 
 extern float sCameraMoveSpeed;
 
@@ -122,6 +123,14 @@ public:
 	float _lightX;
 	bool _lightXAdd;
 	DirectionLight* _dirlight;
+};
+
+class TestSkyBox : public TestBase
+{
+public:
+	TestSkyBox();
+	virtual void Step();
+	Sprite3D* _sp;
 };
 
 struct TestData

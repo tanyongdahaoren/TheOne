@@ -277,22 +277,22 @@ void Node::VisitTransform(const mat4& parentToWorldTransform)
 	}
 }
 
-void Node::VisitRender(const mat4& cameraProjTransform, const mat4& cameraViewTransform)
+void Node::VisitRender(Camera* camera)
 {
-	Render(cameraProjTransform, cameraViewTransform);
+	Render(camera);
 
 	for (const auto &child : _children)
 	{
-		child->VisitRender(cameraProjTransform, cameraViewTransform);
+		child->VisitRender(camera);
 	}
 }
 
-void Node::VisitRenderShadowMapping(const mat4& lightProjTransform, const mat4& lightViewTransform)
+void Node::VisitRenderShadowMapping(Camera* camera)
 {
-	RenderShadowMapping(lightProjTransform, lightViewTransform);
+	RenderShadowMapping(camera);
 
 	for (const auto &child : _children)
 	{
-		child->VisitRenderShadowMapping(lightProjTransform, lightViewTransform);
+		child->VisitRenderShadowMapping(camera);
 	}
 }

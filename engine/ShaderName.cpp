@@ -12,3 +12,6 @@
 
 #include "shaders/DepthRTT.vert"
 #include "shaders/DepthRTT.frag"
+
+#include "shaders/SkyBox.vert"
+#include "shaders/SkyBox.frag"

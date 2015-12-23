@@ -1,14 +1,17 @@
 #include "SkyBox.h"
 
 SkyBox::SkyBox()
+	:_textureCubeMap(NULL)
 {
 
 }
 
 void SkyBox::InitWithTextureCubeMap(TextureCubeMap* textureCubeMap)
 {
+	_textureCubeMap = textureCubeMap;
+
 	Mesh* mesh = new Mesh;
-	mesh->SetColorTexture(textureCubeMap);
+	mesh->Retain();
 
 	mesh->_entries.resize(1);
 	mesh->_entries[0].MaterialIndex = 0;
@@ -46,4 +49,30 @@ void SkyBox::InitWithTextureCubeMap(TextureCubeMap* textureCubeMap)
 	mesh->GenBuffers();
 
 	InitWithMesh(mesh);
+
+	SetShader(shader_sky_box);
+}
+
+void SkyBox::Render(Camera* camera)
+{
+	GLint OldCullFaceMode;
+	glGetIntegerv(GL_CULL_FACE_MODE, &OldCullFaceMode);
+	GLint OldDepthFuncMode;
+	glGetIntegerv(GL_DEPTH_FUNC, &OldDepthFuncMode);
+
+	glCullFace(GL_FRONT);
+	glDepthFunc(GL_LEQUAL);
+
+	_program->Active();
+
+	_textureCubeMap->Bind(CUBE_TEXTURE);
+
+	unsigned int textureFlag = 0;
+
+	_program->Use(textureFlag, _mesh, _toWorldTransform, camera);
+
+	_mesh->UseBuffers();
+
+	glCullFace(OldCullFaceMode);
+	glDepthFunc(OldDepthFuncMode);
 }

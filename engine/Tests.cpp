@@ -5,6 +5,7 @@
 #include "Sprite2D.h"
 #include "Sprite3D.h"
 #include "BaseLight.h"
+#include "SkyBox.h"
 
 float sCameraMoveSpeed = 1.5f;
 
@@ -565,6 +566,46 @@ void TestShadowMap::Step()
 	_dirlight->SetDirection(vec3(_lightX, -10, -10));
 }
 
+TestSkyBox::TestSkyBox()
+{
+	//camera
+	Camera* camera = new Camera;
+	camera->Perspective(60, sWinW / sWinH, 0.1f, 3000);
+	vec3 eye(0, 0, 20);
+	vec3 center(0, 0, 0);
+	camera->SetPosition(eye);
+	camera->LookAt(center);
+	AddChild(camera);
+
+	Texture2D* texture = new Texture2D;
+	texture->LoadTextureFromImage("jeep_army.jpg");
+	Mesh* mesh = MeshManager::GetInstance()->LoadMeshFromFile("jeep.obj",
+		MeshAttribStep_pos | MeshAttribStep_texcood);
+	mesh->SetColorTexture(texture);
+
+	_sp = new Sprite3D;
+	_sp->SetScale(vec3(0.01,0.01,0.01));
+	_sp->InitWithMesh(mesh);
+	_sp->SetShader(shader_position_texture);
+	AddChild(_sp);
+
+	TextureCubeMap* t = new TextureCubeMap;
+	t->LoadTextureFromImages("skybox/left.jpg", "skybox/right.jpg",
+		"skybox/top.jpg", "skybox/bottom.jpg",
+		"skybox/front.jpg", "skybox/back.jpg");
+	t->Retain();
+	SkyBox* box = new SkyBox;
+	box->InitWithTextureCubeMap(t);
+	AddChild(box);
+}
+
+void TestSkyBox::Step()
+{
+	static float ry = 0;
+	ry += 1;
+	_sp->SetRotation(vec3(0, ry, 0));
+}
+
 Tests::Tests()
 {
 	_tests.push_back(TestData("draw primitive test", [](){return new TestDrawPrimitive(); }));
@@ -577,5 +618,6 @@ Tests::Tests()
 	_tests.push_back(TestData("spot light test", [](){return new TestSpotLight(); }));
 	_tests.push_back(TestData("normal map test", [](){return new TestNormalMap(); }));
 	_tests.push_back(TestData("bill board test", [](){return new TestBillBoard(); }));
+	_tests.push_back(TestData("sky box test", [](){return new TestSkyBox(); }));
 	_tests.push_back(TestData("shadow map test", [](){return new TestShadowMap(); }));
 }

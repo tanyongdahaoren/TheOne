@@ -33,6 +33,12 @@ void Tree::Travel(int idx)
 	mat4 identity;
 	VisitTransform(identity);
 
+	//cameras view transform
+	for (int i = 0; i < _cameras.size(); i++)
+	{
+		_cameras[i]->UpdateViewTransform();
+	}
+
 	//shadow pass
 	if (_directionLight && _directionLight->IsOpenShadow())
 	{
@@ -42,7 +48,7 @@ void Tree::Travel(int idx)
 
 		_directionLight->CaculateVP();
 
-		VisitRenderShadowMapping(_directionLight->GetShadowPassProjTransform(), _directionLight->GetShadowPassViewTransform());
+		VisitRenderShadowMapping(_directionLight);
 
 		_directionLight->UnBindRenderShadow();
 	}
@@ -56,10 +62,7 @@ void Tree::Travel(int idx)
 	for (int i = 0; i < _cameras.size(); i++)
 	{
 		_currentCameraIdx = i;
-
-		const mat4& cameraProjTransform = _cameras[i]->GetProjectTransform();
-		const mat4& cameraViewTransform = _cameras[i]->GetViewTransform();
-		VisitRender(cameraProjTransform, cameraViewTransform);
+		VisitRender(_cameras[i]);
 	}
 }
 

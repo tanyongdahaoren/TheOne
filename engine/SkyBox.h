@@ -9,6 +9,11 @@ public:
 	SkyBox();
 
 	void InitWithTextureCubeMap(TextureCubeMap* textureCubeMap);
+
+
 protected:
-	 
+	virtual void Render(Camera* camera);
+
+protected:
+	TextureCubeMap* _textureCubeMap;
 };

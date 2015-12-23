@@ -34,8 +34,6 @@ public:
 
 	Texture2D* GetTexture();
 protected:
-	const mat4 GetShadowPassViewTransform();
-	const mat4 GetShadowPassProjTransform();
 	virtual void CaculateVP(){}
 
 	void BindRenderShadow();

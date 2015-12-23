@@ -11,6 +11,7 @@ using namespace std;
 GLint extern GLGetUniformLocation(GLuint programID, const char* pUniformName);
 
 class Mesh;
+class Camera;
 class Shader
 {
 public:
@@ -25,7 +26,7 @@ public:
 
 	void SetUniformLocationWithMatrix4(string uniform, const mat4& matrix);
 
-	virtual void Use(unsigned int textureFlag, Mesh* mesh, mat4 toWorldTransform, mat4 viewTransform, mat4 projTransform);
+	virtual void Use(unsigned int textureFlag, Mesh* mesh, mat4 toWorldTransform, Camera* camera);
 	
 protected:
 	virtual void InitUniformsLocation();
@@ -37,19 +38,4 @@ protected:
 
 	
 	Vector<ShaderModule*> _mudules;
-};
-
-//shadow map
-class ShaderShadowMap : public Shader
-{
-public:
-	static string GetVertShader();
-	static string GetFragShader();
-protected:
-	virtual void InitUniformsLocation();
-	virtual void Use(Mesh* mesh, mat4 toWorldTransform);
-protected:
-	//for skelon
-	GLuint _openSkelonLocation;
-	GLuint _boneLocation[kMaxBoneNum];
 };

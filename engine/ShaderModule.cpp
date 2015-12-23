@@ -143,7 +143,7 @@ void BaseLightShaderModule::InitUniformsLocation(GLuint programID)
 	_openNormalMapLocation = GLGetUniformLocation(programID, "u_open_normal_map");
 }
 
-void BaseLightShaderModule::Use(Mesh* mesh, mat4 toWorldTransform, mat4 viewTransform, mat4 projTransform)
+void BaseLightShaderModule::Use(Mesh* mesh, mat4 toWorldTransform, Camera* camera)
 {
 	float specularPower = BaseLight::GetSpecularPower();
 	float specularIntensity = BaseLight::GetSpecularIntensity();
@@ -151,7 +151,6 @@ void BaseLightShaderModule::Use(Mesh* mesh, mat4 toWorldTransform, mat4 viewTran
 	glUniform1f(_specularPowerLocation, specularPower);
 	glUniform1f(_specularIntensityLocation, specularIntensity);
 
-	Camera* camera = Director::GetInstance()->GetCurrentTree()->GetCurrentCamera();
 	vec3 eyePos = camera->GetPositionInWorld();
 	glUniform3f(_eyeWorldPosLocation, eyePos.x, eyePos.y, eyePos.z);
 
@@ -260,7 +259,7 @@ void ShadowMapShaderModule::InitUniformsLocation(GLuint programID)
 	_shadowmapSamplerLocation = GLGetUniformLocation(programID, "u_sampler_shadowmap");
 }
 
-void ShadowMapShaderModule::Use(Mesh* mesh, mat4 toWorldTransform, mat4 viewTransform, mat4 projTransform)
+void ShadowMapShaderModule::Use(Mesh* mesh, mat4 toWorldTransform, Camera* camera)
 {
 	DirectionLight* dirLight = Director::GetInstance()->GetCurrentTree()->_directionLight;
 	if (!dirLight || !dirLight->IsOpenShadow())
@@ -269,8 +268,8 @@ void ShadowMapShaderModule::Use(Mesh* mesh, mat4 toWorldTransform, mat4 viewTran
 	}
 	else
 	{
-		mat4 dirLightViewTransform = dirLight->GetShadowPassViewTransform();
-		mat4 dirLightProjTransform = dirLight->GetShadowPassProjTransform();
+		mat4 dirLightViewTransform = dirLight->GetViewTransform();
+		mat4 dirLightProjTransform = dirLight->GetProjectTransform();
 
 		bool isOpenShadow = dirLight->IsOpenShadow();
 		glUniform1i(_openShadowLocation, 1);
@@ -327,7 +326,7 @@ void SkeletonShaderModule::InitUniformsLocation(GLuint programID)
 	}
 }
 
-void SkeletonShaderModule::Use(Mesh* mesh, mat4 toWorldTransform, mat4 viewTransform, mat4 projTransform)
+void SkeletonShaderModule::Use(Mesh* mesh, mat4 toWorldTransform, Camera* camera)
 {
 	//for skelon
 	glUniform1i(_openSkelonLocation, mesh->HaveBone() ? 1 : 0);
@@ -338,8 +337,26 @@ void SkeletonShaderModule::Use(Mesh* mesh, mat4 toWorldTransform, mat4 viewTrans
 	}
 }
 
+std::string SkyBoxShaderModule::VertexStr()
+{
+	return "";
+}
 
+std::string SkyBoxShaderModule::FragStr()
+{
+	return "";
+}
 
+void SkyBoxShaderModule::InitUniformsLocation(GLuint programID)
+{
+	_cameraRotationLocation = GLGetUniformLocation(programID, "u_camera_rot");
+	_cubeSamplerLocation = GLGetUniformLocation(programID, "u_texture_sky_box_sampler");
+}
 
-
-
+void SkyBoxShaderModule::Use(Mesh* mesh, mat4 toWorldTransform, Camera* camera)
+{
+	mat4 cameraRotation = camera->GetToWorldTransform();
+	cameraRotation[3][0] = cameraRotation[3][1] = cameraRotation[3][2] = 0;
+	glUniformMatrix4fv(_cameraRotationLocation, 1, GL_FALSE, (const GLfloat*)&cameraRotation[0][0]);
+	glUniform1i(_cubeSamplerLocation, CUBE_TEXTURE_INDEX);
+}

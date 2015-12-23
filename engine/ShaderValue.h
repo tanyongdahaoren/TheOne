@@ -11,6 +11,7 @@ static const string shader_position_color = "shader_position_color";
 static const string shader_position_texture = "shader_position_texture";
 static const string shader_base_light = "shader_base_light";
 static const string shader_depth_rtt = "shader_depth_rtt";
+static const string shader_sky_box = "shader_sky_box";
 
 //attribute
 enum eShaderVertAttribute

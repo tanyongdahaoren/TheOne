@@ -76,18 +76,6 @@ void BaseLight::OpenShadow(bool b)
 	}
 }
 
-
-const mat4 BaseLight::GetShadowPassViewTransform()
-{
-	return _viewTransform;
-}
-
-
-const mat4 BaseLight::GetShadowPassProjTransform()
-{
-	return _projectTransform;
-}
-
 void BaseLight::BindRenderShadow()
 {
 	_shadowRTT->Bind();

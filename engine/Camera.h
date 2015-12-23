@@ -5,6 +5,7 @@
 
 class Camera : public Node
 {
+	friend class Tree;
 public:
 	Camera();
 

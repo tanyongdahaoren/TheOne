@@ -164,6 +164,8 @@
     <None Include="..\engine\shaders\PositionColor.vert" />
     <None Include="..\engine\shaders\PositionTexture.frag" />
     <None Include="..\engine\shaders\PositionTexture.vert" />
+    <None Include="..\engine\shaders\SkyBox.frag" />
+    <None Include="..\engine\shaders\SkyBox.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

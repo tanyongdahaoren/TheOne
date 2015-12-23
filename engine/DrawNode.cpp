@@ -64,12 +64,12 @@ void DrawNode::EnsureCapacity(int count)
 	}
 }
 
-void DrawNode::Render(const mat4& cameraProjTransform, const mat4& cameraViewTransform)
+void DrawNode::Render(Camera* camera)
 {
 	// Use our shader
 	_program->Active();
 
-	glm::mat4 MVP = cameraProjTransform * cameraViewTransform * _toWorldTransform;
+	glm::mat4 MVP = camera->GetProjectTransform() * camera->GetViewTransform() * _toWorldTransform;
 	_program->SetUniformLocationWithMatrix4(UNIFORM_MVP, MVP);
 	glBindVertexArray(_vao);
 	
@@ -119,11 +119,11 @@ void DrawLines::DrawLine(vec3 from, vec3 to, Color3B c1, Color3B c2)
 	AddVert(to, c2);
 }
 
-void DrawLines::Render(const mat4& cameraProjTransform, const mat4& cameraViewTransform)
+void DrawLines::Render(Camera* camera)
 {
 	glLineWidth(_lineWidth);
 
-	DrawNode::Render(cameraProjTransform, cameraViewTransform);
+	DrawNode::Render(camera);
 }
 
 void DrawLines::SetLineWidth(int w)
@@ -146,11 +146,11 @@ void DrawPoints::DrawPoint(vec3 pos, Color3B c)
 	AddVert(pos, c);
 }
 
-void DrawPoints::Render(const mat4& cameraProjTransform, const mat4& cameraViewTransform)
+void DrawPoints::Render(Camera* camera)
 {
 	glPointSize(_pointSize);
 
-	DrawNode::Render(cameraProjTransform, cameraViewTransform);
+	DrawNode::Render(camera);
 }
 
 void DrawPoints::SetPointSize(int s)

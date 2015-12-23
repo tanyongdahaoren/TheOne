@@ -15,18 +15,6 @@ void Camera::Orthographic(float width, float height, float nearPlane, float farP
 	_projectTransform = glm::ortho(-width/2, width/2, -height/2, height/2, nearPlane, farPlane);
 }
 
-const mat4& Camera::GetProjectTransform()
-{
-	return _projectTransform;
-}
-
-const mat4& Camera::GetViewTransform()
-{
-	UpdateViewTransform();
-	
-	return _viewTransform;
-}
-
 void Camera::UpdateViewTransform()
 {
 	mat4 viewInv = GetToWorldTransform();
@@ -50,5 +38,15 @@ void Camera::LookAt(const vec3& lookAtPos, const vec3& up /*= vec3(0,1,0)*/)
 
 	quat q = quat(rotation);
 	SetRotationQuat(q);
+}
+
+const mat4& Camera::GetProjectTransform()
+{
+	return _projectTransform;
+}
+
+const mat4& Camera::GetViewTransform()
+{
+	return _viewTransform;
 }
 

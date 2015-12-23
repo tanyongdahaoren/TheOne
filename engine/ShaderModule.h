@@ -13,6 +13,7 @@ using namespace std;
 static const string module_base_light = "module_base_light";
 static const string module_skeleton = "module_skeleton";
 static const string module_shadow_map = "module_shadow_map";
+static const string module_sky_box = "module_sky_box";
 
 struct ShaderInfo
 {
@@ -22,6 +23,7 @@ struct ShaderInfo
 	string _frag;
 };
 
+class Camera;
 class ShaderModule : public Ref
 {
 public:
@@ -31,8 +33,9 @@ public:
 
 	virtual void InitUniformsLocation(GLuint programID){}
 
-	virtual void Use(Mesh* mesh, mat4 toWorldTransform, mat4 viewTransform, mat4 projTransform){}
+	virtual void Use(Mesh* mesh, mat4 toWorldTransform, Camera* camera){}
 };
+
 
 const int kMaxPointLightNum = 2;
 const int kMaxSpotLightNum = 2;
@@ -45,7 +48,7 @@ public:
 
 	virtual void InitUniformsLocation(GLuint programID);
 
-	virtual void Use(Mesh* mesh, mat4 toWorldTransform, mat4 viewTransform, mat4 projTransform);
+	virtual void Use(Mesh* mesh, mat4 toWorldTransform, Camera* camera);
 protected:
 	//base
 	struct tBaseLightLocation
@@ -95,7 +98,7 @@ public:
 
 	virtual void InitUniformsLocation(GLuint programID);
 
-	virtual void Use(Mesh* mesh, mat4 toWorldTransform, mat4 viewTransform, mat4 projTransform);
+	virtual void Use(Mesh* mesh, mat4 toWorldTransform, Camera* camera);
 protected:
 	GLuint _openShadowLocation;
 	GLuint _lightMVPLocation;
@@ -112,10 +115,25 @@ public:
 	
 	virtual void InitUniformsLocation(GLuint programID);
 
-	virtual void Use(Mesh* mesh, mat4 toWorldTransform, mat4 viewTransform, mat4 projTransform);
+	virtual void Use(Mesh* mesh, mat4 toWorldTransform, Camera* camera);
 protected:
 	GLuint _openSkelonLocation;
 	GLuint _boneLocation[kMaxBoneNum];
+};
+
+class SkyBoxShaderModule : public ShaderModule
+{
+public:
+	virtual string VertexStr();
+
+	virtual string FragStr();
+
+	virtual void InitUniformsLocation(GLuint programID);
+
+	virtual void Use(Mesh* mesh, mat4 toWorldTransform, Camera* camera);
+protected:
+	GLuint _cameraRotationLocation;
+	GLuint _cubeSamplerLocation;
 };
 
 
@@ -126,7 +144,8 @@ static const ShaderInfoMapValue ShaderInfoMapTableValue[] =
 	ShaderInfoMapValue(shader_position_color,   ShaderInfo(PositionColor_vert, PositionColor_frag, string(""))),
 	ShaderInfoMapValue(shader_position_texture, ShaderInfo(PositionTexture_vert, PositionTexture_frag, module_skeleton, string(""))),
 	ShaderInfoMapValue(shader_depth_rtt,        ShaderInfo(DepthRTT_vert, DepthRTT_frag, module_skeleton, string(""))),
-	ShaderInfoMapValue(shader_base_light,       ShaderInfo(BaseLight_vert, BaseLight_frag, module_base_light, module_shadow_map, module_skeleton, string("")))
+	ShaderInfoMapValue(shader_base_light,       ShaderInfo(BaseLight_vert, BaseLight_frag, module_base_light, module_shadow_map, module_skeleton, string(""))),
+	ShaderInfoMapValue(shader_sky_box,          ShaderInfo(SkyBox_vert, SkyBox_frag, module_sky_box, string("")))
 };
 const ShaderInfoMap ShaderInfoMapTable(ShaderInfoMapTableValue,
 	ShaderInfoMapTableValue + ARRAY_SIZE(ShaderInfoMapTableValue));
@@ -138,6 +157,7 @@ static const ShaderModuleMapValue ShaderModuleMapTableValue[] =
 	ShaderModuleMapValue(module_base_light, [](){return new BaseLightShaderModule(); }),
 	ShaderModuleMapValue(module_shadow_map, [](){return new ShadowMapShaderModule(); }),
 	ShaderModuleMapValue(module_skeleton,   [](){return new SkeletonShaderModule(); }),
+	ShaderModuleMapValue(module_sky_box,    [](){return new SkyBoxShaderModule(); }),
 };
 const ShaderModuleMap ShaderModuleMapTable(ShaderModuleMapTableValue,
 	ShaderModuleMapTableValue + ARRAY_SIZE(ShaderModuleMapTableValue));

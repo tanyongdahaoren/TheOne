@@ -18,9 +18,9 @@ public:
 
 	void SetShader(string shaderName);
 protected:
-	virtual void Render(const mat4& cameraProjTransform, const mat4& cameraViewTransform);
+	virtual void Render(Camera* camera);
 
-	virtual void RenderShadowMapping(const mat4& lightProjTransform, const mat4& lightViewTransform);
+	virtual void RenderShadowMapping(Camera* camera);
 protected:
 	Mesh* _mesh;
 

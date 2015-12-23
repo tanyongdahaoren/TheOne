@@ -93,13 +93,13 @@ void bindPredefinedVertexAttribs(GLuint program)
 		int location;
 	} attribute_locations[] =
 	{
-		{ ATTRIBUTE_NAME_POSITION, eShaderVertAttribute_pos },
-		{ ATTRIBUTE_NAME_COLOR, eShaderVertAttribute_color },
-		{ ATTRIBUTE_NAME_TEX_COORD, eShaderVertAttribute_texcood },
-		{ ATTRIBUTE_NAME_NORMAL, eShaderVertAttribute_normal },
-		{ ATTRIBUTE_NAME_BLEND_INDEX, eShaderVertAttribute_blend_index },
+		{ ATTRIBUTE_NAME_POSITION,     eShaderVertAttribute_pos },
+		{ ATTRIBUTE_NAME_COLOR,        eShaderVertAttribute_color },
+		{ ATTRIBUTE_NAME_TEX_COORD,    eShaderVertAttribute_texcood },
+		{ ATTRIBUTE_NAME_NORMAL,       eShaderVertAttribute_normal },
+		{ ATTRIBUTE_NAME_BLEND_INDEX,  eShaderVertAttribute_blend_index },
 		{ ATTRIBUTE_NAME_BLEND_WEIGHT, eShaderVertAttribute_blend_weight },
-		{ ATTRIBUTE_NAME_TANGENT, eShaderVertAttribute_tangent },
+		{ ATTRIBUTE_NAME_TANGENT,      eShaderVertAttribute_tangent },
 	};
 
 	const int size = ARRAY_SIZE(attribute_locations);
@@ -187,6 +187,8 @@ void ShaderManager::LoadDefaultShaders()
 	LoadShader(shader_depth_rtt);
 
 	LoadShader(shader_base_light);
+
+	LoadShader(shader_sky_box);
 }
 
 Shader* ShaderManager::GetShader(string shaderName)

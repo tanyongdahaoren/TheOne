@@ -18,7 +18,7 @@ protected:
 	void BindBufferDatas();
 
 	virtual void EnsureCapacity(int count);
-	virtual void Render(const mat4& cameraProjTransform, const mat4& cameraViewTransform);
+	virtual void Render(Camera* camera);
 	void SetMode(GLenum mode){ _mode = mode; }
 protected:
 	Shader* _program;
@@ -43,7 +43,7 @@ public:
 
 	void SetLineWidth(int w);
 protected:
-	void Render(const mat4& cameraProjTransform, const mat4& cameraViewTransform);
+	void Render(Camera* camera);
 protected:
 	int _lineWidth;
 };
@@ -57,7 +57,7 @@ public:
 
 	void SetPointSize(int s);
 protected:
-	void Render(const mat4& cameraProjTransform, const mat4& cameraViewTransform);
+	void Render(Camera* camera);
 protected:
 	int _pointSize;
 };

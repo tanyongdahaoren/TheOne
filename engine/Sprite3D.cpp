@@ -37,7 +37,7 @@ void Sprite3D::SetShader(string shaderName)
 	_program = ShaderManager::GetInstance()->GetShader(shaderName);
 }
 
-void Sprite3D::Render(const mat4& cameraProjTransform, const mat4& cameraViewTransform)
+void Sprite3D::Render(Camera* camera)
 {
 	if (_cullBack)
 	{
@@ -57,7 +57,7 @@ void Sprite3D::Render(const mat4& cameraProjTransform, const mat4& cameraViewTra
 		textureFlag |= NORMAL_TEXTURE_INDEX;
 	}
 
-	_program->Use(textureFlag, _mesh, _toWorldTransform, cameraViewTransform, cameraProjTransform);
+	_program->Use(textureFlag, _mesh, _toWorldTransform, camera);
 
 	_mesh->UseBuffers();
 
@@ -77,7 +77,7 @@ void Sprite3D::Render(const mat4& cameraProjTransform, const mat4& cameraViewTra
 #endif
 }
 
-void Sprite3D::RenderShadowMapping(const mat4& lightProjTransform, const mat4& lightViewTransform)
+void Sprite3D::RenderShadowMapping(Camera* camera)
 {
 	if (_cullBack)
 	{
@@ -90,7 +90,7 @@ void Sprite3D::RenderShadowMapping(const mat4& lightProjTransform, const mat4& l
 
 	_shadowShader->Active();
 
-	_shadowShader->Use(0, _mesh, _toWorldTransform, lightViewTransform, lightProjTransform);
+	_shadowShader->Use(0, _mesh, _toWorldTransform, camera);
 
 	_mesh->UseBuffers();
 }

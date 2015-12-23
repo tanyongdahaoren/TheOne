@@ -14,3 +14,6 @@ extern const GLchar * BaseLight_frag;
 extern const GLchar * DepthRTT_vert;
 extern const GLchar * DepthRTT_frag;
 
+extern const GLchar * SkyBox_vert;
+extern const GLchar * SkyBox_frag;
+
