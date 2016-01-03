@@ -119,16 +119,18 @@ vec4 CalculateSpotLight(SpotLight light)
     }                                                                                       
 }
 
+//计算阴影
 float CalculateShadowFactor()
 {
 	if(u_open_shadow == 0)
 		return 1;
 	float factor = 1.0f;
-	if (texture2D(u_sampler_shadowmap, o_pos_light_camera.xy).x < o_pos_light_camera.z - 0.005)
+	if (texture(u_sampler_shadowmap, o_pos_light_camera.xy).x < o_pos_light_camera.z - 0.005)
 		factor = 0.5;
 	return factor;
 }
 
+//计算法线贴图
 vec3 CalculateBumpedNormal()
 {
 	vec3 normal = normalize(o_world_normal);
@@ -139,8 +141,10 @@ vec3 CalculateBumpedNormal()
 	}
 
 	vec3 tangent = normalize(o_world_tangent);
-	//求得与法线垂直的切线
+	
+	//用当前切线与法线 计算正交化的切线
 	tangent = normalize(tangent - dot(tangent, normal) * normal);
+	
 	//通过叉乘求得副切线
 	vec3 bitangent = cross(tangent, normal);
 	//通过3个互相正交的向量 得到TBN变换
